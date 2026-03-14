@@ -1,0 +1,1310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Boston Housing Wrapped 2024</title>
+<meta name="description" content="Boston Housing Wrapped — a Spotify Wrapped-style interactive story about housing speculation in Boston.">
+<meta property="og:title" content="Boston Housing Wrapped 2024">
+<meta property="og:description" content="Can you outbid the investors? An interactive look at Boston's housing crisis.">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Boston Housing Wrapped 2024">
+<meta name="twitter:description" content="Can you outbid the investors? An interactive look at Boston's housing crisis.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --neon: #CCFF00;
+  --neon-red: #FF3B3B;
+  --orange: #FF8C42;
+  --white: #FFFFFF;
+  --black: #000000;
+  --navy: #0B1026;
+  --teal: #0D7377;
+  --purple: #4A0E78;
+  --coral: #E85D75;
+  --deep-red: #8B0000;
+  --burgundy: #2A0A0A;
+  --radius: 16px;
+  --font: 'Montserrat', sans-serif;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html {
+  scroll-snap-type: y mandatory;
+  scroll-behavior: smooth;
+  overflow-x: hidden;
+}
+
+body {
+  font-family: var(--font);
+  color: var(--white);
+  background: var(--black);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+.slide {
+  min-height: 100vh;
+  min-height: 100dvh;
+  scroll-snap-align: start;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 24px;
+  position: relative;
+  overflow: hidden;
+}
+
+.slide-inner {
+  max-width: 390px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  z-index: 2;
+  position: relative;
+}
+
+.top-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  opacity: 0.7;
+  margin-bottom: 24px;
+}
+
+.headline {
+  font-size: 38px;
+  font-weight: 900;
+  line-height: 1.1;
+  margin-bottom: 16px;
+}
+
+.subheadline {
+  font-size: 17px;
+  font-weight: 400;
+  opacity: 0.85;
+  line-height: 1.5;
+  margin-bottom: 32px;
+}
+
+.btn {
+  background: var(--neon);
+  color: var(--black);
+  border: none;
+  border-radius: 50px;
+  padding: 16px 40px;
+  font-family: var(--font);
+  font-size: 17px;
+  font-weight: 900;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  letter-spacing: 0.5px;
+}
+
+.btn:hover { transform: scale(1.05); box-shadow: 0 0 30px rgba(204, 255, 0, 0.3); }
+.btn:active { transform: scale(0.97); }
+
+/* Dot indicators */
+.dots {
+  position: fixed;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  z-index: 100;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.3);
+  transition: background 0.3s, transform 0.3s;
+  cursor: pointer;
+}
+
+.dot.active {
+  background: var(--white);
+  transform: scale(1.4);
+}
+
+/* Animate-in classes */
+.anim {
+  opacity: 0;
+  transform: translateY(40px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+
+.anim.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.anim-delay-1 { transition-delay: 0.15s; }
+.anim-delay-2 { transition-delay: 0.3s; }
+.anim-delay-3 { transition-delay: 0.45s; }
+.anim-delay-4 { transition-delay: 0.6s; }
+
+/* ============ SLIDE 1 — Welcome ============ */
+#slide-welcome {
+  background: linear-gradient(160deg, var(--navy) 0%, #0a3d5c 40%, var(--teal) 100%);
+}
+
+.skyline {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 35%;
+  opacity: 0.08;
+  overflow: hidden;
+}
+
+.building {
+  position: absolute;
+  bottom: 0;
+  background: var(--white);
+}
+
+.b1 { left: 5%; width: 8%; height: 50%; }
+.b2 { left: 15%; width: 6%; height: 70%; }
+.b3 { left: 23%; width: 10%; height: 45%; }
+.b4 { left: 35%; width: 5%; height: 85%; }
+.b5 { left: 42%; width: 12%; height: 55%; }
+.b6 { left: 56%; width: 7%; height: 65%; }
+.b7 { left: 65%; width: 9%; height: 40%; }
+.b8 { left: 76%; width: 6%; height: 75%; }
+.b9 { left: 84%; width: 11%; height: 50%; }
+.b10 { left: 92%; width: 7%; height: 60%; }
+
+.building::after {
+  content: '';
+  position: absolute;
+  top: -8px;
+  left: 25%;
+  width: 50%;
+  height: 0;
+  border-left: 12px solid transparent;
+  border-right: 12px solid transparent;
+  border-bottom: 8px solid var(--white);
+}
+
+/* ============ SLIDE 2 — Guess the Price ============ */
+#slide-guess {
+  background: linear-gradient(160deg, var(--teal) 0%, #2a1460 60%, var(--purple) 100%);
+}
+
+.property-card {
+  width: 85%;
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: rgba(255,255,255,0.08);
+  backdrop-filter: blur(10px);
+  margin-bottom: 24px;
+}
+
+.property-img {
+  width: 100%;
+  height: 180px;
+  background: linear-gradient(135deg, #1a3a4a, #2d1f5e, #3a2a1a);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 700;
+  color: rgba(255,255,255,0.6);
+  position: relative;
+}
+
+.property-img::after {
+  content: '';
+  position: absolute;
+  bottom: 10%;
+  left: 10%;
+  right: 10%;
+  height: 40%;
+  border: 2px solid rgba(255,255,255,0.15);
+  border-bottom: none;
+}
+
+.property-label {
+  padding: 14px;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.price-display {
+  font-size: 48px;
+  font-weight: 900;
+  margin: 16px 0 8px;
+  color: var(--white);
+  transition: all 0.4s;
+  min-height: 60px;
+}
+
+.slider-container {
+  width: 85%;
+  margin: 8px 0 24px;
+}
+
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 6px;
+  border-radius: 3px;
+  background: rgba(255,255,255,0.2);
+  outline: none;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--neon);
+  cursor: pointer;
+  box-shadow: 0 0 15px rgba(204,255,0,0.4);
+}
+
+input[type="range"]::-moz-range-thumb {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--neon);
+  cursor: pointer;
+  border: none;
+  box-shadow: 0 0 15px rgba(204,255,0,0.4);
+}
+
+.slider-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  opacity: 0.5;
+  margin-top: 6px;
+}
+
+.reveal-area {
+  display: none;
+  width: 85%;
+  text-align: center;
+}
+
+.reveal-area.show { display: block; }
+
+.actual-price {
+  font-size: 56px;
+  font-weight: 900;
+  color: var(--neon);
+}
+
+.user-guess-strike {
+  font-size: 20px;
+  text-decoration: line-through;
+  opacity: 0.5;
+  margin: 8px 0;
+}
+
+.comparison-line {
+  font-size: 15px;
+  opacity: 0.7;
+  margin: 4px 0;
+}
+
+.slide-counter {
+  font-size: 12px;
+  opacity: 0.4;
+  margin-top: 20px;
+}
+
+/* ============ SLIDE 3 — Your Competitors ============ */
+#slide-competitors {
+  background: linear-gradient(160deg, var(--purple) 0%, #8B2252 50%, var(--coral) 100%);
+}
+
+.donut-wrap {
+  position: relative;
+  width: 220px;
+  height: 220px;
+  margin: 20px auto;
+}
+
+.donut-wrap svg {
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+
+.donut-segment {
+  fill: none;
+  stroke-width: 35;
+  stroke-linecap: butt;
+  transition: stroke-dasharray 1.2s ease;
+}
+
+.donut-center-label {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%,-50%);
+  font-size: 14px;
+  font-weight: 700;
+  text-align: center;
+  line-height: 1.3;
+}
+
+.legend {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px 16px;
+  margin-top: 20px;
+  width: 85%;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.legend-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.callout-card {
+  margin-top: 24px;
+  background: rgba(255,59,59,0.2);
+  border: 1px solid rgba(255,59,59,0.4);
+  border-radius: var(--radius);
+  padding: 16px 20px;
+  width: 85%;
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.callout-card span { color: var(--neon-red); }
+
+.neighborhood-pills {
+  display: flex;
+  gap: 8px;
+  margin-top: 16px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.pill {
+  padding: 8px 14px;
+  border-radius: 50px;
+  font-size: 12px;
+  font-weight: 700;
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.2);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.pill.active {
+  background: var(--white);
+  color: var(--black);
+  border-color: var(--white);
+}
+
+/* ============ SLIDE 4 — House Hunting ============ */
+#slide-hunt {
+  background: linear-gradient(160deg, var(--coral) 0%, #d4602e 50%, var(--orange) 100%);
+}
+
+.selector-group {
+  width: 85%;
+  margin-bottom: 16px;
+  text-align: left;
+}
+
+.selector-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  opacity: 0.6;
+  margin-bottom: 8px;
+}
+
+.selector-row {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.selector-pill {
+  padding: 10px 14px;
+  border-radius: 50px;
+  font-size: 13px;
+  font-weight: 700;
+  background: rgba(255,255,255,0.12);
+  border: 1.5px solid rgba(255,255,255,0.2);
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: var(--font);
+  color: var(--white);
+}
+
+.selector-pill.active {
+  background: var(--white);
+  color: var(--black);
+  border-color: var(--white);
+}
+
+.currency-input-wrap {
+  position: relative;
+  width: 85%;
+  margin: 16px 0 24px;
+}
+
+.currency-input-wrap label {
+  font-size: 15px;
+  font-weight: 700;
+  display: block;
+  margin-bottom: 10px;
+}
+
+.currency-input {
+  width: 100%;
+  padding: 16px 20px;
+  border-radius: var(--radius);
+  border: 2px solid rgba(255,255,255,0.3);
+  background: rgba(255,255,255,0.1);
+  color: var(--white);
+  font-family: var(--font);
+  font-size: 32px;
+  font-weight: 900;
+  text-align: center;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.currency-input:focus { border-color: var(--neon); }
+.currency-input::placeholder { color: rgba(255,255,255,0.3); }
+
+/* ============ SLIDE 5 — Reality Check ============ */
+#slide-reality {
+  background: linear-gradient(160deg, var(--orange) 0%, #c0392b 50%, var(--deep-red) 100%);
+}
+
+.median-price {
+  font-size: 64px;
+  font-weight: 900;
+  color: var(--neon);
+  line-height: 1;
+}
+
+.guess-comparison {
+  font-size: 18px;
+  margin: 12px 0 4px;
+  opacity: 0.8;
+}
+
+.difference {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--neon);
+  margin-bottom: 32px;
+}
+
+.houses-row {
+  display: flex;
+  gap: 16px;
+  align-items: flex-end;
+  justify-content: center;
+  margin: 16px 0;
+  width: 90%;
+}
+
+.house-unit {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+}
+
+.house-box {
+  position: relative;
+  background: rgba(255,255,255,0.15);
+  border-radius: 4px 4px var(--radius) var(--radius);
+}
+
+.house-box::before {
+  content: '';
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-style: solid;
+}
+
+.house-big { width: 100px; height: 90px; }
+.house-big::before { border-width: 0 55px 30px 55px; border-color: transparent transparent rgba(255,255,255,0.2) transparent; }
+
+.house-mid { width: 75px; height: 65px; }
+.house-mid::before { border-width: 0 42px 22px 42px; border-color: transparent transparent rgba(255,255,255,0.2) transparent; }
+
+.house-small { width: 55px; height: 45px; }
+.house-small::before { border-width: 0 32px 18px 32px; border-color: transparent transparent rgba(255,255,255,0.2) transparent; }
+
+/* Windows */
+.house-box::after {
+  content: '';
+  position: absolute;
+  bottom: 20%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(204,255,0,0.3);
+  border-radius: 2px;
+}
+
+.house-big::after { width: 20px; height: 28px; }
+.house-mid::after { width: 14px; height: 20px; }
+.house-small::after { width: 10px; height: 14px; }
+
+.stick-figure {
+  font-size: 24px;
+  margin-top: 4px;
+}
+
+.house-year {
+  font-size: 11px;
+  font-weight: 700;
+  margin-top: 6px;
+  opacity: 0.7;
+}
+
+.house-sqft {
+  font-size: 13px;
+  font-weight: 900;
+}
+
+/* ============ SLIDE 6 — Mortgage Reality ============ */
+#slide-mortgage {
+  background: linear-gradient(160deg, var(--deep-red) 0%, #4a0a0a 50%, var(--burgundy) 100%);
+}
+
+.years-number {
+  font-size: 72px;
+  font-weight: 900;
+  color: var(--neon);
+  line-height: 1;
+}
+
+.timeline-container {
+  width: 90%;
+  margin: 32px 0 24px;
+  position: relative;
+}
+
+.timeline-bar {
+  width: 100%;
+  height: 14px;
+  border-radius: 7px;
+  background: rgba(255,255,255,0.15);
+  position: relative;
+  overflow: hidden;
+}
+
+.timeline-fill {
+  height: 100%;
+  border-radius: 7px;
+  background: linear-gradient(90deg, var(--neon), var(--orange), var(--neon-red));
+  width: 0%;
+  transition: width 1.5s ease;
+}
+
+.milestones {
+  position: relative;
+  width: 100%;
+  height: 70px;
+  margin-top: 8px;
+}
+
+.milestone {
+  position: absolute;
+  text-align: center;
+  transform: translateX(-50%);
+  top: 0;
+}
+
+.milestone-icon { font-size: 18px; }
+
+.milestone-age {
+  font-size: 10px;
+  font-weight: 700;
+  opacity: 0.5;
+  margin-top: 2px;
+}
+
+.milestone-text {
+  font-size: 10px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.monthly-payment {
+  font-size: 36px;
+  font-weight: 900;
+  margin: 12px 0 4px;
+}
+
+.payment-label {
+  font-size: 13px;
+  opacity: 0.5;
+  margin-bottom: 20px;
+}
+
+.toggle-row {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.toggle-pill {
+  padding: 8px 12px;
+  border-radius: 50px;
+  font-size: 11px;
+  font-weight: 700;
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.2);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.toggle-pill.active {
+  background: var(--white);
+  color: var(--black);
+  border-color: var(--white);
+}
+
+/* ============ SLIDE 7 — Share Card ============ */
+#slide-share {
+  background: radial-gradient(ellipse at center, #1a1a2e 0%, var(--black) 70%);
+}
+
+.card-stack {
+  position: relative;
+  width: 300px;
+  height: 420px;
+  margin: 0 auto 32px;
+}
+
+.bg-card {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: var(--radius);
+}
+
+.bg-card-1 {
+  background: linear-gradient(135deg, #FF3B3B, #ff6b6b);
+  transform: rotate(-4deg) translateY(8px);
+}
+
+.bg-card-2 {
+  background: linear-gradient(135deg, #0D7377, var(--neon));
+  transform: rotate(3deg) translateY(4px);
+}
+
+.share-card {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: var(--radius);
+  background: linear-gradient(160deg, #1a1a2e, #0B1026);
+  border: 1px solid rgba(255,255,255,0.1);
+  transform: rotate(1deg);
+  display: flex;
+  flex-direction: column;
+  padding: 28px 24px;
+  text-align: left;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+}
+
+.share-card-title {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  opacity: 0.5;
+  margin-bottom: 24px;
+}
+
+.share-stat {
+  margin-bottom: 18px;
+}
+
+.share-stat-label {
+  font-size: 11px;
+  opacity: 0.5;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+
+.share-stat-value {
+  font-size: 18px;
+  font-weight: 900;
+  line-height: 1.3;
+}
+
+.share-stat-value .neon { color: var(--neon); }
+.share-stat-value .red { color: var(--neon-red); }
+
+.share-card-footer {
+  margin-top: auto;
+  font-size: 10px;
+  letter-spacing: 2px;
+  opacity: 0.3;
+  font-weight: 700;
+}
+
+.social-row {
+  display: flex;
+  gap: 16px;
+  margin-top: 16px;
+  justify-content: center;
+}
+
+.social-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.social-icon:hover { background: rgba(255,255,255,0.2); }
+
+.watermark {
+  font-size: 10px;
+  letter-spacing: 3px;
+  font-weight: 700;
+  opacity: 0.2;
+  margin-top: 32px;
+}
+
+/* ============ Responsive ============ */
+@media (min-width: 768px) {
+  .slide-inner { max-width: 480px; }
+  .headline { font-size: 46px; }
+  .property-card { width: 75%; }
+  .slider-container { width: 75%; }
+  .reveal-area { width: 75%; }
+  .donut-wrap { width: 260px; height: 260px; }
+  .card-stack { width: 340px; height: 460px; }
+}
+
+@media (min-width: 1024px) {
+  .slide-inner { max-width: 560px; }
+  .headline { font-size: 52px; }
+}
+</style>
+</head>
+<body>
+
+<!-- Dot indicators -->
+<div class="dots" id="dots"></div>
+
+<!-- ====== SLIDE 1 — Welcome ====== -->
+<section class="slide" id="slide-welcome">
+  <div class="skyline">
+    <div class="building b1"></div>
+    <div class="building b2"></div>
+    <div class="building b3"></div>
+    <div class="building b4"></div>
+    <div class="building b5"></div>
+    <div class="building b6"></div>
+    <div class="building b7"></div>
+    <div class="building b8"></div>
+    <div class="building b9"></div>
+    <div class="building b10"></div>
+  </div>
+  <div class="slide-inner">
+    <p class="top-label anim">BOSTON HOUSING &bull; 2024 WRAPPED</p>
+    <h1 class="headline anim anim-delay-1">Welcome to<br>Boston</h1>
+    <p class="subheadline anim anim-delay-2">A great city to buy into — if you can outbid the investors.</p>
+    <button class="btn anim anim-delay-3" onclick="scrollToSlide(1)">Let's Go &rarr;</button>
+  </div>
+</section>
+
+<!-- ====== SLIDE 2 — Guess the Price ====== -->
+<section class="slide" id="slide-guess">
+  <div class="slide-inner">
+    <p class="top-label anim">GUESS THE PRICE</p>
+    <div class="property-card anim anim-delay-1">
+      <div class="property-img">Boston Triple-Decker, Dorchester</div>
+      <div class="property-label">115 Wendover St &bull; 6 Bed &bull; 3 Bath</div>
+    </div>
+    <p class="subheadline anim anim-delay-2" style="margin-bottom:8px;">How much did this sell for in 2023?</p>
+    <div class="price-display anim anim-delay-2" id="priceDisplay">$500,000</div>
+    <div class="slider-container anim anim-delay-3" id="sliderArea">
+      <input type="range" id="priceSlider" min="0" max="2000000" step="5000" value="500000">
+      <div class="slider-labels"><span>$0</span><span>$2,000,000</span></div>
+    </div>
+    <button class="btn anim anim-delay-4" id="revealBtn" onclick="revealPrice()">Reveal</button>
+    <div class="reveal-area" id="revealArea">
+      <div class="actual-price anim" id="actualPriceEl">$0</div>
+      <div class="user-guess-strike anim anim-delay-1" id="userGuessStrike"></div>
+      <div class="comparison-line anim anim-delay-2">In 2003: $195,000</div>
+      <div class="comparison-line anim anim-delay-3">In 2013: $410,000</div>
+    </div>
+    <p class="slide-counter anim anim-delay-4">1 of 6 properties</p>
+  </div>
+</section>
+
+<!-- ====== SLIDE 3 — Your Competitors ====== -->
+<section class="slide" id="slide-competitors">
+  <div class="slide-inner">
+    <p class="top-label anim">YOUR COMPETITION</p>
+    <h2 class="headline anim anim-delay-1" style="font-size:32px;">Here's who else<br>is bidding</h2>
+    <div class="donut-wrap anim anim-delay-2">
+      <svg viewBox="0 0 200 200">
+        <circle class="donut-segment" id="seg-individual" cx="100" cy="100" r="82" stroke="var(--white)" stroke-dasharray="0 515" />
+        <circle class="donut-segment" id="seg-llc" cx="100" cy="100" r="82" stroke="var(--neon-red)" stroke-dasharray="0 515" />
+        <circle class="donut-segment" id="seg-trust" cx="100" cy="100" r="82" stroke="var(--neon)" stroke-dasharray="0 515" />
+        <circle class="donut-segment" id="seg-investor" cx="100" cy="100" r="82" stroke="var(--orange)" stroke-dasharray="0 515" />
+      </svg>
+      <div class="donut-center-label">BUYER<br>BREAKDOWN</div>
+    </div>
+    <div class="legend anim anim-delay-3">
+      <div class="legend-item"><div class="legend-dot" style="background:var(--white)"></div>Individuals 42%</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--neon-red)"></div>LLC/Corp 31%</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--neon)"></div>Trusts 15%</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--orange)"></div>Investors 12%</div>
+    </div>
+    <div class="callout-card anim anim-delay-4">
+      In Dorchester, <span>1 in 3 buyers</span> is a corporate entity
+    </div>
+    <div class="neighborhood-pills anim anim-delay-4">
+      <div class="pill active">Dorchester</div>
+      <div class="pill">Roxbury</div>
+      <div class="pill">South Boston</div>
+      <div class="pill">JP</div>
+    </div>
+  </div>
+</section>
+
+<!-- ====== SLIDE 4 — House Hunting ====== -->
+<section class="slide" id="slide-hunt">
+  <div class="slide-inner">
+    <p class="top-label anim">HOUSE HUNTING</p>
+    <h2 class="headline anim anim-delay-1" style="font-size:32px;">Let's find your<br>dream home</h2>
+    <div class="selector-group anim anim-delay-2">
+      <div class="selector-label">District</div>
+      <div class="selector-row" data-group="district">
+        <button class="selector-pill active" data-value="dorchester">Dorchester</button>
+        <button class="selector-pill" data-value="roxbury">Roxbury</button>
+        <button class="selector-pill" data-value="southboston">South Boston</button>
+        <button class="selector-pill" data-value="jp">Jamaica Plain</button>
+      </div>
+    </div>
+    <div class="selector-group anim anim-delay-2">
+      <div class="selector-label">Type</div>
+      <div class="selector-row" data-group="type">
+        <button class="selector-pill active" data-value="condo">Condo</button>
+        <button class="selector-pill" data-value="single">Single Family</button>
+        <button class="selector-pill" data-value="multi">Multi-Family</button>
+      </div>
+    </div>
+    <div class="selector-group anim anim-delay-3">
+      <div class="selector-label">Bedrooms</div>
+      <div class="selector-row" data-group="beds">
+        <button class="selector-pill" data-value="1">1</button>
+        <button class="selector-pill active" data-value="2">2</button>
+        <button class="selector-pill" data-value="3">3</button>
+        <button class="selector-pill" data-value="4">4+</button>
+      </div>
+    </div>
+    <div class="currency-input-wrap anim anim-delay-3">
+      <label>What would you pay?</label>
+      <input class="currency-input" id="budgetInput" type="text" placeholder="$500,000" value="$500,000" inputmode="numeric">
+    </div>
+    <button class="btn anim anim-delay-4" onclick="showReality()">Show Me</button>
+  </div>
+</section>
+
+<!-- ====== SLIDE 5 — Reality Check ====== -->
+<section class="slide" id="slide-reality">
+  <div class="slide-inner">
+    <p class="top-label anim">REALITY CHECK</p>
+    <div class="median-price anim anim-delay-1" id="medianPrice">$0</div>
+    <h2 class="headline anim anim-delay-1" style="font-size:20px;margin-top:8px;">Median Sale Price</h2>
+    <p class="guess-comparison anim anim-delay-2" id="guessComparison">You guessed $500,000</p>
+    <p class="difference anim anim-delay-2" id="guessDiff">You were $285,000 off</p>
+    <div class="houses-row anim anim-delay-3">
+      <div class="house-unit">
+        <div class="house-box house-big"></div>
+        <span class="stick-figure">🧍</span>
+        <span class="house-year">2000</span>
+        <span class="house-sqft">1,800 sqft</span>
+      </div>
+      <div class="house-unit">
+        <div class="house-box house-mid"></div>
+        <span class="stick-figure">🧍</span>
+        <span class="house-year">2012</span>
+        <span class="house-sqft">1,100 sqft</span>
+      </div>
+      <div class="house-unit">
+        <div class="house-box house-small"></div>
+        <span class="stick-figure">🧍</span>
+        <span class="house-year">2023</span>
+        <span class="house-sqft">620 sqft</span>
+      </div>
+    </div>
+    <p class="subheadline anim anim-delay-4" style="font-size:14px;opacity:0.5;margin-top:16px;">Same budget. Shrinking home.</p>
+  </div>
+</section>
+
+<!-- ====== SLIDE 6 — Mortgage Reality ====== -->
+<section class="slide" id="slide-mortgage">
+  <div class="slide-inner">
+    <p class="top-label anim">THE COST OF TIME</p>
+    <h2 class="headline anim anim-delay-1" style="font-size:24px;">You'll need</h2>
+    <div class="years-number anim anim-delay-1" id="yearsNumber">0</div>
+    <h2 class="headline anim anim-delay-1" style="font-size:24px;margin-top:0;">years</h2>
+    <div class="timeline-container anim anim-delay-2">
+      <div class="timeline-bar">
+        <div class="timeline-fill" id="timelineFill"></div>
+      </div>
+      <div class="milestones">
+        <div class="milestone" style="left:0%"><div class="milestone-icon">🎓</div><div class="milestone-age">22</div><div class="milestone-text">Graduate</div></div>
+        <div class="milestone" style="left:17%"><div class="milestone-icon">💍</div><div class="milestone-age">30</div><div class="milestone-text">Marry</div></div>
+        <div class="milestone" style="left:21%"><div class="milestone-icon">👶</div><div class="milestone-age">32</div><div class="milestone-text">First child</div></div>
+        <div class="milestone" style="left:56%"><div class="milestone-icon">🏠</div><div class="milestone-age">49</div><div class="milestone-text">Pay off home</div></div>
+        <div class="milestone" style="left:90%"><div class="milestone-icon">🪑</div><div class="milestone-age">65</div><div class="milestone-text">Retire</div></div>
+      </div>
+    </div>
+    <div class="monthly-payment anim anim-delay-3" id="monthlyPayment">$0</div>
+    <div class="payment-label anim anim-delay-3">per month</div>
+    <div class="toggle-row anim anim-delay-4">
+      <div class="toggle-pill active">Single income</div>
+      <div class="toggle-pill">Dual income</div>
+      <div class="toggle-pill">With student loans</div>
+      <div class="toggle-pill">With kids</div>
+    </div>
+  </div>
+</section>
+
+<!-- ====== SLIDE 7 — Share Card ====== -->
+<section class="slide" id="slide-share">
+  <div class="slide-inner">
+    <div class="card-stack anim">
+      <div class="bg-card bg-card-1"></div>
+      <div class="bg-card bg-card-2"></div>
+      <div class="share-card" id="shareCard">
+        <div class="share-card-title">BOSTON HOUSING WRAPPED 2024</div>
+        <div class="share-stat">
+          <div class="share-stat-label">Your Guess vs Reality</div>
+          <div class="share-stat-value" id="shareGuess">$500,000 &rarr; <span class="neon">$847,000</span></div>
+        </div>
+        <div class="share-stat">
+          <div class="share-stat-label">Mortgage Timeline</div>
+          <div class="share-stat-value">You'd need <span class="neon">27 years</span> of payments</div>
+        </div>
+        <div class="share-stat">
+          <div class="share-stat-label">Your Competition</div>
+          <div class="share-stat-value">You're competing against <span class="red">31% corporate buyers</span></div>
+        </div>
+        <div class="share-stat">
+          <div class="share-stat-label">Shrinking Homes</div>
+          <div class="share-stat-value">In 2000: 1,800 sqft. Today: <span class="neon">620 sqft.</span></div>
+        </div>
+        <div class="share-card-footer">BOSTONHOUSING.WRAPPED</div>
+      </div>
+    </div>
+    <button class="btn anim anim-delay-1" onclick="shareCard()">Share</button>
+    <div class="social-row anim anim-delay-2">
+      <div class="social-icon" title="Copy link">🔗</div>
+      <div class="social-icon" title="X / Twitter">𝕏</div>
+      <div class="social-icon" title="Instagram">📷</div>
+      <div class="social-icon" title="Message">💬</div>
+    </div>
+    <div class="watermark anim anim-delay-3">BOSTONHOUSING.WRAPPED</div>
+  </div>
+</section>
+
+<script>
+// ============ GLOBALS ============
+const slides = document.querySelectorAll('.slide');
+const dotsContainer = document.getElementById('dots');
+let userGuessSlide2 = 500000;
+let userBudget = 500000;
+const ACTUAL_PRICE = 847000;
+const MEDIAN_PRICE = 785000;
+
+// ============ DOT INDICATORS ============
+slides.forEach((_, i) => {
+  const d = document.createElement('div');
+  d.className = 'dot' + (i === 0 ? ' active' : '');
+  d.addEventListener('click', () => scrollToSlide(i));
+  dotsContainer.appendChild(d);
+});
+
+function updateDots(idx) {
+  document.querySelectorAll('.dot').forEach((d, i) => {
+    d.classList.toggle('active', i === idx);
+  });
+}
+
+// ============ SCROLL TO SLIDE ============
+function scrollToSlide(i) {
+  slides[i].scrollIntoView({ behavior: 'smooth' });
+}
+
+// ============ INTERSECTION OBSERVER — Animations & Dots ============
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      const idx = Array.from(slides).indexOf(entry.target);
+      updateDots(idx);
+      // Trigger animations
+      entry.target.querySelectorAll('.anim').forEach(el => el.classList.add('visible'));
+      // Slide-specific triggers
+      if (entry.target.id === 'slide-competitors') animateDonut();
+      if (entry.target.id === 'slide-mortgage') animateMortgage();
+      if (entry.target.id === 'slide-reality') animateMedianPrice();
+    }
+  });
+}, { threshold: 0.5 });
+
+slides.forEach(s => observer.observe(s));
+
+// ============ PRICE SLIDER (Slide 2) ============
+const priceSlider = document.getElementById('priceSlider');
+const priceDisplay = document.getElementById('priceDisplay');
+
+priceSlider.addEventListener('input', () => {
+  const val = parseInt(priceSlider.value);
+  userGuessSlide2 = val;
+  priceDisplay.textContent = formatCurrency(val);
+});
+
+function formatCurrency(n) {
+  return '$' + n.toLocaleString('en-US');
+}
+
+// ============ REVEAL PRICE (Slide 2) ============
+function revealPrice() {
+  const btn = document.getElementById('revealBtn');
+  const sliderArea = document.getElementById('sliderArea');
+  const revealArea = document.getElementById('revealArea');
+
+  btn.style.display = 'none';
+  sliderArea.style.display = 'none';
+  priceDisplay.style.display = 'none';
+  document.querySelector('#slide-guess .subheadline').style.display = 'none';
+
+  revealArea.classList.add('show');
+  // Trigger animations in reveal area
+  revealArea.querySelectorAll('.anim').forEach(el => el.classList.add('visible'));
+
+  document.getElementById('userGuessStrike').textContent = 'Your guess: ' + formatCurrency(userGuessSlide2);
+
+  // Count up to actual price
+  countUp(document.getElementById('actualPriceEl'), 0, ACTUAL_PRICE, 1500, true);
+}
+
+// ============ COUNT UP ANIMATION ============
+function countUp(el, start, end, duration, isCurrency) {
+  const startTime = performance.now();
+  function tick(now) {
+    const elapsed = now - startTime;
+    const progress = Math.min(elapsed / duration, 1);
+    // ease out cubic
+    const eased = 1 - Math.pow(1 - progress, 3);
+    const current = Math.round(start + (end - start) * eased);
+    el.textContent = isCurrency ? formatCurrency(current) : current.toLocaleString();
+    if (progress < 1) requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+}
+
+// ============ DONUT CHART (Slide 3) ============
+let donutAnimated = false;
+function animateDonut() {
+  if (donutAnimated) return;
+  donutAnimated = true;
+  const C = 2 * Math.PI * 82; // ~515.22
+  const segments = [
+    { id: 'seg-individual', pct: 42 },
+    { id: 'seg-llc', pct: 31 },
+    { id: 'seg-trust', pct: 15 },
+    { id: 'seg-investor', pct: 12 }
+  ];
+
+  let offset = 0;
+  segments.forEach(seg => {
+    const el = document.getElementById(seg.id);
+    const len = (seg.pct / 100) * C;
+    const gap = C - len;
+    el.style.strokeDasharray = `${len} ${gap}`;
+    el.style.strokeDashoffset = -offset;
+    offset += len;
+  });
+}
+
+// ============ SELECTOR PILLS (Slide 4) ============
+document.querySelectorAll('.selector-row').forEach(row => {
+  row.querySelectorAll('.selector-pill').forEach(pill => {
+    pill.addEventListener('click', () => {
+      row.querySelectorAll('.selector-pill').forEach(p => p.classList.remove('active'));
+      pill.classList.add('active');
+    });
+  });
+});
+
+// ============ TOGGLE PILLS (Slide 6) ============
+document.querySelectorAll('.toggle-row .toggle-pill').forEach(pill => {
+  pill.addEventListener('click', () => {
+    document.querySelectorAll('.toggle-row .toggle-pill').forEach(p => p.classList.remove('active'));
+    pill.classList.add('active');
+  });
+});
+
+// ============ NEIGHBORHOOD PILLS (Slide 3) ============
+document.querySelectorAll('.neighborhood-pills .pill').forEach(pill => {
+  pill.addEventListener('click', () => {
+    document.querySelectorAll('.neighborhood-pills .pill').forEach(p => p.classList.remove('active'));
+    pill.classList.add('active');
+  });
+});
+
+// ============ CURRENCY INPUT (Slide 4) ============
+const budgetInput = document.getElementById('budgetInput');
+budgetInput.addEventListener('input', () => {
+  let raw = budgetInput.value.replace(/[^0-9]/g, '');
+  if (raw === '') { budgetInput.value = ''; userBudget = 0; return; }
+  userBudget = parseInt(raw);
+  budgetInput.value = formatCurrency(userBudget);
+});
+
+budgetInput.addEventListener('focus', () => {
+  let raw = budgetInput.value.replace(/[^0-9]/g, '');
+  budgetInput.value = raw;
+});
+
+budgetInput.addEventListener('blur', () => {
+  let raw = budgetInput.value.replace(/[^0-9]/g, '');
+  if (raw === '') return;
+  userBudget = parseInt(raw);
+  budgetInput.value = formatCurrency(userBudget);
+});
+
+// ============ SHOW REALITY (Slide 4 → 5) ============
+function showReality() {
+  // Update slide 5 with user's guess
+  document.getElementById('guessComparison').textContent = 'You guessed ' + formatCurrency(userBudget);
+  const diff = Math.abs(MEDIAN_PRICE - userBudget);
+  document.getElementById('guessDiff').textContent = 'You were ' + formatCurrency(diff) + ' off';
+
+  // Update share card
+  document.getElementById('shareGuess').innerHTML =
+    formatCurrency(userBudget) + ' &rarr; <span class="neon">' + formatCurrency(ACTUAL_PRICE) + '</span>';
+
+  scrollToSlide(4);
+}
+
+// ============ ANIMATE MEDIAN PRICE (Slide 5) ============
+let medianAnimated = false;
+function animateMedianPrice() {
+  if (medianAnimated) return;
+  medianAnimated = true;
+  countUp(document.getElementById('medianPrice'), 0, MEDIAN_PRICE, 1500, true);
+}
+
+// ============ ANIMATE MORTGAGE (Slide 6) ============
+let mortgageAnimated = false;
+function animateMortgage() {
+  if (mortgageAnimated) return;
+  mortgageAnimated = true;
+
+  countUp(document.getElementById('yearsNumber'), 0, 27, 1500, false);
+  countUp(document.getElementById('monthlyPayment'), 0, 3847, 1500, true);
+
+  setTimeout(() => {
+    document.getElementById('timelineFill').style.width = '56%';
+  }, 300);
+}
+
+// ============ SHARE (Slide 7) ============
+function shareCard() {
+  if (navigator.share) {
+    navigator.share({
+      title: 'Boston Housing Wrapped 2024',
+      text: 'I just took the Boston Housing Wrapped quiz. Can you outbid the investors?',
+      url: window.location.href
+    }).catch(() => {});
+  } else {
+    navigator.clipboard.writeText(window.location.href).then(() => {
+      const btn = document.querySelector('#slide-share .btn');
+      btn.textContent = 'Link Copied!';
+      setTimeout(() => btn.textContent = 'Share', 2000);
+    }).catch(() => {});
+  }
+}
+
+// ============ TAP TO ADVANCE ============
+let touchStartY = 0;
+document.addEventListener('touchstart', e => { touchStartY = e.touches[0].clientY; }, { passive: true });
+document.addEventListener('touchend', e => {
+  const diff = touchStartY - e.changedTouches[0].clientY;
+  if (diff > 50) {
+    // Swipe up
+    const current = getCurrentSlide();
+    if (current < slides.length - 1) scrollToSlide(current + 1);
+  } else if (diff < -50) {
+    // Swipe down
+    const current = getCurrentSlide();
+    if (current > 0) scrollToSlide(current - 1);
+  }
+}, { passive: true });
+
+function getCurrentSlide() {
+  let closest = 0;
+  let minDist = Infinity;
+  slides.forEach((s, i) => {
+    const rect = s.getBoundingClientRect();
+    const dist = Math.abs(rect.top);
+    if (dist < minDist) { minDist = dist; closest = i; }
+  });
+  return closest;
+}
+
+// Trigger first slide animations on load
+window.addEventListener('load', () => {
+  slides[0].querySelectorAll('.anim').forEach(el => el.classList.add('visible'));
+});
+</script>
+</body>
+</html>
