@@ -18,9 +18,8 @@
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
 html {
-  scroll-snap-type: y mandatory;
-  scroll-behavior: smooth;
   overflow-x: hidden;
+  overflow-y: hidden;
 }
 
 body {
@@ -33,9 +32,8 @@ body {
 
 /* ============ SLIDE BASE ============ */
 .slide {
-  min-height: 100vh;
-  min-height: 100dvh;
-  scroll-snap-align: start;
+  height: 100vh;
+  height: 100dvh;
   display: flex;
   flex-direction: column;
   align-items: center;

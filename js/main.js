@@ -3,12 +3,14 @@ const slides = document.querySelectorAll('.slide');
 const dotsContainer = document.getElementById('dots');
 let userGuessSlide2 = 500000;
 let userBudget = 500000;
+let currentSlideIdx = 0;
+let isTransitioning = false;
 
 // ============ DOT INDICATORS ============
 slides.forEach((_, i) => {
   const d = document.createElement('div');
   d.className = 'dot' + (i === 0 ? ' active' : '');
-  d.addEventListener('click', () => scrollToSlide(i));
+  d.addEventListener('click', () => goToSlide(i));
   dotsContainer.appendChild(d);
 });
 
@@ -18,45 +20,39 @@ function updateDots(idx) {
   });
 }
 
-// ============ SCROLL TO SLIDE ============
-function scrollToSlide(i) {
+// ============ SLIDE NAVIGATION ============
+function goToSlide(i) {
+  if (i < 0 || i >= slides.length || i === currentSlideIdx || isTransitioning) return;
+  isTransitioning = true;
+  currentSlideIdx = i;
+
   slides[i].scrollIntoView({ behavior: 'smooth' });
+  updateDots(i);
+  onSlideEnter(slides[i]);
+
+  // Lock out further navigation until transition completes
+  setTimeout(() => { isTransitioning = false; }, 800);
 }
+
+// Kept for backward compat with onclick handlers in HTML
+function scrollToSlide(i) { goToSlide(i); }
 
 function scrollToId(id) {
   const el = document.getElementById(id);
-  if (el) el.scrollIntoView({ behavior: 'smooth' });
+  if (!el) return;
+  const idx = Array.from(slides).indexOf(el);
+  if (idx >= 0) goToSlide(idx);
 }
 
-// ============ HELPER ============
-function formatCurrency(n) {
-  return '$' + n.toLocaleString('en-US');
+function nextSlide() {
+  goToSlide(currentSlideIdx + 1);
 }
 
-function countUp(el, start, end, duration, isCurrency) {
-  const startTime = performance.now();
-  function tick(now) {
-    const elapsed = now - startTime;
-    const progress = Math.min(elapsed / duration, 1);
-    const eased = 1 - Math.pow(1 - progress, 3);
-    const current = Math.round(start + (end - start) * eased);
-    el.textContent = isCurrency ? formatCurrency(current) : current.toLocaleString();
-    if (progress < 1) requestAnimationFrame(tick);
-  }
-  requestAnimationFrame(tick);
+function prevSlide() {
+  goToSlide(currentSlideIdx - 1);
 }
 
-function getCurrentSlide() {
-  let closest = 0;
-  let minDist = Infinity;
-  slides.forEach((s, i) => {
-    const dist = Math.abs(s.getBoundingClientRect().top);
-    if (dist < minDist) { minDist = dist; closest = i; }
-  });
-  return closest;
-}
-
-// ============ INTERSECTION OBSERVER ============
+// ============ SLIDE ENTER TRIGGERS ============
 let donutAnimated = false;
 let barsAnimated = false;
 let medianAnimated = false;
@@ -65,45 +61,73 @@ let shiftAnimated = false;
 let mapAutoPlayed = false;
 let introStarted = false;
 
-const observer = new IntersectionObserver((entries) => {
-  entries.forEach(entry => {
-    if (entry.isIntersecting) {
-      const idx = Array.from(slides).indexOf(entry.target);
-      updateDots(idx);
-      entry.target.querySelectorAll('.anim').forEach(el => el.classList.add('visible'));
+function onSlideEnter(slide) {
+  slide.querySelectorAll('.anim').forEach(el => el.classList.add('visible'));
 
-      // Slide-specific triggers
-      if (entry.target.id === 'slide-competitors') animateDonut();
-      if (entry.target.id === 'slide-competition-advantage') animateAdvantageBars();
-      if (entry.target.id === 'slide-reality') animateMedianPrice();
-      if (entry.target.id === 'slide-mortgage') animateMortgage();
+  if (slide.id === 'slide-competitors') animateDonut();
+  if (slide.id === 'slide-competition-advantage') animateAdvantageBars();
+  if (slide.id === 'slide-reality') animateMedianPrice();
+  if (slide.id === 'slide-mortgage') animateMortgage();
 
-      if (entry.target.id === 'slide-map-intro' && !introStarted) {
-        introStarted = true;
-        setTimeout(runIntroSequence, 400);
-      }
+  if (slide.id === 'slide-map-intro' && !introStarted) {
+    introStarted = true;
+    setTimeout(runIntroSequence, 400);
+  }
 
-      if (entry.target.id === 'slide-map') {
-        updateMap(parseInt(document.getElementById('yearSlider').value));
-        if (!mapAutoPlayed) {
-          mapAutoPlayed = true;
-          setTimeout(togglePlay, 800);
-        }
-      }
-
-      if (entry.target.id === 'slide-shift' && !shiftAnimated) {
-        shiftAnimated = true;
-        setTimeout(() => {
-          document.querySelectorAll('.shift-bar-late').forEach(bar => {
-            bar.style.width = bar.getAttribute('data-width') + '%';
-          });
-        }, 400);
-      }
+  if (slide.id === 'slide-map') {
+    updateMap(parseInt(document.getElementById('yearSlider').value));
+    if (!mapAutoPlayed) {
+      mapAutoPlayed = true;
+      setTimeout(togglePlay, 800);
     }
-  });
-}, { threshold: 0.3 });
+  }
 
-slides.forEach(s => observer.observe(s));
+  if (slide.id === 'slide-shift' && !shiftAnimated) {
+    shiftAnimated = true;
+    setTimeout(() => {
+      document.querySelectorAll('.shift-bar-late').forEach(bar => {
+        bar.style.width = bar.getAttribute('data-width') + '%';
+      });
+    }, 400);
+  }
+}
+
+// ============ KEYBOARD NAVIGATION ============
+document.addEventListener('keydown', (e) => {
+  // Don't hijack keys when user is typing in an input
+  if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+
+  if (e.key === 'ArrowDown' || e.key === 'PageDown') {
+    e.preventDefault();
+    nextSlide();
+  } else if (e.key === 'ArrowUp' || e.key === 'PageUp') {
+    e.preventDefault();
+    prevSlide();
+  }
+});
+
+// ============ WHEEL NAVIGATION ============
+let wheelAccum = 0;
+let wheelTimer = null;
+const WHEEL_THRESHOLD = 80;
+
+document.addEventListener('wheel', (e) => {
+  e.preventDefault();
+  if (isTransitioning) return;
+
+  wheelAccum += e.deltaY;
+  if (wheelAccum > WHEEL_THRESHOLD) {
+    wheelAccum = 0;
+    nextSlide();
+  } else if (wheelAccum < -WHEEL_THRESHOLD) {
+    wheelAccum = 0;
+    prevSlide();
+  }
+
+  // Decay accumulated scroll to prevent drift
+  clearTimeout(wheelTimer);
+  wheelTimer = setTimeout(() => { wheelAccum = 0; }, 200);
+}, { passive: false });
 
 // ============ PRICE SLIDER (Slide 2) ============
 const priceSlider = document.getElementById('priceSlider');
@@ -366,15 +390,14 @@ document.addEventListener('touchstart', e => { touchStartY = e.touches[0].client
 document.addEventListener('touchend', e => {
   const diff = touchStartY - e.changedTouches[0].clientY;
   if (Math.abs(diff) < 50) return;
-  const current = getCurrentSlide();
-  if (diff > 0 && current < slides.length - 1) scrollToSlide(current + 1);
-  else if (diff < 0 && current > 0) scrollToSlide(current - 1);
+  if (diff > 0) nextSlide();
+  else prevSlide();
 }, { passive: true });
 
 // ============ INIT ============
 window.addEventListener('load', () => {
   // Trigger first slide animations
-  slides[0].querySelectorAll('.anim').forEach(el => el.classList.add('visible'));
+  onSlideEnter(slides[0]);
   updateCompetitionCards('Dorchester');
 
   // Map init
