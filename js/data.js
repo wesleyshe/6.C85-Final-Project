@@ -2,36 +2,30 @@
 const ACTUAL_PRICE = 847000;
 const MEDIAN_PRICE = 785000;
 
-// ============ NEIGHBORHOOD BUYER MIX ============
-const neighborhoodMix = {
-  'Dorchester': {
-    individual: 42,
-    llc: 31,
-    trust: 15,
-    investor: 12,
-    callout: 'In <span>Dorchester</span>, <span>1 in 3 buyers</span> is a corporate entity.'
-  },
-  'Roxbury': {
-    individual: 39,
-    llc: 34,
-    trust: 14,
-    investor: 13,
-    callout: 'In <span>Roxbury</span>, corporate buyers make up an even larger share of the market.'
-  },
-  'South Boston': {
-    individual: 45,
-    llc: 27,
-    trust: 13,
-    investor: 15,
-    callout: 'In <span>South Boston</span>, individual buyers remain the biggest group, but investor presence is still substantial.'
-  },
-  'JP': {
-    individual: 48,
-    llc: 24,
-    trust: 16,
-    investor: 12,
-    callout: 'In <span>JP</span>, the buyer mix looks somewhat more resident-heavy, though non-individual ownership remains visible.'
-  }
+// ============ CITYWIDE BUYER MIX (2018–2022) ============
+// Source: City of Boston / MAPC, Residential Sales Data 2000–2023
+// (A2_EDA_Residential.csv), buyer entity flags, filtered to 2018–2022.
+// n = 9,558 transactions. Categories are mutually exclusive:
+//   Individual = no LLC, trust, business, bank, or GSE flag
+//   LLC/Corp   = buyer_llc_ind == 1
+//   Trust      = buyer_trst_ind == 1
+//   Other      = buyer_bus_ind, buyer_bnk_ind, or buyer_gse_ind == 1
+const citywideMix = {
+  individual: 78,
+  llc: 13,
+  trust: 8,
+  other: 1
+};
+
+// Neighborhood pills are kept for context callouts but share the same
+// citywide buyer breakdown — the residential sales dataset does not have
+// enough per-neighborhood transactions to compute reliable splits.
+// Corporate *ownership* rates per neighborhood are shown on the map slide.
+const neighborhoodCallouts = {
+  'Dorchester': 'Citywide, <span>1 in 5 buyers</span> is an LLC, trust, or corporate entity.',
+  'Roxbury':    'Citywide, <span>1 in 5 buyers</span> is an LLC, trust, or corporate entity.',
+  'South Boston': 'Citywide, <span>1 in 5 buyers</span> is an LLC, trust, or corporate entity.',
+  'JP':         'Citywide, <span>1 in 5 buyers</span> is an LLC, trust, or corporate entity.'
 };
 
 // ============ CORP OWNERSHIP CSV DATA ============

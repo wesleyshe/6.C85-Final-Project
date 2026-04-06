@@ -188,7 +188,7 @@ const donutOrder = [
   { key: 'individual', id: 'seg-individual' },
   { key: 'llc', id: 'seg-llc' },
   { key: 'trust', id: 'seg-trust' },
-  { key: 'investor', id: 'seg-investor' }
+  { key: 'other', id: 'seg-other' }
 ];
 
 function drawDonut(data) {
@@ -206,38 +206,11 @@ function drawDonut(data) {
   });
 }
 
-function updateCompetitionCards(name) {
-  const data = neighborhoodMix[name];
-  if (!data) return;
-
-  document.getElementById('legend-individual').textContent = `Individuals ${data.individual}%`;
-  document.getElementById('legend-llc').textContent = `LLC/Corp ${data.llc}%`;
-  document.getElementById('legend-trust').textContent = `Trusts ${data.trust}%`;
-  document.getElementById('legend-investor').textContent = `Investors ${data.investor}%`;
-
-  document.getElementById('individualCard').textContent = `${data.individual}%`;
-  document.getElementById('llcCard').textContent = `${data.llc}%`;
-  document.getElementById('trustCard').textContent = `${data.trust}%`;
-  document.getElementById('investorCard').textContent = `${data.investor}%`;
-
-  document.getElementById('competitionCallout').innerHTML = data.callout;
-
-  if (donutAnimated) drawDonut(data);
-}
-
 function animateDonut() {
   if (donutAnimated) return;
   donutAnimated = true;
-  drawDonut(neighborhoodMix['Dorchester']);
+  drawDonut(citywideMix);
 }
-
-document.querySelectorAll('.neighborhood-pills .pill').forEach(pill => {
-  pill.addEventListener('click', () => {
-    document.querySelectorAll('.neighborhood-pills .pill').forEach(p => p.classList.remove('active'));
-    pill.classList.add('active');
-    updateCompetitionCards(pill.dataset.hood);
-  });
-});
 
 // ============ ADVANTAGE BARS (Slide 4) ============
 function animateAdvantageBars() {
@@ -429,7 +402,7 @@ document.addEventListener('touchend', e => {
 window.addEventListener('load', () => {
   // Trigger first slide animations
   onSlideEnter(slides[0]);
-  updateCompetitionCards('Dorchester');
+  drawDonut(citywideMix);
 
   // Map init
   buildMap();
