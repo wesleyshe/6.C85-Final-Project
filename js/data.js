@@ -3,36 +3,224 @@ const ACTUAL_PRICE = 847000;
 const MEDIAN_PRICE = 785000;
 
 // ============ NEIGHBORHOOD BUYER MIX ============
+
 const neighborhoodMix = {
-  'Dorchester': {
-    individual: 42,
-    llc: 31,
-    trust: 15,
-    investor: 12,
-    callout: 'In <span>Dorchester</span>, <span>1 in 3 buyers</span> is a corporate entity.'
+  "Allston": {
+    "total": 1642,
+    "nonInvestor": 1170,
+    "small": 132,
+    "medium": 150,
+    "large": 79,
+    "institutional": 111
   },
-  'Roxbury': {
-    individual: 39,
-    llc: 34,
-    trust: 14,
-    investor: 13,
-    callout: 'In <span>Roxbury</span>, corporate buyers make up an even larger share of the market.'
+  "Back Bay": {
+    "total": 3970,
+    "nonInvestor": 3452,
+    "small": 216,
+    "medium": 114,
+    "large": 118,
+    "institutional": 70
   },
-  'South Boston': {
-    individual: 45,
-    llc: 27,
-    trust: 13,
-    investor: 15,
-    callout: 'In <span>South Boston</span>, individual buyers remain the biggest group, but investor presence is still substantial.'
+  "Beacon Hill": {
+    "total": 2076,
+    "nonInvestor": 1822,
+    "small": 131,
+    "medium": 67,
+    "large": 42,
+    "institutional": 14
   },
-  'JP': {
-    individual: 48,
-    llc: 24,
-    trust: 16,
-    investor: 12,
-    callout: 'In <span>JP</span>, the buyer mix looks somewhat more resident-heavy, though non-individual ownership remains visible.'
+  "Brighton": {
+    "total": 4034,
+    "nonInvestor": 3258,
+    "small": 311,
+    "medium": 237,
+    "large": 156,
+    "institutional": 72
+  },
+  "Charlestown": {
+    "total": 3977,
+    "nonInvestor": 3626,
+    "small": 175,
+    "medium": 90,
+    "large": 44,
+    "institutional": 42
+  },
+  "Chinatown": {
+    "total": 157,
+    "nonInvestor": 129,
+    "small": 7,
+    "medium": 11,
+    "large": 3,
+    "institutional": 7
+  },
+  "Dorchester": {
+    "total": 10261,
+    "nonInvestor": 7724,
+    "small": 660,
+    "medium": 575,
+    "large": 486,
+    "institutional": 816
+  },
+  "Downtown": {
+    "total": 2845,
+    "nonInvestor": 2486,
+    "small": 169,
+    "medium": 96,
+    "large": 50,
+    "institutional": 44
+  },
+  "East Boston": {
+    "total": 3518,
+    "nonInvestor": 2766,
+    "small": 226,
+    "medium": 202,
+    "large": 113,
+    "institutional": 211
+  },
+  "Fenway": {
+    "total": 2034,
+    "nonInvestor": 1523,
+    "small": 142,
+    "medium": 116,
+    "large": 86,
+    "institutional": 167
+  },
+  "Hyde Park": {
+    "total": 3147,
+    "nonInvestor": 2617,
+    "small": 100,
+    "medium": 110,
+    "large": 72,
+    "institutional": 248
+  },
+  "Jamaica Plain": {
+    "total": 5266,
+    "nonInvestor": 4729,
+    "small": 200,
+    "medium": 143,
+    "large": 96,
+    "institutional": 98
+  },
+  "Longwood": {
+    "total": 286,
+    "nonInvestor": 208,
+    "small": 16,
+    "medium": 11,
+    "large": 10,
+    "institutional": 41
+  },
+  "Mattapan": {
+    "total": 1608,
+    "nonInvestor": 1209,
+    "small": 71,
+    "medium": 54,
+    "large": 79,
+    "institutional": 195
+  },
+  "Mission Hill": {
+    "total": 415,
+    "nonInvestor": 314,
+    "small": 34,
+    "medium": 23,
+    "large": 22,
+    "institutional": 22
+  },
+  "North End": {
+    "total": 1644,
+    "nonInvestor": 1460,
+    "small": 92,
+    "medium": 57,
+    "large": 24,
+    "institutional": 11
+  },
+  "Roslindale": {
+    "total": 2896,
+    "nonInvestor": 2556,
+    "small": 102,
+    "medium": 77,
+    "large": 60,
+    "institutional": 101
+  },
+  "Roxbury": {
+    "total": 3046,
+    "nonInvestor": 2068,
+    "small": 219,
+    "medium": 247,
+    "large": 152,
+    "institutional": 360
+  },
+  "South Boston": {
+    "total": 7627,
+    "nonInvestor": 6653,
+    "small": 435,
+    "medium": 289,
+    "large": 155,
+    "institutional": 95
+  },
+  "South Boston Waterfront": {
+    "total": 725,
+    "nonInvestor": 676,
+    "small": 27,
+    "medium": 19,
+    "large": 2,
+    "institutional": 1
+  },
+  "South End": {
+    "total": 5810,
+    "nonInvestor": 5259,
+    "small": 234,
+    "medium": 153,
+    "large": 104,
+    "institutional": 60
+  },
+  "West End": {
+    "total": 543,
+    "nonInvestor": 489,
+    "small": 27,
+    "medium": 19,
+    "large": 4,
+    "institutional": 4
+  },
+  "West Roxbury": {
+    "total": 3844,
+    "nonInvestor": 3383,
+    "small": 161,
+    "medium": 125,
+    "large": 62,
+    "institutional": 113
   }
 };
+
+// const neighborhoodMix = {
+//   'Dorchester': {
+//     individual: 42,
+//     llc: 31,
+//     trust: 15,
+//     investor: 12,
+//     callout: 'In <span>Dorchester</span>, <span>1 in 3 buyers</span> is a corporate entity.'
+//   },
+//   'Roxbury': {
+//     individual: 39,
+//     llc: 34,
+//     trust: 14,
+//     investor: 13,
+//     callout: 'In <span>Roxbury</span>, corporate buyers make up an even larger share of the market.'
+//   },
+//   'South Boston': {
+//     individual: 45,
+//     llc: 27,
+//     trust: 13,
+//     investor: 15,
+//     callout: 'In <span>South Boston</span>, individual buyers remain the biggest group, but investor presence is still substantial.'
+//   },
+//   'JP': {
+//     individual: 48,
+//     llc: 24,
+//     trust: 16,
+//     investor: 12,
+//     callout: 'In <span>JP</span>, the buyer mix looks somewhat more resident-heavy, though non-individual ownership remains visible.'
+//   }
+// };
 
 // ============ CORP OWNERSHIP CSV DATA ============
 const RAW_CORP = `Neighborhood,Year,own_occ_rate,corp_own_rate
