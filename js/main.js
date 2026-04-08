@@ -185,11 +185,20 @@ function revealPrice() {
 
 // ============ DONUT CHART (Slide 3) ============
 const donutOrder = [
-  { key: 'individual', id: 'seg-individual' },
-  { key: 'llc', id: 'seg-llc' },
-  { key: 'trust', id: 'seg-trust' },
-  { key: 'investor', id: 'seg-investor' }
+  { key: 'nonInvestor', id: 'seg-nonInvestor' },
+  { key: 'small', id: 'seg-small' },
+  { key: 'medium', id: 'seg-medium' },
+  { key: 'large', id: 'seg-large' },
+  { key: 'institutional', id: 'seg-institutional' }
 ];
+
+function pct(value, total) {
+  return total === 0 ? 0 : (value / total) * 100;
+}
+
+function roundedPct(value, total) {
+  return Math.round(pct(value, total));
+}
 
 function drawDonut(data) {
   const C = 2 * Math.PI * 82;
@@ -197,9 +206,12 @@ function drawDonut(data) {
 
   donutOrder.forEach(seg => {
     const el = document.getElementById(seg.id);
-    const pct = data[seg.key];
-    const len = (pct / 100) * C;
+    if (!el) return;
+
+    const segmentPct = pct(data[seg.key], data.total);
+    const len = (segmentPct / 100) * C;
     const gap = C - len;
+
     el.style.strokeDasharray = `${len} ${gap}`;
     el.style.strokeDashoffset = -offset;
     offset += len;
@@ -210,17 +222,30 @@ function updateCompetitionCards(name) {
   const data = neighborhoodMix[name];
   if (!data) return;
 
-  document.getElementById('legend-individual').textContent = `Individuals ${data.individual}%`;
-  document.getElementById('legend-llc').textContent = `LLC/Corp ${data.llc}%`;
-  document.getElementById('legend-trust').textContent = `Trusts ${data.trust}%`;
-  document.getElementById('legend-investor').textContent = `Investors ${data.investor}%`;
+  const nonInvestorPct = roundedPct(data.nonInvestor, data.total);
+  const smallPct = roundedPct(data.small, data.total);
+  const mediumPct = roundedPct(data.medium, data.total);
+  const largePct = roundedPct(data.large, data.total);
+  const institutionalPct = roundedPct(data.institutional, data.total);
 
-  document.getElementById('individualCard').textContent = `${data.individual}%`;
-  document.getElementById('llcCard').textContent = `${data.llc}%`;
-  document.getElementById('trustCard').textContent = `${data.trust}%`;
-  document.getElementById('investorCard').textContent = `${data.investor}%`;
+  const investorTotal =
+    data.small + data.medium + data.large + data.institutional;
+  const investorPct = roundedPct(investorTotal, data.total);
 
-  document.getElementById('competitionCallout').innerHTML = data.callout;
+  document.getElementById('legend-nonInvestor').textContent = `Non-investors ${nonInvestorPct}%`;
+  document.getElementById('legend-small').textContent = `Small investors ${smallPct}%`;
+  document.getElementById('legend-medium').textContent = `Medium investors ${mediumPct}%`;
+  document.getElementById('legend-large').textContent = `Large investors ${largePct}%`;
+  document.getElementById('legend-institutional').textContent = `Institutional ${institutionalPct}%`;
+
+  document.getElementById('nonInvestorCard').textContent = `${nonInvestorPct}%`;
+  document.getElementById('smallCard').textContent = `${smallPct}%`;
+  document.getElementById('mediumCard').textContent = `${mediumPct}%`;
+  document.getElementById('largeCard').textContent = `${largePct}%`;
+  document.getElementById('institutionalCard').textContent = `${institutionalPct}%`;
+
+  document.getElementById('competitionCallout').innerHTML =
+    `In <span>${name}</span>, <span>${investorPct}%</span> of buyers are investors.`;
 
   if (donutAnimated) drawDonut(data);
 }
@@ -438,3 +463,12 @@ window.addEventListener('load', () => {
   initYearSlider();
   initParticles();
 });
+
+function toggleOverlay(show) {
+  const overlay = document.getElementById('resourceOverlay');
+  if (show) {
+    overlay.classList.add('active');
+  } else {
+    overlay.classList.remove('active');
+  }
+}

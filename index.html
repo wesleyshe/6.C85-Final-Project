@@ -74,72 +74,84 @@
     <p class="top-label anim">YOUR COMPETITION</p>
     <h2 class="headline anim anim-delay-1" style="font-size:32px;">Who are you really<br>competing against?</h2>
     <p class="subheadline anim anim-delay-2" style="max-width:560px;">
-      In Boston, you are not just bidding against another family. You are bidding against individual buyers,
-      LLC and corporate entities, trusts, and investors.
-    </p>
+  In Boston, you are not just bidding against another family. A meaningful share of homes are purchased
+  by investors ranging from small buyers to institutional players.
+</p>
 
     <div class="competitors-layout">
       <div class="competitor-top">
         <div class="donut-panel anim anim-delay-2">
-          <div class="donut-panel-title">Buyer breakdown</div>
-          <div class="donut-wrap">
-            <svg viewBox="0 0 200 200" aria-label="Buyer breakdown donut chart">
-              <circle class="donut-bg" cx="100" cy="100" r="82"></circle>
-              <circle class="donut-segment" id="seg-individual" cx="100" cy="100" r="82" stroke="var(--white)" stroke-dasharray="0 515"></circle>
-              <circle class="donut-segment" id="seg-llc" cx="100" cy="100" r="82" stroke="var(--neon-red)" stroke-dasharray="0 515"></circle>
-              <circle class="donut-segment" id="seg-trust" cx="100" cy="100" r="82" stroke="var(--neon)" stroke-dasharray="0 515"></circle>
-              <circle class="donut-segment" id="seg-investor" cx="100" cy="100" r="82" stroke="var(--orange)" stroke-dasharray="0 515"></circle>
-            </svg>
-            <div class="donut-center-label">BUYER<br>BREAKDOWN</div>
-          </div>
-          <div class="legend">
-            <div class="legend-item"><div class="legend-dot" style="background:var(--white)"></div><span id="legend-individual">Individuals 42%</span></div>
-            <div class="legend-item"><div class="legend-dot" style="background:var(--neon-red)"></div><span id="legend-llc">LLC/Corp 31%</span></div>
-            <div class="legend-item"><div class="legend-dot" style="background:var(--neon)"></div><span id="legend-trust">Trusts 15%</span></div>
-            <div class="legend-item"><div class="legend-dot" style="background:var(--orange)"></div><span id="legend-investor">Investors 12%</span></div>
-          </div>
-        </div>
+      <div class="donut-panel-title">Buyer breakdown</div>
+      <div class="donut-wrap">
+        <svg viewBox="0 0 200 200" aria-label="Buyer breakdown donut chart">
+          <circle class="donut-bg" cx="100" cy="100" r="82"></circle>
+          <circle class="donut-segment" id="seg-nonInvestor" cx="100" cy="100" r="82" stroke="var(--white)"></circle>
+          <circle class="donut-segment" id="seg-small" cx="100" cy="100" r="82" stroke="var(--neon-red)"></circle>
+          <circle class="donut-segment" id="seg-medium" cx="100" cy="100" r="82" stroke="var(--neon)"></circle>
+          <circle class="donut-segment" id="seg-large" cx="100" cy="100" r="82" stroke="var(--orange)"></circle>
+          <circle class="donut-segment" id="seg-institutional" cx="100" cy="100" r="82" stroke="var(--purple)"></circle>
+        </svg>
+        <div class="donut-center-label">BUYER<br>BREAKDOWN</div>
+      </div>
+        <div class="legend">
+          <div class="legend-item"><div class="legend-dot" style="background:var(--white)"></div><span id="legend-nonInvestor">Non-investors 0%</span></div>
+          <div class="legend-item"><div class="legend-dot" style="background:var(--neon-red)"></div><span id="legend-small">Small investors 0%</span></div>
+          <div class="legend-item"><div class="legend-dot" style="background:var(--neon)"></div><span id="legend-medium">Medium investors 0%</span></div>
+          <div class="legend-item"><div class="legend-dot" style="background:var(--orange)"></div><span id="legend-large">Large investors 0%</span></div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--purple)"></div><span id="legend-institutional">Institutional 0%</span></div>
+      </div>
+    </div>
 
-        <div class="competitor-grid anim anim-delay-3">
-          <div class="card-group-title">Meet the players</div>
-          <div class="competitor-cards">
-            <div class="competitor-card">
-              <div class="competitor-icon">🏠</div>
-              <div class="competitor-name">Individuals</div>
-              <div class="competitor-stat" id="individualCard">42%</div>
-              <div class="competitor-copy">Individual buyers purchasing homes directly, often as primary residences.</div>
-            </div>
-            <div class="competitor-card highlight">
-              <div class="competitor-icon">🏢</div>
-              <div class="competitor-name">LLC / Corp</div>
-              <div class="competitor-stat" id="llcCard">31%</div>
-              <div class="competitor-copy">Corporate entities and LLCs buying property as part of a larger investment strategy.</div>
-            </div>
-            <div class="competitor-card">
-              <div class="competitor-icon">🧾</div>
-              <div class="competitor-name">Trusts</div>
-              <div class="competitor-stat" id="trustCard">15%</div>
-              <div class="competitor-copy">Properties purchased through trusts, often making ownership less visible at first glance.</div>
-            </div>
-            <div class="competitor-card">
-              <div class="competitor-icon">📈</div>
-              <div class="competitor-name">Investors</div>
-              <div class="competitor-stat" id="investorCard">12%</div>
-              <div class="competitor-copy">Buyers focused on housing as an asset, not necessarily as a place to live.</div>
+          <div class="competitor-grid anim anim-delay-3">
+            <div class="card-group-title">Meet the players</div>
+            <div class="competitor-cards">
+              <div class="competitor-card">
+                <div class="competitor-icon">🏠</div>
+                <div class="competitor-name">Non-investors</div>
+                <div class="competitor-stat" id="nonInvestorCard">0%</div>
+                <div class="competitor-copy">Buyers not classified as investors in the transaction data.</div>
+              </div>
+
+              <div class="competitor-card">
+                <div class="competitor-icon">📈</div>
+                <div class="competitor-name">Small investors</div>
+                <div class="competitor-stat" id="smallCard">0%</div>
+                <div class="competitor-copy">Smaller-scale investor buyers participating in the housing market.</div>
+              </div>
+
+              <div class="competitor-card">
+                <div class="competitor-icon">📊</div>
+                <div class="competitor-name">Medium investors</div>
+                <div class="competitor-stat" id="mediumCard">0%</div>
+                <div class="competitor-copy">Mid-sized investors with a stronger recurring market presence.</div>
+              </div>
+
+              <div class="competitor-card highlight">
+                <div class="competitor-icon">🏢</div>
+                <div class="competitor-name">Large investors</div>
+                <div class="competitor-stat" id="largeCard">0%</div>
+                <div class="competitor-copy">High-volume buyers purchasing homes as part of broader portfolios.</div>
+              </div>
+
+              <div class="competitor-card">
+                <div class="competitor-icon">🏦</div>
+                <div class="competitor-name">Institutional</div>
+                <div class="competitor-stat" id="institutionalCard">0%</div>
+                <div class="competitor-copy">Institutional-scale buyers and major entities purchasing at scale.</div>
+              </div>
             </div>
           </div>
-        </div>
       </div>
 
       <div class="callout-card anim anim-delay-4" id="competitionCallout">
-        In <span>Dorchester</span>, <span>1 in 3 buyers</span> is a corporate entity.
+        In <span>Dorchester</span>, <span>0%</span> of buyers are investors.
       </div>
 
       <div class="neighborhood-pills anim anim-delay-4">
         <div class="pill active" data-hood="Dorchester">Dorchester</div>
         <div class="pill" data-hood="Roxbury">Roxbury</div>
         <div class="pill" data-hood="South Boston">South Boston</div>
-        <div class="pill" data-hood="JP">JP</div>
+        <div class="pill" data-hood="Jamaica Plain">Jamaica Plain</div>
       </div>
     </div>
   </div>
@@ -458,7 +470,49 @@
     <h1 class="headline anim anim-delay-1" style="font-size:28px;">Your neighborhood<br>is <span>not for sale</span></h1>
     <p class="subheadline anim anim-delay-2" style="font-size:14px;">Corporate ownership in Boston has quadrupled in 20 years. The question isn't whether it will keep growing, but whether we'll do anything about it.</p>
 
-    <button class="btn anim anim-delay-2" onclick="shareCard()">Share</button>
+<div class="cta-row anim anim-delay-2" style="display: flex; gap: 10px; justify-content: center;">
+  <button class="btn" onclick="shareCard()">Share</button>
+  <button class="btn btn-outline" onclick="toggleOverlay(true)">Get Help & Resources</button>
+</div>
+
+<div id="resourceOverlay" class="overlay">
+  <div class="overlay-content">
+    <button class="close-btn" onclick="toggleOverlay(false)">&times;</button>
+    <h2 class="overlay-title">Take Action</h2>
+    <p class="overlay-subtitle">Resources for navigating the Boston housing market.</p>
+
+    <div class="resource-list">
+      <a href="https://www.boston.gov/departments/housing" target="_blank" class="res-item">
+        <span class="res-icon">🏛️</span>
+        <div class="res-info">
+          <strong>City of Boston Housing</strong>
+          <span>Down payment assistance & programs</span>
+        </div>
+      </a>
+      <a href="https://www.masshousing.com/" target="_blank" class="res-item">
+        <span class="res-icon">🏡</span>
+        <div class="res-info">
+          <strong>MassHousing</strong>
+          <span>Affordable mortgage & low-interest loans</span>
+        </div>
+      </a>
+      <a href="https://www.mahahome.com/" target="_blank" class="res-item">
+        <span class="res-icon">🎓</span>
+        <div class="res-info">
+          <strong>MAHA (Homebuyer Ed)</strong>
+          <span>Classes required for special loan rates</span>
+        </div>
+      </a>
+      <a href="https://www.clvu.org/" target="_blank" class="res-item">
+        <span class="res-icon">✊</span>
+        <div class="res-info">
+          <strong>City Life / Vida Urbana</strong>
+          <span>Tenant rights & housing justice advocacy</span>
+        </div>
+      </a>
+    </div>
+  </div>
+</div>
     <div class="social-row anim anim-delay-3">
       <div class="social-icon" title="Copy link">🔗</div>
       <div class="social-icon" title="X / Twitter">𝕏</div>
