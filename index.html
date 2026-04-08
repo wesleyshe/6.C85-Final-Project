@@ -81,80 +81,61 @@
     <div class="competitors-layout">
       <div class="competitor-top">
         <div class="donut-panel anim anim-delay-2">
-      <div class="donut-panel-title">Buyer breakdown</div>
-      <div class="donut-wrap">
-        <svg viewBox="0 0 200 200" aria-label="Buyer breakdown donut chart">
-          <circle class="donut-bg" cx="100" cy="100" r="82"></circle>
-          <circle class="donut-segment" id="seg-nonInvestor" cx="100" cy="100" r="82" stroke="var(--white)"></circle>
-          <circle class="donut-segment" id="seg-small" cx="100" cy="100" r="82" stroke="var(--neon-red)"></circle>
-          <circle class="donut-segment" id="seg-medium" cx="100" cy="100" r="82" stroke="var(--neon)"></circle>
-          <circle class="donut-segment" id="seg-large" cx="100" cy="100" r="82" stroke="var(--orange)"></circle>
-          <circle class="donut-segment" id="seg-institutional" cx="100" cy="100" r="82" stroke="var(--purple)"></circle>
-        </svg>
-        <div class="donut-center-label">BUYER<br>BREAKDOWN</div>
-      </div>
-        <div class="legend">
-          <div class="legend-item"><div class="legend-dot" style="background:var(--white)"></div><span id="legend-nonInvestor">Non-investors 0%</span></div>
-          <div class="legend-item"><div class="legend-dot" style="background:var(--neon-red)"></div><span id="legend-small">Small investors 0%</span></div>
-          <div class="legend-item"><div class="legend-dot" style="background:var(--neon)"></div><span id="legend-medium">Medium investors 0%</span></div>
-          <div class="legend-item"><div class="legend-dot" style="background:var(--orange)"></div><span id="legend-large">Large investors 0%</span></div>
-        <div class="legend-item"><div class="legend-dot" style="background:var(--purple)"></div><span id="legend-institutional">Institutional 0%</span></div>
-      </div>
-    </div>
+          <div class="donut-panel-title">Buyer breakdown</div>
+          <div class="donut-wrap">
+            <svg viewBox="0 0 200 200" aria-label="Buyer breakdown donut chart">
+              <circle class="donut-bg" cx="100" cy="100" r="82"></circle>
+              <circle class="donut-segment" id="seg-individual" cx="100" cy="100" r="82" stroke="var(--white)" stroke-dasharray="0 515"></circle>
+              <circle class="donut-segment" id="seg-llc" cx="100" cy="100" r="82" stroke="var(--neon-red)" stroke-dasharray="0 515"></circle>
+              <circle class="donut-segment" id="seg-trust" cx="100" cy="100" r="82" stroke="var(--neon)" stroke-dasharray="0 515"></circle>
+              <circle class="donut-segment" id="seg-other" cx="100" cy="100" r="82" stroke="var(--orange)" stroke-dasharray="0 515"></circle>
+            </svg>
+            <div class="donut-center-label">BUYER<br>BREAKDOWN</div>
+          </div>
+          <div class="legend">
+            <div class="legend-item"><div class="legend-dot" style="background:var(--white)"></div><span id="legend-individual">Individuals 78%</span></div>
+            <div class="legend-item"><div class="legend-dot" style="background:var(--neon-red)"></div><span id="legend-llc">LLC/Corp 13%</span></div>
+            <div class="legend-item"><div class="legend-dot" style="background:var(--neon)"></div><span id="legend-trust">Trusts 8%</span></div>
+            <div class="legend-item"><div class="legend-dot" style="background:var(--orange)"></div><span id="legend-other">Other 1%</span></div>
+          </div>
+        </div>
 
-          <div class="competitor-grid anim anim-delay-3">
-            <div class="card-group-title">Meet the players</div>
-            <div class="competitor-cards">
-              <div class="competitor-card">
-                <div class="competitor-icon">🏠</div>
-                <div class="competitor-name">Non-investors</div>
-                <div class="competitor-stat" id="nonInvestorCard">0%</div>
-                <div class="competitor-copy">Buyers not classified as investors in the transaction data.</div>
-              </div>
-
-              <div class="competitor-card">
-                <div class="competitor-icon">📈</div>
-                <div class="competitor-name">Small investors</div>
-                <div class="competitor-stat" id="smallCard">0%</div>
-                <div class="competitor-copy">Smaller-scale investor buyers participating in the housing market.</div>
-              </div>
-
-              <div class="competitor-card">
-                <div class="competitor-icon">📊</div>
-                <div class="competitor-name">Medium investors</div>
-                <div class="competitor-stat" id="mediumCard">0%</div>
-                <div class="competitor-copy">Mid-sized investors with a stronger recurring market presence.</div>
-              </div>
-
-              <div class="competitor-card highlight">
-                <div class="competitor-icon">🏢</div>
-                <div class="competitor-name">Large investors</div>
-                <div class="competitor-stat" id="largeCard">0%</div>
-                <div class="competitor-copy">High-volume buyers purchasing homes as part of broader portfolios.</div>
-              </div>
-
-              <div class="competitor-card">
-                <div class="competitor-icon">🏦</div>
-                <div class="competitor-name">Institutional</div>
-                <div class="competitor-stat" id="institutionalCard">0%</div>
-                <div class="competitor-copy">Institutional-scale buyers and major entities purchasing at scale.</div>
-              </div>
+        <div class="competitor-grid anim anim-delay-3">
+          <div class="card-group-title">Meet the players</div>
+          <div class="competitor-cards">
+            <div class="competitor-card">
+              <div class="competitor-icon">🏠</div>
+              <div class="competitor-name">Individuals</div>
+              <div class="competitor-stat" id="individualCard">78%</div>
+              <div class="competitor-copy">Individual buyers purchasing homes directly, often as primary residences.</div>
+            </div>
+            <div class="competitor-card highlight">
+              <div class="competitor-icon">🏢</div>
+              <div class="competitor-name">LLC / Corp</div>
+              <div class="competitor-stat" id="llcCard">13%</div>
+              <div class="competitor-copy">Corporate entities and LLCs buying property as part of a larger investment strategy.</div>
+            </div>
+            <div class="competitor-card">
+              <div class="competitor-icon">🧾</div>
+              <div class="competitor-name">Trusts</div>
+              <div class="competitor-stat" id="trustCard">8%</div>
+              <div class="competitor-copy">Properties purchased through trusts, often making ownership less visible at first glance.</div>
+            </div>
+            <div class="competitor-card">
+              <div class="competitor-icon">📈</div>
+              <div class="competitor-name">Other</div>
+              <div class="competitor-stat" id="otherCard">1%</div>
+              <div class="competitor-copy">Banks, government-sponsored enterprises, and other institutional buyers.</div>
             </div>
           </div>
       </div>
 
       <div class="callout-card anim anim-delay-4" id="competitionCallout">
-        In <span>Dorchester</span>, <span>0%</span> of buyers are investors.
-      </div>
-
-      <div class="neighborhood-pills anim anim-delay-4">
-        <div class="pill active" data-hood="Dorchester">Dorchester</div>
-        <div class="pill" data-hood="Roxbury">Roxbury</div>
-        <div class="pill" data-hood="South Boston">South Boston</div>
-        <div class="pill" data-hood="Jamaica Plain">Jamaica Plain</div>
+        Citywide, <span>1 in 5 buyers</span> is an LLC, trust, or corporate entity.
       </div>
     </div>
   </div>
+  <p class="data-source">Source: MAPC, Residential Sales Data, City of Boston 2000–2023 (via data.boston.gov)</p>
 </section>
 
 <!-- ====== SLIDE 4 — Competition Advantages ====== -->
@@ -175,29 +156,24 @@
         </div>
         <div class="bar-group">
           <div class="bar-row">
-            <div class="bar-label">Resident</div>
-            <div class="bar-track"><div class="bar-fill resident advantage-bar" data-width="28%"></div></div>
-            <div class="bar-value">28%</div>
+            <div class="bar-label">Individual</div>
+            <div class="bar-track"><div class="bar-fill resident advantage-bar" data-width="33%"></div></div>
+            <div class="bar-value">33%</div>
           </div>
           <div class="bar-row">
             <div class="bar-label">Corporate</div>
-            <div class="bar-track"><div class="bar-fill corporate advantage-bar" data-width="76%"></div></div>
-            <div class="bar-value">76%</div>
+            <div class="bar-track"><div class="bar-fill corporate advantage-bar" data-width="55%"></div></div>
+            <div class="bar-value">55%</div>
           </div>
           <div class="bar-row">
             <div class="bar-label">Absentee</div>
-            <div class="bar-track"><div class="bar-fill absentee advantage-bar" data-width="58%"></div></div>
-            <div class="bar-value">58%</div>
+            <div class="bar-track"><div class="bar-fill absentee advantage-bar" data-width="40%"></div></div>
+            <div class="bar-value">40%</div>
           </div>
           <div class="bar-row">
             <div class="bar-label">Flipper</div>
-            <div class="bar-track"><div class="bar-fill flipper advantage-bar" data-width="64%"></div></div>
-            <div class="bar-value">64%</div>
-          </div>
-          <div class="bar-row">
-            <div class="bar-label">Cash buyer</div>
-            <div class="bar-track"><div class="bar-fill cash advantage-bar" data-width="91%"></div></div>
-            <div class="bar-value">91%</div>
+            <div class="bar-track"><div class="bar-fill flipper advantage-bar" data-width="49%"></div></div>
+            <div class="bar-value">49%</div>
           </div>
         </div>
       </div>
@@ -234,6 +210,7 @@
       </div>
     </div>
   </div>
+  <p class="data-source">Source: MAPC, Residential Sales Data, City of Boston 2000–2023 (via data.boston.gov)</p>
 </section>
 
 <!-- ====== SLIDE 5 — Who Owns Your Neighborhood (Wrapped Intro) ====== -->
@@ -262,6 +239,7 @@
     </div>
   </div>
   <canvas id="particleCanvas"></canvas>
+  <p class="data-source">Source: City of Boston Property Assessment Data, 2004–2024 (data.boston.gov)</p>
 </section>
 
 <!-- ====== SLIDE 6 — The Map ====== -->
@@ -322,6 +300,7 @@
       </div>
     </div>
   </div>
+  <p class="data-source">Source: City of Boston Property Assessment Data, 2004–2024 (data.boston.gov). Demographics: U.S. Census Bureau.</p>
 </section>
 
 <!-- ====== SLIDE 7 — The Shift ====== -->
@@ -335,6 +314,7 @@
       Every single Boston neighborhood saw corporate ownership rise. The Seaport jumped <span>+32pp</span>. But in Dorchester and Roxbury, even smaller increases hit harder — those are the communities that can least afford it.
     </div>
   </div>
+  <p class="data-source">Source: City of Boston Property Assessment Data, 2004–2024 (data.boston.gov)</p>
 </section>
 
 <!-- ====== SLIDE 8 — House Hunting ====== -->
@@ -406,6 +386,7 @@
     </div>
     <p class="subheadline anim anim-delay-4" style="font-size:14px;opacity:0.5;margin-top:16px;">Same budget. Shrinking home.</p>
   </div>
+  <p class="data-source">Median price: Zillow Home Value Index. Sqft: MAPC, Residential Sales Data, City of Boston 2000–2023 (median $/sqft at ~$700K budget).</p>
 </section>
 
 <!-- ====== SLIDE 10 — Mortgage Reality ====== -->
@@ -436,6 +417,7 @@
       <div class="toggle-pill">With kids</div>
     </div>
   </div>
+  <p class="data-source">Mortgage rate: Freddie Mac PMMS. Marriage age: U.S. Census Bureau. Retirement: SSA/Medicare eligibility.</p>
 </section>
 
 <!-- ====== SLIDE 11 — Share / CTA ====== -->
@@ -456,7 +438,7 @@
         </div>
         <div class="share-stat">
           <div class="share-stat-label">Your Competition</div>
-          <div class="share-stat-value">You're competing against <span class="red">31% corporate buyers</span></div>
+          <div class="share-stat-value">You're competing against <span class="red">22% non-individual buyers</span></div>
         </div>
         <div class="share-stat">
           <div class="share-stat-label">Shrinking Homes</div>

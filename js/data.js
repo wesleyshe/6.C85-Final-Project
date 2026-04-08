@@ -191,6 +191,32 @@ const neighborhoodMix = {
   }
 };
 
+// ============ CITYWIDE BUYER MIX (2018–2022) ============
+// Source: City of Boston / MAPC, Residential Sales Data 2000–2023
+// (A2_EDA_Residential.csv), buyer entity flags, filtered to 2018–2022.
+// n = 9,558 transactions. Categories are mutually exclusive:
+//   Individual = no LLC, trust, business, bank, or GSE flag
+//   LLC/Corp   = buyer_llc_ind == 1
+//   Trust      = buyer_trst_ind == 1
+//   Other      = buyer_bus_ind, buyer_bnk_ind, or buyer_gse_ind == 1
+const citywideMix = {
+  individual: 78,
+  llc: 13,
+  trust: 8,
+  other: 1
+};
+
+// Neighborhood pills are kept for context callouts but share the same
+// citywide buyer breakdown — the residential sales dataset does not have
+// enough per-neighborhood transactions to compute reliable splits.
+// Corporate *ownership* rates per neighborhood are shown on the map slide.
+const neighborhoodCallouts = {
+  'Dorchester': 'Citywide, <span>1 in 5 buyers</span> is an LLC, trust, or corporate entity.',
+  'Roxbury':    'Citywide, <span>1 in 5 buyers</span> is an LLC, trust, or corporate entity.',
+  'South Boston': 'Citywide, <span>1 in 5 buyers</span> is an LLC, trust, or corporate entity.',
+  'JP':         'Citywide, <span>1 in 5 buyers</span> is an LLC, trust, or corporate entity.'
+};
+
 // const neighborhoodMix = {
 //   'Dorchester': {
 //     individual: 42,

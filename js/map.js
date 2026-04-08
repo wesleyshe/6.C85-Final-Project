@@ -251,30 +251,64 @@ function buildShiftGrid() {
   const shifts = neighborhoods.map(name => {
     const early = corpData[name][2004]?.corp_own_rate || 0;
     const late = corpData[name][2024]?.corp_own_rate || 0;
-    const demo = DEMOGRAPHICS[name];
-    const pctNW = demo ? Math.round((1 - demo.white / demo.total) * 100) : 0;
-    return { name, early, late, delta: late - early, pctNW };
+    return { name, early, late, delta: late - early };
   }).sort((a, b) => b.delta - a.delta);
 
   const top5 = shifts.slice(0, 5);
   top5.forEach((s, i) => {
+    const earlyPct = (s.early * 100).toFixed(0);
+    const latePct = (s.late * 100).toFixed(0);
+    const deltaPct = (s.delta * 100).toFixed(0);
     const row = document.createElement('div');
     row.className = 'shift-row';
+    row.style.animationDelay = `${i * 0.12}s`;
     row.innerHTML = `
       <div class="shift-rank">${i + 1}</div>
       <div class="shift-info">
-        <div class="shift-name">${s.name}<span class="nonwhite-tag">${s.pctNW}% non-white</span></div>
-        <div class="shift-bar-bg">
-          <div class="shift-bar-late" data-width="${s.late * 250}"></div>
+        <div class="shift-header">
+          <span class="shift-name">${s.name}</span>
+          <span class="shift-delta">+${deltaPct}pp</span>
         </div>
-        <div class="shift-numbers">
-          <span class="shift-early">${(s.early * 100).toFixed(0)}% in 2004</span>
-          <span class="shift-delta">+${(s.delta * 100).toFixed(0)}pp</span>
-          <span class="shift-late">${(s.late * 100).toFixed(0)}% now</span>
+        <div class="shift-bar-track">
+          <div class="shift-bar-fill shift-bar-early" data-width="${earlyPct}"></div>
+          <div class="shift-bar-fill shift-bar-late" data-width="${latePct}">
+            <span class="shift-label shift-label-late">${latePct}% <span class="shift-year">2024</span></span>
+          </div>
+          <div class="shift-marker" data-pos="${earlyPct}">
+            <span class="shift-marker-label">${earlyPct}% <span class="shift-year">2004</span></span>
+          </div>
         </div>
       </div>
     `;
     grid.appendChild(row);
+  });
+}
+
+// Called from onSlideEnter — two-phase bar animation
+function animateShiftBars() {
+  const rows = document.querySelectorAll('.shift-row');
+  rows.forEach((row, i) => {
+    const earlyBar = row.querySelector('.shift-bar-early');
+    const lateBar = row.querySelector('.shift-bar-late');
+    const earlyW = earlyBar.getAttribute('data-width');
+    const lateW = lateBar.getAttribute('data-width');
+    const delay = i * 120;
+
+    const marker = row.querySelector('.shift-marker');
+
+    // Phase 1: grow to 2004 value + show marker
+    setTimeout(() => {
+      earlyBar.style.width = earlyW + '%';
+      marker.style.left = earlyW + '%';
+      marker.classList.add('show');
+    }, 400 + delay);
+
+    // Phase 2: grow the overlay to 2024 value
+    setTimeout(() => {
+      lateBar.style.width = lateW + '%';
+      row.querySelector('.shift-label-late').classList.add('show');
+      row.querySelector('.shift-delta').classList.add('show');
+    }, 1200 + delay);
   });
 }
 

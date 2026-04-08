@@ -1071,71 +1071,147 @@ input[type="range"]::-moz-range-thumb {
   max-width: 550px;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 14px;
   margin: 8px 0;
 }
 
 .shift-row {
   display: flex;
-  align-items: center;
-  gap: 16px;
+  align-items: flex-start;
+  gap: 14px;
 }
 
 .shift-rank {
-  font-size: 28px;
+  font-size: 24px;
   font-weight: 900;
   color: var(--neon-red);
-  opacity: 0.5;
-  width: 36px;
+  opacity: 0.35;
+  width: 28px;
   text-align: right;
   flex-shrink: 0;
+  line-height: 1.2;
+  padding-top: 1px;
 }
 
 .shift-info {
   flex: 1;
+  min-width: 0;
 }
 
-.shift-name {
-  font-size: 16px;
-  font-weight: 900;
+.shift-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
   margin-bottom: 6px;
 }
 
-.shift-name .nonwhite-tag {
-  font-size: 11px;
-  font-weight: 400;
-  opacity: 0.4;
-  margin-left: 6px;
+.shift-name {
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
 }
 
-.shift-bar-bg {
-  height: 8px;
-  border-radius: 4px;
-  background: rgba(255,255,255,0.1);
+.shift-delta {
+  font-size: 14px;
+  font-weight: 900;
+  color: var(--neon-red);
+  opacity: 0;
+  transform: translateX(8px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+.shift-delta.show {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* Bar track — full 100% width = 100% ownership */
+.shift-bar-track {
   position: relative;
-  overflow: hidden;
+  height: 10px;
+  border-radius: 5px;
+  background: rgba(255,255,255,0.08);
+  margin-bottom: 18px;
 }
 
-.shift-bar-late {
+/* 2004 bar — muted, sits behind */
+.shift-bar-fill.shift-bar-early {
   position: absolute;
   top: 0; left: 0;
   height: 100%;
-  border-radius: 4px;
-  background: linear-gradient(90deg, var(--orange), var(--neon-red));
-  transition: width 1.2s ease;
+  border-radius: 5px;
+  background: rgba(255,255,255,0.15);
   width: 0;
+  transition: width 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
-.shift-numbers {
-  display: flex;
-  justify-content: space-between;
-  font-size: 12px;
-  margin-top: 4px;
+/* 2024 bar — bold gradient, grows on top */
+.shift-bar-fill.shift-bar-late {
+  position: absolute;
+  top: 0; left: 0;
+  height: 100%;
+  border-radius: 5px;
+  background: linear-gradient(90deg, var(--orange), var(--neon-red));
+  width: 0;
+  transition: width 1s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
-.shift-early { opacity: 0.4; }
-.shift-delta { color: var(--neon-red); font-weight: 900; font-size: 14px; }
-.shift-late { font-weight: 700; }
+/* Label pinned to the right edge of the 2024 bar */
+.shift-label {
+  position: absolute;
+  right: 0;
+  top: 100%;
+  transform: translateX(100%);
+  padding-left: 6px;
+  white-space: nowrap;
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  margin-top: 6px;
+}
+
+/* Dashed marker line at 2004 position */
+.shift-marker {
+  position: absolute;
+  top: -4px;
+  bottom: -4px;
+  left: 0;
+  width: 0;
+  border-left: 2px dashed rgba(255,255,255,0.5);
+  z-index: 3;
+  opacity: 0;
+  transition: left 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94), opacity 0.4s ease;
+}
+.shift-marker.show {
+  opacity: 1;
+}
+
+.shift-marker-label {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  transform: translateX(-50%);
+  margin-top: 6px;
+  white-space: nowrap;
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  opacity: 0.5;
+  line-height: 1;
+}
+
+.shift-label-late {
+  font-weight: 700;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+.shift-label-late.show {
+  opacity: 1;
+}
+
+.shift-year {
+  font-size: 10px;
+  opacity: 0.5;
+  margin-left: 2px;
+}
 
 /* ============ SLIDE 8 — House Hunting ============ */
 #slide-hunt {
@@ -1660,4 +1736,19 @@ input[type="range"]::-moz-range-thumb {
 
 .overlay.active {
   display: flex;
+}
+
+/* ============ DATA SOURCE FOOTNOTES ============ */
+.data-source {
+  position: absolute;
+  bottom: 12px;
+  right: 16px;
+  font-size: 9px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.55);
+  line-height: 1.3;
+  max-width: 300px;
+  text-align: right;
+  z-index: 5;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
 }
