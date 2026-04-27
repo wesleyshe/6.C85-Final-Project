@@ -367,13 +367,22 @@ function showPhase(idx) {
   });
 }
 
+// Show phase 0 only; user advances manually with the Next button.
 function runIntroSequence() {
   currentPhase = 0;
   showPhase(0);
+  const nextWrap = document.getElementById('introNextWrap');
+  if (nextWrap) nextWrap.classList.remove('hidden');
+}
 
-  setTimeout(() => {
-    currentPhase = 1;
-    showPhase(1);
+// Step the intro forward one phase. Triggers count-up animations on entry to
+// phases 1 and 2; hides the Next button on phase 3 (final headline has its own).
+function advanceIntro() {
+  if (currentPhase >= 3) return;
+  currentPhase++;
+  showPhase(currentPhase);
+
+  if (currentPhase === 1) {
     const el = document.getElementById('statEarly');
     let val = 0;
     const timer = setInterval(() => {
@@ -381,11 +390,7 @@ function runIntroSequence() {
       el.textContent = val + '%';
       if (val >= 5) clearInterval(timer);
     }, 80);
-  }, PHASE_DURATION);
-
-  setTimeout(() => {
-    currentPhase = 2;
-    showPhase(2);
+  } else if (currentPhase === 2) {
     const el = document.getElementById('statNow');
     let val = 0;
     const timer = setInterval(() => {
@@ -394,25 +399,12 @@ function runIntroSequence() {
       el.textContent = val + '%';
       if (val >= 38) clearInterval(timer);
     }, 40);
-  }, PHASE_DURATION * 2);
-
-  setTimeout(() => {
-    currentPhase = 3;
-    showPhase(3);
+  } else if (currentPhase === 3) {
     introComplete = true;
-  }, PHASE_DURATION * 3);
-}
-
-// Allow clicking to skip intro
-document.getElementById('slide-map-intro').addEventListener('click', (e) => {
-  if (e.target.closest('.btn')) return;
-  if (introComplete) return;
-  if (currentPhase < 3) {
-    currentPhase = 3;
-    showPhase(3);
-    introComplete = true;
+    const nextWrap = document.getElementById('introNextWrap');
+    if (nextWrap) nextWrap.classList.add('hidden');
   }
-});
+}
 
 // ============ SHARE (Slide 11) ============
 function shareCard() {
@@ -447,17 +439,18 @@ document.addEventListener('touchend', e => {
 }, { passive: true });
 
 // ============ INIT ============
-window.addEventListener('load', () => {
+window.addEventListener('load', async () => {
   // Trigger first slide animations
   onSlideEnter(slides[0]);
   updateCompetitionCards('Dorchester');
 
   // Map init
-  buildMap();
+  await buildMap();
   buildShiftGrid();
   updateMap(2004);
   initYearSlider();
   initParticles();
+  initInfoPopovers();
 });
 
 function toggleOverlay(show) {

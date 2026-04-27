@@ -289,6 +289,9 @@
       <p class="subheadline fade-up-late">Watch 20 years of corporate takeover unfold across Boston's neighborhoods.</p>
       <button class="btn fade-up-late btn-pulse" onclick="scrollToSlide(6)">See the Map &rarr;</button>
     </div>
+    <div class="intro-next-wrap" id="introNextWrap">
+      <button class="btn" onclick="advanceIntro()">Next &rarr;</button>
+    </div>
   </div>
   <canvas id="particleCanvas"></canvas>
   <p class="data-source">Source: City of Boston Property Assessment Data, 2004–2024 (data.boston.gov)</p>
@@ -315,7 +318,7 @@
         </div>
 
         <div class="sidebar-card" id="demoCard">
-          <h3>Demographics</h3>
+          <h3>Local Housing</h3>
           <div id="demoContent">
             <div class="selected-detail" style="opacity:0.4;">Select a neighborhood to see who lives there</div>
           </div>
@@ -558,6 +561,7 @@
 </section>
 
 <script src="js/data.js"></script>
+<script src="js/geojson.js"></script>
 <script src="js/map.js"></script>
 <script src="js/main.js"></script>
 </body>
