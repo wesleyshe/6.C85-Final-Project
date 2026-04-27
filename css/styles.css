@@ -13,6 +13,17 @@
   --burgundy: #2A0A0A;
   --radius: 16px;
   --font: 'Montserrat', sans-serif;
+
+  /* Unified typography scale (~20% larger than original).
+     Use these tokens everywhere — never hardcode font-size in inline styles. */
+  --fs-caption: 13px;   /* tiny labels, data sources, sqft footnotes */
+  --fs-small:   16px;   /* secondary copy, stat-row labels */
+  --fs-body:    19px;   /* default body, subheadlines */
+  --fs-h3:      22px;   /* card titles, section subheads */
+  --fs-h2:      30px;   /* mid-emphasis headlines */
+  --fs-h1:      44px;   /* default slide headline */
+  --fs-hero:    60px;   /* showcase headlines */
+  --fs-mega:    112px;  /* count-up showpiece numbers */
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -49,7 +60,7 @@ body {
 }
 
 .slide-inner {
-  max-width: 390px;
+  max-width: 470px;
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -60,7 +71,7 @@ body {
 }
 
 .top-label {
-  font-size: 11px;
+  font-size: var(--fs-caption);
   font-weight: 700;
   letter-spacing: 3px;
   text-transform: uppercase;
@@ -69,14 +80,14 @@ body {
 }
 
 .headline {
-  font-size: 38px;
+  font-size: var(--fs-h1);
   font-weight: 900;
   line-height: 1.1;
   margin-bottom: 16px;
 }
 
 .subheadline {
-  font-size: 17px;
+  font-size: var(--fs-body);
   font-weight: 400;
   opacity: 0.85;
   line-height: 1.5;
@@ -88,9 +99,9 @@ body {
   color: var(--black);
   border: none;
   border-radius: 50px;
-  padding: 16px 40px;
+  padding: 18px 44px;
   font-family: var(--font);
-  font-size: 17px;
+  font-size: var(--fs-body);
   font-weight: 900;
   cursor: pointer;
   transition: transform 0.2s, box-shadow 0.2s;
@@ -98,6 +109,18 @@ body {
 }
 .btn:hover { transform: scale(1.05); box-shadow: 0 0 30px rgba(204, 255, 0, 0.3); }
 .btn:active { transform: scale(0.97); }
+
+/* Headline size modifiers — apply alongside .headline */
+.headline.h-h2 { font-size: var(--fs-h2); }
+.headline.h-h3 { font-size: var(--fs-h3); }
+.headline.h-tight { margin-top: 0; }
+
+/* Subheadline size modifier */
+.subheadline.sub-sm { font-size: var(--fs-small); max-width: 480px; }
+
+/* Stat-row size + tone modifiers */
+.stat-value.stat-sm { font-size: var(--fs-small); }
+.stat-value.stat-mute { color: #95a5a6; }
 
 /* ============ DOT INDICATORS ============ */
 .dots {
@@ -204,12 +227,12 @@ body {
 
 .property-label {
   padding: 14px;
-  font-size: 14px;
+  font-size: var(--fs-small);
   font-weight: 700;
 }
 
 .price-display {
-  font-size: 48px;
+  font-size: var(--fs-hero);
   font-weight: 900;
   margin: 16px 0 8px;
   color: var(--white);
@@ -256,7 +279,7 @@ input[type="range"]::-moz-range-thumb {
 .slider-labels {
   display: flex;
   justify-content: space-between;
-  font-size: 11px;
+  font-size: var(--fs-caption);
   opacity: 0.5;
   margin-top: 6px;
 }
@@ -270,26 +293,26 @@ input[type="range"]::-moz-range-thumb {
 .reveal-area.show { display: block; }
 
 .actual-price {
-  font-size: 56px;
+  font-size: var(--fs-hero);
   font-weight: 900;
   color: var(--neon);
 }
 
 .user-guess-strike {
-  font-size: 20px;
+  font-size: var(--fs-h3);
   text-decoration: line-through;
   opacity: 0.5;
   margin: 8px 0;
 }
 
 .comparison-line {
-  font-size: 15px;
+  font-size: var(--fs-small);
   opacity: 0.7;
   margin: 4px 0;
 }
 
 .slide-counter {
-  font-size: 12px;
+  font-size: var(--fs-caption);
   opacity: 0.4;
   margin-top: 20px;
 }
@@ -346,7 +369,7 @@ input[type="range"]::-moz-range-thumb {
 .card-group-title,
 .advantage-title,
 .trend-title {
-  font-size: 12px;
+  font-size: var(--fs-caption);
   font-weight: 700;
   letter-spacing: 2px;
   text-transform: uppercase;
@@ -388,7 +411,7 @@ input[type="range"]::-moz-range-thumb {
   top: 50%;
   left: 50%;
   transform: translate(-50%,-50%);
-  font-size: 14px;
+  font-size: var(--fs-small);
   font-weight: 700;
   text-align: center;
   line-height: 1.35;
@@ -406,7 +429,7 @@ input[type="range"]::-moz-range-thumb {
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 13px;
+  font-size: var(--fs-small);
   font-weight: 700;
 }
 
@@ -442,25 +465,25 @@ input[type="range"]::-moz-range-thumb {
 }
 
 .competitor-icon {
-  font-size: 24px;
+  font-size: var(--fs-h2);
   margin-bottom: 10px;
 }
 
 .competitor-name {
-  font-size: 13px;
+  font-size: var(--fs-small);
   font-weight: 900;
   line-height: 1.2;
   margin-bottom: 6px;
 }
 
 .competitor-stat {
-  font-size: 20px;
+  font-size: var(--fs-h3);
   font-weight: 900;
   margin-bottom: 6px;
 }
 
 .competitor-copy {
-  font-size: 11px;
+  font-size: var(--fs-caption);
   line-height: 1.35;
   opacity: 0.82;
 }
@@ -471,7 +494,7 @@ input[type="range"]::-moz-range-thumb {
   border-radius: var(--radius);
   padding: 16px 18px;
   width: 100%;
-  font-size: 15px;
+  font-size: var(--fs-small);
   font-weight: 700;
   line-height: 1.45;
 }
@@ -489,7 +512,7 @@ input[type="range"]::-moz-range-thumb {
 .pill {
   padding: 8px 14px;
   border-radius: 50px;
-  font-size: 12px;
+  font-size: var(--fs-caption);
   font-weight: 700;
   background: rgba(255,255,255,0.1);
   border: 1px solid rgba(255,255,255,0.2);
@@ -523,7 +546,7 @@ input[type="range"]::-moz-range-thumb {
 
 .advantage-desc,
 .trend-desc {
-  font-size: 14px;
+  font-size: var(--fs-small);
   line-height: 1.45;
   opacity: 0.82;
   margin-bottom: 16px;
@@ -542,7 +565,7 @@ input[type="range"]::-moz-range-thumb {
 }
 
 .bar-label {
-  font-size: 12px;
+  font-size: var(--fs-caption);
   font-weight: 700;
   line-height: 1.2;
 }
@@ -568,7 +591,7 @@ input[type="range"]::-moz-range-thumb {
 .bar-fill.cash { background: var(--neon); }
 
 .bar-value {
-  font-size: 12px;
+  font-size: var(--fs-caption);
   font-weight: 900;
   text-align: right;
 }
@@ -587,7 +610,7 @@ input[type="range"]::-moz-range-thumb {
   background: rgba(255,255,255,0.08);
   color: var(--white);
   font-family: var(--font);
-  font-size: 11px;
+  font-size: var(--fs-caption);
   font-weight: 700;
   cursor: pointer;
 }
@@ -639,7 +662,7 @@ input[type="range"]::-moz-range-thumb {
 .point-flipper { stroke: var(--neon); }
 
 .axis-label {
-  font-size: 10px;
+  font-size: var(--fs-caption);
   font-weight: 700;
   fill: rgba(255,255,255,0.65);
 }
@@ -655,7 +678,7 @@ input[type="range"]::-moz-range-thumb {
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 12px;
+  font-size: var(--fs-caption);
   font-weight: 700;
 }
 
@@ -714,7 +737,7 @@ input[type="range"]::-moz-range-thumb {
 }
 
 .big-question {
-  font-size: 42px;
+  font-size: var(--fs-h1);
   font-weight: 900;
   line-height: 1.1;
   opacity: 0;
@@ -728,7 +751,7 @@ input[type="range"]::-moz-range-thumb {
 }
 
 .mega-number {
-  font-size: 120px;
+  font-size: var(--fs-mega);
   font-weight: 900;
   line-height: 1;
   color: var(--neon);
@@ -748,7 +771,7 @@ input[type="range"]::-moz-range-thumb {
 }
 
 .mega-label {
-  font-size: 18px;
+  font-size: var(--fs-body);
   font-weight: 700;
   opacity: 0;
   transform: translateY(20px);
@@ -887,7 +910,7 @@ input[type="range"]::-moz-range-thumb {
   border: 1px solid rgba(204,255,0,0.3);
   border-radius: 8px;
   padding: 10px 14px;
-  font-size: 12px;
+  font-size: var(--fs-caption);
   font-weight: 700;
   opacity: 0;
   transition: opacity 0.2s;
@@ -895,8 +918,8 @@ input[type="range"]::-moz-range-thumb {
   white-space: nowrap;
 }
 .map-tooltip.show { opacity: 1; }
-.map-tooltip .tt-name { font-size: 14px; margin-bottom: 4px; }
-.map-tooltip .tt-rate { color: var(--neon); font-size: 18px; }
+.map-tooltip .tt-name { font-size: var(--fs-small); margin-bottom: 4px; }
+.map-tooltip .tt-rate { color: var(--neon); font-size: var(--fs-body); }
 
 .sidebar {
   width: 280px;
@@ -915,7 +938,7 @@ input[type="range"]::-moz-range-thumb {
 }
 
 .sidebar-card h3 {
-  font-size: 11px;
+  font-size: var(--fs-caption);
   font-weight: 700;
   letter-spacing: 2px;
   text-transform: uppercase;
@@ -924,14 +947,14 @@ input[type="range"]::-moz-range-thumb {
 }
 
 .selected-name {
-  font-size: 20px;
+  font-size: var(--fs-h3);
   font-weight: 900;
   margin-bottom: 6px;
   line-height: 1.2;
 }
 
 .selected-detail {
-  font-size: 13px;
+  font-size: var(--fs-small);
   opacity: 0.7;
   margin-bottom: 4px;
 }
@@ -946,12 +969,12 @@ input[type="range"]::-moz-range-thumb {
 .stat-row:last-child { border-bottom: none; }
 
 .stat-label {
-  font-size: 12px;
+  font-size: var(--fs-caption);
   opacity: 0.6;
 }
 
 .stat-value {
-  font-size: 16px;
+  font-size: var(--fs-body);
   font-weight: 900;
 }
 
@@ -966,7 +989,7 @@ input[type="range"]::-moz-range-thumb {
 .demo-bar-label {
   display: flex;
   justify-content: space-between;
-  font-size: 11px;
+  font-size: var(--fs-caption);
   margin-bottom: 4px;
   opacity: 0.6;
 }
@@ -995,7 +1018,7 @@ input[type="range"]::-moz-range-thumb {
 }
 
 .year-display {
-  font-size: 48px;
+  font-size: var(--fs-hero);
   font-weight: 900;
   color: var(--neon);
   line-height: 1;
@@ -1032,7 +1055,7 @@ input[type="range"]::-moz-range-thumb {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 18px;
+  font-size: var(--fs-body);
   color: var(--black);
   transition: transform 0.2s;
   flex-shrink: 0;
@@ -1044,7 +1067,7 @@ input[type="range"]::-moz-range-thumb {
   align-items: center;
   gap: 8px;
   margin-top: 12px;
-  font-size: 11px;
+  font-size: var(--fs-caption);
   opacity: 0.6;
 }
 
@@ -1082,7 +1105,7 @@ input[type="range"]::-moz-range-thumb {
 }
 
 .shift-rank {
-  font-size: 24px;
+  font-size: var(--fs-h2);
   font-weight: 900;
   color: var(--neon-red);
   opacity: 0.35;
@@ -1106,13 +1129,13 @@ input[type="range"]::-moz-range-thumb {
 }
 
 .shift-name {
-  font-size: 15px;
+  font-size: var(--fs-small);
   font-weight: 800;
   letter-spacing: 0.02em;
 }
 
 .shift-delta {
-  font-size: 14px;
+  font-size: var(--fs-small);
   font-weight: 900;
   color: var(--neon-red);
   opacity: 0;
@@ -1163,7 +1186,7 @@ input[type="range"]::-moz-range-thumb {
   transform: translateX(100%);
   padding-left: 6px;
   white-space: nowrap;
-  font-size: 11px;
+  font-size: var(--fs-caption);
   font-variant-numeric: tabular-nums;
   line-height: 1;
   margin-top: 6px;
@@ -1192,7 +1215,7 @@ input[type="range"]::-moz-range-thumb {
   transform: translateX(-50%);
   margin-top: 6px;
   white-space: nowrap;
-  font-size: 11px;
+  font-size: var(--fs-caption);
   font-variant-numeric: tabular-nums;
   opacity: 0.5;
   line-height: 1;
@@ -1208,7 +1231,7 @@ input[type="range"]::-moz-range-thumb {
 }
 
 .shift-year {
-  font-size: 10px;
+  font-size: var(--fs-caption);
   opacity: 0.5;
   margin-left: 2px;
 }
@@ -1218,14 +1241,177 @@ input[type="range"]::-moz-range-thumb {
   background: linear-gradient(160deg, var(--coral) 0%, #d4602e 50%, var(--orange) 100%);
 }
 
+/* Slide 9 — wider container so the right preview column has room */
+#slide-hunt .slide-inner { max-width: 980px; }
+
+.hunt-layout {
+  display: flex;
+  gap: 32px;
+  align-items: stretch;     /* both columns share the tallest column's height */
+  width: 100%;
+  margin-top: 8px;
+}
+.hunt-left {
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.hunt-right {
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.hunt-card {
+  background: rgba(0, 0, 0, 0.22);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: var(--radius);
+  padding: 18px 18px 18px;
+  text-align: center;
+  backdrop-filter: blur(6px);
+  display: flex;
+  flex-direction: column;
+  flex: 1;                  /* card fills the right column's full height */
+}
+
+/* Combined region + type panel: side-by-side internally */
+.hunt-pair {
+  display: flex;
+  gap: 16px;
+  align-items: stretch;
+  flex: 1;                  /* takes remaining vertical space above the desc */
+}
+.hunt-section {
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.hunt-card-label {
+  font-size: var(--fs-caption);
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  opacity: 0.55;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+.hunt-card-name {
+  font-size: var(--fs-body);
+  font-weight: 900;
+  letter-spacing: 0.3px;
+  margin-top: 8px;
+}
+.hunt-card-desc {
+  font-size: var(--fs-small);
+  font-weight: 400;
+  opacity: 0.78;
+  line-height: 1.5;
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.hunt-map-wrap {
+  width: 100%;
+  flex: 1;                  /* expand to fill section's vertical space */
+  min-height: 140px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.hunt-map-wrap svg { width: 100%; height: 100%; display: block; }
+
+/* Boston shape: single uniform fill (looks like one silhouette, not 24 polys) */
+.hunt-geo-path {
+  fill: rgba(255, 255, 255, 0.16);
+  stroke: rgba(255, 255, 255, 0.30);
+  stroke-width: 0.4;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+}
+/* Highlight DOT for the active district */
+.hunt-geo-dot {
+  fill: var(--neon);
+  filter: drop-shadow(0 0 6px rgba(204, 255, 0, 0.85));
+  transition: cx 0.4s ease, cy 0.4s ease;
+}
+.hunt-geo-dot-ring {
+  fill: none;
+  stroke: var(--neon);
+  stroke-width: 1.4;
+  opacity: 0.55;
+  vector-effect: non-scaling-stroke;
+  transition: cx 0.4s ease, cy 0.4s ease;
+}
+
+.hunt-type-wrap {
+  width: 100%;
+  flex: 1;                  /* expand to match map height */
+  min-height: 140px;
+  display: flex;
+  align-items: center;      /* center the building vertically in the wrap */
+  justify-content: center;
+}
+.hunt-type-wrap svg { width: 100%; height: 100%; display: block; overflow: visible; }
+.ht-shape {
+  fill: rgba(0, 0, 0, 0.55);
+  stroke: var(--neon);
+  stroke-width: 1.6;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+}
+.ht-shape.ht-front { fill: rgba(204, 255, 0, 0.10); }
+.ht-shape.ht-right { fill: rgba(204, 255, 0, 0.16); }
+.ht-shape.ht-top   { fill: rgba(204, 255, 0, 0.22); }
+.ht-shape.ht-roof  { fill: rgba(204, 255, 0, 0.20); }
+.ht-detail {
+  fill: rgba(0, 0, 0, 0.78);
+  stroke: var(--neon);
+  stroke-width: 1.1;
+  vector-effect: non-scaling-stroke;
+}
+.ht-detail.ht-yours {
+  fill: var(--neon);
+  filter: drop-shadow(0 0 6px rgba(204, 255, 0, 0.8));
+}
+.ht-line {
+  stroke: var(--neon);
+  stroke-width: 1;
+  opacity: 0.55;
+  vector-effect: non-scaling-stroke;
+}
+
+@media (max-width: 767px) {
+  #slide-hunt {
+    height: auto;
+    min-height: 100vh;
+    min-height: 100dvh;
+    overflow: visible;
+    justify-content: flex-start;
+    padding-top: 60px;
+    padding-bottom: 32px;
+  }
+  #slide-hunt .slide-inner { max-width: 470px; }
+  .hunt-layout { flex-direction: column; gap: 14px; }
+  .hunt-right { width: 100%; max-width: 420px; align-self: center; }
+  .hunt-card { padding: 12px; }
+  .hunt-pair { gap: 10px; }
+  .hunt-card-desc { font-size: 11px; margin-top: 10px; padding-top: 8px; }
+}
+
 .selector-group {
-  width: 85%;
+  width: 100%;
   margin-bottom: 16px;
   text-align: left;
 }
 
 .selector-label {
-  font-size: 11px;
+  font-size: var(--fs-caption);
   font-weight: 700;
   letter-spacing: 2px;
   text-transform: uppercase;
@@ -1242,7 +1428,7 @@ input[type="range"]::-moz-range-thumb {
 .selector-pill {
   padding: 10px 14px;
   border-radius: 50px;
-  font-size: 13px;
+  font-size: var(--fs-small);
   font-weight: 700;
   background: rgba(255,255,255,0.12);
   border: 1.5px solid rgba(255,255,255,0.2);
@@ -1258,36 +1444,31 @@ input[type="range"]::-moz-range-thumb {
   border-color: var(--white);
 }
 
-.currency-input-wrap {
-  position: relative;
-  width: 85%;
-  margin: 16px 0 24px;
+.budget-slider-wrap {
+  width: 100%;
+  margin: 18px 0 24px;
+  text-align: center;
 }
 
-.currency-input-wrap label {
-  font-size: 15px;
+.budget-slider-label {
+  font-size: var(--fs-small);
   font-weight: 700;
   display: block;
-  margin-bottom: 10px;
+  margin-bottom: 12px;
 }
 
-.currency-input {
-  width: 100%;
-  padding: 16px 20px;
-  border-radius: var(--radius);
-  border: 2px solid rgba(255,255,255,0.3);
-  background: rgba(255,255,255,0.1);
-  color: var(--white);
-  font-family: var(--font);
-  font-size: 32px;
+.budget-display {
+  font-size: var(--fs-hero);
   font-weight: 900;
-  text-align: center;
-  outline: none;
-  transition: border-color 0.2s;
+  color: var(--neon);
+  line-height: 1;
+  margin-bottom: 14px;
+  text-shadow: 0 0 24px rgba(204, 255, 0, 0.35);
 }
 
-.currency-input:focus { border-color: var(--neon); }
-.currency-input::placeholder { color: rgba(255,255,255,0.3); }
+#budgetSlider {
+  width: 100%;
+}
 
 /* ============ SLIDE 9 — Reality Check ============ */
 #slide-reality {
@@ -1295,20 +1476,20 @@ input[type="range"]::-moz-range-thumb {
 }
 
 .median-price {
-  font-size: 64px;
+  font-size: var(--fs-hero);
   font-weight: 900;
   color: var(--neon);
   line-height: 1;
 }
 
 .guess-comparison {
-  font-size: 18px;
+  font-size: var(--fs-body);
   margin: 12px 0 4px;
   opacity: 0.8;
 }
 
 .difference {
-  font-size: 16px;
+  font-size: var(--fs-body);
   font-weight: 700;
   color: var(--neon);
   margin-bottom: 32px;
@@ -1371,20 +1552,241 @@ input[type="range"]::-moz-range-thumb {
 .house-small::after { width: 10px; height: 14px; }
 
 .stick-figure {
-  font-size: 24px;
+  font-size: var(--fs-h2);
   margin-top: 4px;
 }
 
 .house-year {
-  font-size: 11px;
+  font-size: var(--fs-caption);
   font-weight: 700;
   margin-top: 6px;
   opacity: 0.7;
 }
 
 .house-sqft {
-  font-size: 13px;
+  font-size: var(--fs-small);
   font-weight: 900;
+}
+
+/* ============ SLIDE 10 — Shrinking Home Iso Comparison ============ */
+#slide-reality .slide-inner { max-width: 540px; }
+
+/* Single nested-iso visualization: outer box (2014) contains the smaller
+   inner box (2024). Both share the same bottom-front corner so the inner
+   appears "nested" in one corner of the outer. The inner box animates from
+   outer-size to its natural smaller size when the slide enters. */
+.shrink-iso-wrap {
+  width: 100%;
+  max-width: 440px;
+  aspect-ratio: 1.3 / 1;       /* squat box: floor footprint dominates the 10-ft ceiling */
+  margin: 22px auto 14px;
+}
+.shrink-iso-wrap svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.shrink-face {
+  stroke-width: 1.6;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+}
+.shrink-box-outer .shrink-face { stroke: var(--neon); }
+.shrink-box-outer .shrink-face.shrink-front { fill: rgba(204, 255, 0, 0.04); }
+.shrink-box-outer .shrink-face.shrink-right { fill: rgba(204, 255, 0, 0.07); }
+.shrink-box-outer .shrink-face.shrink-top   { fill: rgba(204, 255, 0, 0.10); }
+
+.shrink-box-inner .shrink-face { stroke: var(--neon-red); stroke-width: 1.8; }
+.shrink-box-inner .shrink-face.shrink-front { fill: rgba(255, 59, 59, 0.12); }
+.shrink-box-inner .shrink-face.shrink-right { fill: rgba(255, 59, 59, 0.20); }
+.shrink-box-inner .shrink-face.shrink-top   { fill: rgba(255, 59, 59, 0.28); }
+
+/* Inner box geometry is regenerated per frame during the shrink animation —
+   no CSS transform needed because we need to keep height fixed while the
+   floor (W & D) shrinks. */
+
+/* Stats row below the iso comparison */
+.shrink-stats {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 18px;
+  width: 100%;
+  margin: 8px 0 12px;
+}
+.shrink-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  min-width: 0;
+}
+.shrink-stat-year {
+  font-size: var(--fs-caption);
+  font-weight: 900;
+  letter-spacing: 1.5px;
+}
+.shrink-stat-2014 .shrink-stat-year { color: var(--neon); }
+.shrink-stat-2024 .shrink-stat-year { color: var(--neon-red); }
+.shrink-stat-sqft {
+  font-size: var(--fs-h3);
+  font-weight: 900;
+  margin-top: 4px;
+}
+.shrink-stat-meta {
+  font-size: var(--fs-caption);
+  font-weight: 700;
+  opacity: 0.65;
+  margin-top: 2px;
+}
+.shrink-stat-arrow {
+  font-size: var(--fs-h2);
+  font-weight: 900;
+  opacity: 0.55;
+  align-self: center;
+  margin-top: 18px;
+}
+
+/* (legacy — superseded by the single nested-box layout above) */
+.shrink-row {
+  display: flex;
+  gap: 18px;
+  align-items: flex-end;
+  justify-content: center;
+  width: 100%;
+  margin: 22px 0 8px;
+}
+
+.shrink-unit {
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.iso-svg-wrap {
+  width: 100%;
+  aspect-ratio: 1 / 1.05;
+  display: block;
+  position: relative;
+}
+
+.iso-svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  display: block;
+}
+
+/* Floor-plan footprint */
+.fp-floor {
+  fill: rgba(204, 255, 0, 0.05);
+  stroke: var(--neon);
+  stroke-width: 1.6;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+}
+.fp-room {
+  fill: rgba(204, 255, 0, 0.08);
+  stroke: var(--neon);
+  stroke-width: 1;
+  stroke-opacity: 0.7;
+  vector-effect: non-scaling-stroke;
+}
+.fp-label {
+  fill: var(--white);
+  font-family: var(--font);
+  font-size: 7px;
+  font-weight: 700;
+  text-anchor: middle;
+  dominant-baseline: central;
+  pointer-events: none;
+  opacity: 0.85;
+}
+/* Outer wall extrusion strips */
+.fp-wall {
+  fill: rgba(0, 0, 0, 0.65);
+  stroke: var(--neon);
+  stroke-width: 1.4;
+  vector-effect: non-scaling-stroke;
+}
+.fp-wall.fp-wall-front { fill: rgba(204, 255, 0, 0.06); }
+.fp-wall.fp-wall-fl    { fill: rgba(0, 0, 0, 0.55); }
+.fp-wall.fp-wall-fr    { fill: rgba(204, 255, 0, 0.12); }
+.fp-wall-top {
+  fill: none;
+  stroke: var(--neon);
+  stroke-width: 1.4;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+}
+/* Single-family roof */
+.fp-roof {
+  fill: rgba(204, 255, 0, 0.16);
+  stroke: var(--neon);
+  stroke-width: 1.4;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+}
+
+/* 2024 = red palette (the shrunk present) */
+.iso-2024 .fp-floor    { stroke: var(--neon-red); fill: rgba(255, 59, 59, 0.06); }
+.iso-2024 .fp-room     { stroke: var(--neon-red); fill: rgba(255, 59, 59, 0.10); }
+.iso-2024 .fp-wall     { stroke: var(--neon-red); }
+.iso-2024 .fp-wall.fp-wall-front { fill: rgba(255, 59, 59, 0.08); }
+.iso-2024 .fp-wall.fp-wall-fr    { fill: rgba(255, 59, 59, 0.14); }
+.iso-2024 .fp-wall-top { stroke: var(--neon-red); }
+.iso-2024 .fp-roof     { stroke: var(--neon-red); fill: rgba(255, 59, 59, 0.20); }
+
+/* Stat cards under each iso unit */
+.iso-stats {
+  margin-top: 10px;
+  font-size: var(--fs-caption);
+  color: rgba(255, 255, 255, 0.85);
+  line-height: 1.5;
+}
+.iso-stats .iso-year {
+  font-size: var(--fs-small);
+  font-weight: 900;
+  letter-spacing: 1.5px;
+  color: var(--neon);
+}
+.iso-2024-stats .iso-year { color: var(--neon-red); }
+.iso-stats .iso-meta { font-weight: 700; opacity: 0.75; font-size: var(--fs-caption); }
+.iso-stats .iso-sqft { font-weight: 900; font-size: var(--fs-body); margin-top: 2px; }
+.iso-stats .iso-ppsf { opacity: 0.45; font-size: var(--fs-caption); margin-top: 2px; }
+
+.shrink-headline {
+  font-size: var(--fs-small);
+  font-weight: 700;
+  margin-top: 14px;
+  line-height: 1.45;
+  max-width: 360px;
+}
+.shrink-headline .neon { color: var(--neon); }
+.shrink-headline .neon-red { color: var(--neon-red); }
+
+.shrink-note {
+  font-size: var(--fs-caption);
+  opacity: 0.45;
+  margin-top: 8px;
+  font-style: italic;
+  max-width: 320px;
+  line-height: 1.4;
+}
+
+/* Scale-in entrance animation, staggered: 2014 first, 2024 follows */
+.iso-svg-wrap .iso-svg { transform-origin: 50% 90%; transform: scale(0); opacity: 0; }
+.iso-svg-wrap.show .iso-svg {
+  animation: isoScaleIn 700ms cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+.iso-svg-wrap.iso-2024.show .iso-svg { animation-delay: 380ms; }
+@keyframes isoScaleIn {
+  from { transform: scale(0); opacity: 0; }
+  to   { transform: scale(1); opacity: 1; }
 }
 
 /* ============ SLIDE 10 — Mortgage Reality ============ */
@@ -1393,7 +1795,7 @@ input[type="range"]::-moz-range-thumb {
 }
 
 .years-number {
-  font-size: 72px;
+  font-size: var(--fs-mega);
   font-weight: 900;
   color: var(--neon);
   line-height: 1;
@@ -1422,46 +1824,123 @@ input[type="range"]::-moz-range-thumb {
   transition: width 1.5s ease;
 }
 
-.milestones {
+/* Above-bar container — Pay off home only */
+.milestones-above {
   position: relative;
   width: 100%;
   height: 70px;
-  margin-top: 8px;
+  margin-bottom: 4px;
+}
+
+/* Below-bar container — life-stage milestones, supports row-2 stagger.
+   No top-margin so the connector visually touches the bar. */
+.milestones-below {
+  position: relative;
+  width: 100%;
+  height: 140px;
+  margin-top: 0;
 }
 
 .milestone {
   position: absolute;
+  top: 0;
   text-align: center;
   transform: translateX(-50%);
-  top: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 64px;
 }
 
-.milestone-icon { font-size: 18px; }
+.milestone-icon {
+  font-size: var(--fs-body);
+  line-height: 1;
+}
 
 .milestone-age {
-  font-size: 10px;
+  font-size: var(--fs-caption);
   font-weight: 700;
   opacity: 0.5;
   margin-top: 2px;
+  line-height: 1.1;
 }
 
 .milestone-text {
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 700;
-  white-space: nowrap;
+  margin-top: 2px;
+  line-height: 1.15;
+  letter-spacing: 0.1px;
 }
 
+/* "avg." / "Pay off" prefix rendered on its own line */
+.milestone-prefix {
+  display: block;
+  opacity: 0.55;
+  font-weight: 700;
+  font-size: 10px;
+  letter-spacing: 0.4px;
+}
+
+/* Connector — vertical line linking the icon to the bar */
+.milestone-connector {
+  width: 1.5px;
+  background: rgba(255, 255, 255, 0.45);
+  height: 8px;
+}
+/* Below-bar connector sits ABOVE the icon (HTML order: connector → icon → ...) */
+.milestones-below .milestone-connector { margin-bottom: 2px; }
+/* Above-bar connector sits BELOW the icon (HTML order: text → age → icon → connector) */
+.milestones-above .milestone-connector { margin-top: 2px; }
+
+/* Row-2 staggered milestones share the same top anchor (top: 0) — only the
+   connector length differs. The longer connector starts at the bar and extends
+   down to push the icon below row-1's labels, keeping the line unbroken from
+   bar to icon. */
+.milestones-below .milestone.milestone-row-2 .milestone-connector {
+  height: 70px;
+  opacity: 0.55;
+}
+
+/* Pay off home — neon-tinted, slides smoothly along the bar with selections */
+.milestone-payoff {
+  transition: left 0.5s cubic-bezier(0.34, 1.2, 0.64, 1);
+}
+.milestone-payoff .milestone-icon { color: var(--neon); }
+.milestone-payoff .milestone-age { color: var(--neon); opacity: 1; }
+.milestone-payoff .milestone-text { color: var(--white); opacity: 0.92; }
+.milestone-payoff .milestone-prefix { opacity: 0.7; }
+.milestone-payoff .milestone-connector {
+  background: var(--neon);
+  opacity: 0.7;
+}
+
+/* End-of-life cap at age 100 — just a numeric marker, no connector or label */
+.milestone-end { width: 32px; }
+.milestone-end .milestone-age { opacity: 0.4; }
+
 .monthly-payment {
-  font-size: 36px;
+  font-size: var(--fs-h1);
   font-weight: 900;
   margin: 12px 0 4px;
 }
 
 .payment-label {
-  font-size: 13px;
+  font-size: var(--fs-small);
   opacity: 0.5;
-  margin-bottom: 20px;
+  margin-bottom: 18px;
 }
+
+.effective-note {
+  font-size: 11px;
+  opacity: 0.55;
+  margin-top: 22px;
+  font-style: italic;
+  line-height: 1.45;
+  max-width: 460px;
+  text-align: center;
+}
+.effective-note em { color: var(--neon); font-style: italic; opacity: 0.9; }
 
 .toggle-row {
   display: flex;
@@ -1471,20 +1950,54 @@ input[type="range"]::-moz-range-thumb {
 }
 
 .toggle-pill {
-  padding: 8px 12px;
+  padding: 8px 14px;
   border-radius: 50px;
-  font-size: 11px;
+  font-size: var(--fs-caption);
   font-weight: 700;
   background: rgba(255,255,255,0.1);
-  border: 1px solid rgba(255,255,255,0.2);
+  border: 1px solid rgba(255,255,255,0.25);
+  color: var(--white);
+  font-family: var(--font);
   cursor: pointer;
   transition: all 0.2s;
+}
+
+.toggle-pill:hover {
+  background: rgba(255,255,255,0.18);
+  border-color: rgba(255,255,255,0.4);
 }
 
 .toggle-pill.active {
   background: var(--white);
   color: var(--black);
   border-color: var(--white);
+}
+
+/* Cost-of-time: stacked groups with row labels */
+.cost-toggles {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  width: 100%;
+  margin-top: 16px;
+}
+.toggle-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+.toggle-group-label {
+  font-size: var(--fs-caption);
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  font-weight: 700;
+  opacity: 0.55;
+}
+
+/* The "Years" countup needs to feel weighty */
+.years-number {
+  line-height: 1;
 }
 
 /* ============ SLIDE 11 — Share / CTA ============ */
@@ -1534,7 +2047,7 @@ input[type="range"]::-moz-range-thumb {
 }
 
 .share-card-title {
-  font-size: 11px;
+  font-size: var(--fs-caption);
   font-weight: 700;
   letter-spacing: 3px;
   opacity: 0.5;
@@ -1546,7 +2059,7 @@ input[type="range"]::-moz-range-thumb {
 }
 
 .share-stat-label {
-  font-size: 11px;
+  font-size: var(--fs-caption);
   opacity: 0.5;
   font-weight: 700;
   letter-spacing: 1px;
@@ -1555,7 +2068,7 @@ input[type="range"]::-moz-range-thumb {
 }
 
 .share-stat-value {
-  font-size: 18px;
+  font-size: var(--fs-body);
   font-weight: 900;
   line-height: 1.3;
 }
@@ -1565,7 +2078,7 @@ input[type="range"]::-moz-range-thumb {
 
 .share-card-footer {
   margin-top: auto;
-  font-size: 10px;
+  font-size: var(--fs-caption);
   letter-spacing: 2px;
   opacity: 0.3;
   font-weight: 700;
@@ -1586,7 +2099,7 @@ input[type="range"]::-moz-range-thumb {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 16px;
+  font-size: var(--fs-body);
   cursor: pointer;
   transition: background 0.2s;
 }
@@ -1594,7 +2107,7 @@ input[type="range"]::-moz-range-thumb {
 .social-icon:hover { background: rgba(255,255,255,0.2); }
 
 .watermark {
-  font-size: 10px;
+  font-size: var(--fs-caption);
   letter-spacing: 3px;
   font-weight: 700;
   opacity: 0.2;
@@ -1607,18 +2120,18 @@ input[type="range"]::-moz-range-thumb {
 }
 
 #slide-share .top-label {
-  font-size: 11px;
+  font-size: var(--fs-caption);
   margin-bottom: 8px;
 }
 
 #slide-share .headline {
-  font-size: 26px !important;
+  font-size: var(--fs-h2) !important;
   line-height: 1.02;
   margin-bottom: 8px;
 }
 
 #slide-share .subheadline {
-  font-size: 13px !important;
+  font-size: var(--fs-small) !important;
   line-height: 1.3;
   max-width: 480px;
   margin-bottom: 16px;
@@ -1631,7 +2144,7 @@ input[type="range"]::-moz-range-thumb {
 
 #slide-share .btn {
   padding: 12px 24px;
-  font-size: 14px;
+  font-size: var(--fs-small);
 }
 
 #slide-share .social-row {
@@ -1641,18 +2154,18 @@ input[type="range"]::-moz-range-thumb {
 #slide-share .social-icon {
   width: 34px;
   height: 34px;
-  font-size: 13px;
+  font-size: var(--fs-small);
 }
 
 #slide-share .watermark {
   margin-top: 14px;
-  font-size: 10px;
+  font-size: var(--fs-caption);
 }
 
 /* ============ Responsive ============ */
 @media (min-width: 768px) {
-  .slide-inner { max-width: 480px; }
-  .headline { font-size: 46px; }
+  .slide-inner { max-width: 540px; }
+  .headline { font-size: var(--fs-hero); }
   .property-card { width: 75%; }
   .slider-container { width: 75%; }
   .reveal-area { width: 75%; }
@@ -1690,7 +2203,7 @@ input[type="range"]::-moz-range-thumb {
   .map-container {
     min-height: 350px;
   }
-  .year-display { font-size: 36px; }
+  .year-display { font-size: var(--fs-h1); }
 }
 
 @media (max-width: 980px) {
@@ -1710,8 +2223,8 @@ input[type="range"]::-moz-range-thumb {
 }
 
 @media (min-width: 1024px) {
-  .slide-inner { max-width: 560px; }
-  .headline { font-size: 52px; }
+  .slide-inner { max-width: 620px; }
+  .headline { font-size: var(--fs-hero); }
 }
 
 
@@ -1763,7 +2276,7 @@ input[type="range"]::-moz-range-thumb {
 }
 
 .headline-source {
-  font-size: 10px;
+  font-size: var(--fs-caption);
   font-weight: 700;
   letter-spacing: 1.5px;
   text-transform: uppercase;
@@ -1772,7 +2285,7 @@ input[type="range"]::-moz-range-thumb {
 }
 
 .headline-text {
-  font-size: 15px;
+  font-size: var(--fs-small);
   font-weight: 700;
   line-height: 1.35;
   color: var(--white);
@@ -1782,7 +2295,7 @@ input[type="range"]::-moz-range-thumb {
   position: absolute;
   bottom: 12px;
   right: 16px;
-  font-size: 9px;
+  font-size: 11px;
   font-weight: 600;
   color: rgba(255, 255, 255, 0.55);
   line-height: 1.3;

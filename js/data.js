@@ -2,6 +2,119 @@
 const ACTUAL_PRICE = 847000;
 const MEDIAN_PRICE = 785000;
 
+// ============ MEDIAN SALE PRICE LOOKUP ============
+// Keys: district → type → bedrooms (1, 2, 3, 4 = "4+")
+// Calibrated to ~2023–2024 Boston neighborhood medians (Zillow / Redfin / MLS-derived).
+// Where district × type × bed-count is a thin or essentially nonexistent market
+// (e.g. 1BR single-family in Back Bay, 4BR condo in Dorchester), the value is an
+// educated guess flagged in the README of this file (see comment block below).
+const medianPrices = {
+  backbay: {
+    condo:  { 1:  750000, 2: 1400000, 3: 2500000, 4: 4500000 },
+    single: { 1: 1500000, 2: 2500000, 3: 4000000, 4: 7000000 },
+    multi:  { 1: 1200000, 2: 2000000, 3: 3500000, 4: 5000000 }
+  },
+  southboston: {
+    condo:  { 1: 550000, 2:  800000, 3: 1100000, 4: 1500000 },
+    single: { 1: 700000, 2:  950000, 3: 1300000, 4: 1800000 },
+    multi:  { 1: 650000, 2: 1100000, 3: 1500000, 4: 2000000 }
+  },
+  dorchester: {
+    condo:  { 1: 400000, 2: 525000, 3: 650000, 4:  800000 },
+    single: { 1: 450000, 2: 600000, 3: 750000, 4:  900000 },
+    multi:  { 1: 500000, 2: 750000, 3: 950000, 4: 1150000 }
+  },
+  jp: {
+    condo:  { 1: 475000, 2: 650000, 3:  850000, 4: 1050000 },
+    single: { 1: 650000, 2: 850000, 3: 1100000, 4: 1400000 },
+    multi:  { 1: 700000, 2: 950000, 3: 1200000, 4: 1500000 }
+  },
+  eastboston: {
+    condo:  { 1: 525000, 2: 700000, 3:  850000, 4: 1050000 },
+    single: { 1: 500000, 2: 650000, 3:  800000, 4:  950000 },
+    multi:  { 1: 575000, 2: 800000, 3: 1000000, 4: 1300000 }
+  }
+};
+
+// ============ MEDIAN PRICE / SQFT LOOKUP (2014 vs 2024) ============
+// Used by Slide 10's "Same budget, shrinking home" iso comparison.
+// 2014 is chosen as the post-financial-crisis recovery anchor — a market
+// low point before the 2017–2024 run-up.
+//
+// All values are educated guesses calibrated to publicly reported Boston
+// neighborhood medians (Zillow / Redfin / MAPC ~2014 and ~2023–24). At the
+// district × type granularity, no single authoritative published number
+// exists, so every cell here is approximate. Rough heuristics used:
+//   - condo $/sqft is the most reliable anchor (most sold, most reported)
+//   - single-family $/sqft is roughly 0.75–1.15× the condo number
+//     (higher in scarce-detached areas, lower in dense areas)
+//   - multi-family $/sqft is roughly 0.60–0.75× the condo number
+//     (more total sqft per transaction → lower per-sqft)
+//   - 2024 ≈ 1.7×–2.3× 2014 (Boston roughly doubled in this period;
+//     East Boston and South Boston ran the hottest)
+const medianPpsf = {
+  backbay: {
+    condo:  { 2014:  750, 2024: 1400 },
+    single: { 2014:  900, 2024: 1700 },
+    multi:  { 2014:  700, 2024: 1300 }
+  },
+  southboston: {
+    condo:  { 2014: 475, 2024:  900 },
+    single: { 2014: 525, 2024: 1000 },
+    multi:  { 2014: 400, 2024:  800 }
+  },
+  dorchester: {
+    condo:  { 2014: 300, 2024: 525 },
+    single: { 2014: 240, 2024: 425 },
+    multi:  { 2014: 200, 2024: 375 }
+  },
+  jp: {
+    condo:  { 2014: 375, 2024: 650 },
+    single: { 2014: 350, 2024: 600 },
+    multi:  { 2014: 280, 2024: 500 }
+  },
+  eastboston: {
+    condo:  { 2014: 310, 2024: 700 },
+    single: { 2014: 275, 2024: 575 },
+    multi:  { 2014: 230, 2024: 525 }
+  }
+};
+
+// Maps total sqft to a bedroom-count label (Boston market norms).
+function bedroomFromSqft(sqft) {
+  if (sqft < 550)  return 'Studio';
+  if (sqft < 800)  return '1BR';
+  if (sqft < 1100) return '2BR';
+  if (sqft < 1500) return '3BR';
+  if (sqft < 2200) return '4BR';
+  return '5BR+';
+}
+
+/*
+  Reliability notes for medianPrices (which entries are educated guesses):
+
+  HIGH CONFIDENCE (calibrated against published 2023–24 neighborhood medians):
+    - All "condo, 2BR" entries across the 5 districts (the most reported number).
+    - "single, 3BR" for Dorchester, JP, East Boston, South Boston.
+    - "multi, 3BR" (the canonical Boston triple-decker by-unit count) for Dorchester, JP, East Boston, South Boston.
+
+  MEDIUM CONFIDENCE (interpolated/extrapolated from the 2BR + 3BR anchors):
+    - All other condo bedrooms (1BR, 3BR, 4BR) in all 5 districts.
+    - "single, 2BR" and "single, 4BR" in South Boston, Dorchester, JP, East Boston.
+    - "multi, 2BR" and "multi, 4BR" in South Boston, Dorchester, JP, East Boston.
+
+  EDUCATED GUESSES (thin or essentially nonexistent markets — flag these in copy):
+    - backbay.single.* — Back Bay has very few "single family" detached homes;
+      most are converted brownstones/townhouses. All 4 bedroom counts are guesses.
+    - backbay.multi.*  — multi-family is rare in Back Bay; all 4 are guesses.
+    - backbay.condo.4  — 4+ BR condos exist but transactions are rare; guess.
+    - *.single.1 (all districts) — 1BR single-family homes are an unusual category;
+      treat as approximate floor.
+    - *.multi.1  (all districts) — 1BR triple-decker units sold as a whole building
+      are rare; numbers reflect smallest-unit duplex/condo-style sales.
+    - dorchester.condo.4, eastboston.single.4 — 4+BR in these submarkets is thin.
+*/
+
 // ============ NEIGHBORHOOD BUYER MIX ============
 
 const neighborhoodMix = {

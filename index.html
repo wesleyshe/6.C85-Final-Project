@@ -3,13 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Boston Housing Wrapped 2024</title>
+<title>Boston Housing Wrapped 2026</title>
 <meta name="description" content="Boston Housing Wrapped — a Spotify Wrapped-style interactive story about housing speculation in Boston.">
-<meta property="og:title" content="Boston Housing Wrapped 2024">
+<meta property="og:title" content="Boston Housing Wrapped 2026">
 <meta property="og:description" content="Can you outbid the investors? An interactive look at Boston's housing crisis.">
 <meta property="og:type" content="website">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Boston Housing Wrapped 2024">
+<meta name="twitter:title" content="Boston Housing Wrapped 2026">
 <meta name="twitter:description" content="Can you outbid the investors? An interactive look at Boston's housing crisis.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -36,7 +36,7 @@
     <div class="building b10"></div>
   </div>
   <div class="slide-inner">
-    <p class="top-label anim">BOSTON HOUSING &bull; 2024 WRAPPED</p>
+    <p class="top-label anim">BOSTON HOUSING &bull; 2026 WRAPPED</p>
     <h1 class="headline anim anim-delay-1">Welcome to<br>Boston</h1>
     <p class="subheadline anim anim-delay-2">A great city to buy into — if you can outbid the investors.</p>
     <button class="btn anim anim-delay-3" onclick="scrollToSlide(1)">Let's Go &rarr;</button>
@@ -47,7 +47,7 @@
 <section class="slide" id="slide-headlines">
   <div class="slide-inner" style="max-width:520px;">
     <p class="top-label anim">SETTING THE SCENE</p>
-    <h2 class="headline anim anim-delay-1" style="font-size:30px;">Boston's housing market<br>has been making headlines</h2>
+    <h2 class="headline h-h2 anim anim-delay-1">Boston's housing market<br>has been making headlines</h2>
 
     <div class="headlines-stack anim anim-delay-2">
       <div class="headline-card">
@@ -68,7 +68,7 @@
       </div>
     </div>
 
-    <p class="subheadline anim anim-delay-3" style="font-size:14px;max-width:440px;">
+    <p class="subheadline sub-sm anim anim-delay-3">
       Boston's housing crisis isn't new — but it's accelerating. A shrinking supply, rising demand, and growing investor activity have made the market one of the toughest in the country for everyday buyers.
     </p>
     <button class="btn anim anim-delay-4" onclick="scrollToSlide(2)">How bad is it? &rarr;</button>
@@ -104,7 +104,7 @@
 <section class="slide" id="slide-competitors">
   <div class="slide-inner">
     <p class="top-label anim">YOUR COMPETITION</p>
-    <h2 class="headline anim anim-delay-1" style="font-size:32px;">Who are you really<br>competing against?</h2>
+    <h2 class="headline h-h2 anim anim-delay-1">Who are you really<br>competing against?</h2>
     <p class="subheadline anim anim-delay-2" style="max-width:560px;">
   In Boston, you are not just bidding against another family. A meaningful share of homes are purchased
   by investors ranging from small buyers to institutional players.
@@ -194,7 +194,7 @@
 <section class="slide" id="slide-competition-advantage">
   <div class="slide-inner">
     <p class="top-label anim">WHY THEY WIN</p>
-    <h2 class="headline anim anim-delay-1" style="font-size:32px;">Some buyers play by<br>a different rulebook</h2>
+    <h2 class="headline h-h2 anim anim-delay-1">Some buyers play by<br>a different rulebook</h2>
     <p class="subheadline anim anim-delay-2" style="max-width:600px;">This screen translates structural advantages in the housing market into measurable indicators, highlighting who moves fastest, who buys in cash, and how investor activity has evolved over time.</p>
 
     <div class="advantage-layout">
@@ -329,11 +329,11 @@
           </div>
           <div class="stat-row">
             <span class="stat-label">Highest</span>
-            <span class="stat-value red" id="cityMax" style="font-size:13px;">--</span>
+            <span class="stat-value red stat-sm" id="cityMax">--</span>
           </div>
           <div class="stat-row">
             <span class="stat-label">Lowest</span>
-            <span class="stat-value" id="cityMin" style="color:#95a5a6;font-size:13px;">--</span>
+            <span class="stat-value stat-sm stat-mute" id="cityMin">--</span>
           </div>
         </div>
       </div>
@@ -359,8 +359,8 @@
 <section class="slide" id="slide-shift">
   <div class="slide-inner">
     <p class="top-label anim">20 YEARS LATER</p>
-    <h1 class="headline anim anim-delay-1" style="font-size:32px;">The neighborhoods<br>hit hardest</h1>
-    <p class="subheadline anim anim-delay-2" style="font-size:15px;">Top 5 biggest increases in corporate ownership</p>
+    <h1 class="headline h-h2 anim anim-delay-1">The neighborhoods<br>hit hardest</h1>
+    <p class="subheadline sub-sm anim anim-delay-2">Top 5 biggest increases in corporate ownership</p>
     <div class="top-shifts anim anim-delay-3" id="shiftGrid"></div>
     <div class="callout-card anim anim-delay-4" style="max-width:600px;margin-top:24px;text-align:center;">
       Every single Boston neighborhood saw corporate ownership rise. The Seaport jumped <span>+32pp</span>. But in Dorchester and Roxbury, even smaller increases hit harder — those are the communities that can least afford it.
@@ -373,38 +373,64 @@
 <section class="slide" id="slide-hunt">
   <div class="slide-inner">
     <p class="top-label anim">HOUSE HUNTING</p>
-    <h2 class="headline anim anim-delay-1" style="font-size:32px;">Let's find your<br>dream home</h2>
-    <div class="selector-group anim anim-delay-2">
-      <div class="selector-label">District</div>
-      <div class="selector-row" data-group="district">
-        <button class="selector-pill active" data-value="dorchester">Dorchester</button>
-        <button class="selector-pill" data-value="roxbury">Roxbury</button>
-        <button class="selector-pill" data-value="southboston">South Boston</button>
-        <button class="selector-pill" data-value="jp">Jamaica Plain</button>
+    <h2 class="headline h-h2 anim anim-delay-1">Let's find your<br>dream home</h2>
+
+    <div class="hunt-layout">
+      <div class="hunt-left">
+        <div class="selector-group anim anim-delay-2">
+          <div class="selector-label">District</div>
+          <div class="selector-row" data-group="district">
+            <button class="selector-pill active" data-value="backbay">Back Bay</button>
+            <button class="selector-pill" data-value="southboston">South Boston</button>
+            <button class="selector-pill" data-value="dorchester">Dorchester</button>
+            <button class="selector-pill" data-value="jp">Jamaica Plain</button>
+            <button class="selector-pill" data-value="eastboston">East Boston</button>
+          </div>
+        </div>
+        <div class="selector-group anim anim-delay-2">
+          <div class="selector-label">Type</div>
+          <div class="selector-row" data-group="type">
+            <button class="selector-pill active" data-value="condo">Condo</button>
+            <button class="selector-pill" data-value="single">Single Family</button>
+            <button class="selector-pill" data-value="multi">Multi-Family</button>
+          </div>
+        </div>
+        <div class="selector-group anim anim-delay-3">
+          <div class="selector-label">Bedrooms</div>
+          <div class="selector-row" data-group="beds">
+            <button class="selector-pill" data-value="1">1</button>
+            <button class="selector-pill active" data-value="2">2</button>
+            <button class="selector-pill" data-value="3">3</button>
+            <button class="selector-pill" data-value="4">4+</button>
+          </div>
+        </div>
+        <div class="budget-slider-wrap anim anim-delay-3">
+          <label class="budget-slider-label">What would you pay?</label>
+          <div class="budget-display" id="budgetDisplay">$500,000</div>
+          <input type="range" id="budgetSlider" min="100000" max="2000000" step="25000" value="500000">
+          <div class="slider-labels"><span>$100K</span><span>$2M</span></div>
+        </div>
+        <button class="btn anim anim-delay-4" onclick="showReality()">Show Me</button>
+      </div>
+
+      <div class="hunt-right anim anim-delay-2">
+        <div class="hunt-card hunt-combined">
+          <div class="hunt-pair">
+            <div class="hunt-section">
+              <div class="hunt-card-label">Region</div>
+              <div class="hunt-map-wrap" id="huntMapWrap"></div>
+              <div class="hunt-card-name" id="huntDistrictName">Back Bay</div>
+            </div>
+            <div class="hunt-section">
+              <div class="hunt-card-label">Type</div>
+              <div class="hunt-type-wrap" id="huntTypeWrap"></div>
+              <div class="hunt-card-name" id="huntTypeName">Condo</div>
+            </div>
+          </div>
+          <div class="hunt-card-desc" id="huntTypeDesc"></div>
+        </div>
       </div>
     </div>
-    <div class="selector-group anim anim-delay-2">
-      <div class="selector-label">Type</div>
-      <div class="selector-row" data-group="type">
-        <button class="selector-pill active" data-value="condo">Condo</button>
-        <button class="selector-pill" data-value="single">Single Family</button>
-        <button class="selector-pill" data-value="multi">Multi-Family</button>
-      </div>
-    </div>
-    <div class="selector-group anim anim-delay-3">
-      <div class="selector-label">Bedrooms</div>
-      <div class="selector-row" data-group="beds">
-        <button class="selector-pill" data-value="1">1</button>
-        <button class="selector-pill active" data-value="2">2</button>
-        <button class="selector-pill" data-value="3">3</button>
-        <button class="selector-pill" data-value="4">4+</button>
-      </div>
-    </div>
-    <div class="currency-input-wrap anim anim-delay-3">
-      <label>What would you pay?</label>
-      <input class="currency-input" id="budgetInput" type="text" placeholder="$500,000" value="$500,000" inputmode="numeric">
-    </div>
-    <button class="btn anim anim-delay-4" onclick="showReality()">Show Me</button>
   </div>
 </section>
 
@@ -413,63 +439,121 @@
   <div class="slide-inner">
     <p class="top-label anim">REALITY CHECK</p>
     <div class="median-price anim anim-delay-1" id="medianPrice">$0</div>
-    <h2 class="headline anim anim-delay-1" style="font-size:20px;margin-top:8px;">Median Sale Price</h2>
+    <h2 class="headline h-h3 anim anim-delay-1">Median Sale Price</h2>
     <p class="guess-comparison anim anim-delay-2" id="guessComparison">You guessed $500,000</p>
     <p class="difference anim anim-delay-2" id="guessDiff">You were $285,000 off</p>
-    <div class="houses-row anim anim-delay-3">
-      <div class="house-unit">
-        <div class="house-box house-big"></div>
-        <span class="stick-figure">🧍</span>
-        <span class="house-year">2000</span>
-        <span class="house-sqft">1,800 sqft</span>
+    <div class="shrink-iso-wrap anim anim-delay-3" id="shrinkIsoWrap"></div>
+    <div class="shrink-stats anim anim-delay-3">
+      <div class="shrink-stat shrink-stat-2014" id="shrinkStat2014">
+        <div class="shrink-stat-year">2014</div>
+        <div class="shrink-stat-sqft">—</div>
+        <div class="shrink-stat-meta">—</div>
       </div>
-      <div class="house-unit">
-        <div class="house-box house-mid"></div>
-        <span class="stick-figure">🧍</span>
-        <span class="house-year">2012</span>
-        <span class="house-sqft">1,100 sqft</span>
-      </div>
-      <div class="house-unit">
-        <div class="house-box house-small"></div>
-        <span class="stick-figure">🧍</span>
-        <span class="house-year">2023</span>
-        <span class="house-sqft">620 sqft</span>
+      <div class="shrink-stat-arrow">&rarr;</div>
+      <div class="shrink-stat shrink-stat-2024" id="shrinkStat2024">
+        <div class="shrink-stat-year">2024</div>
+        <div class="shrink-stat-sqft">—</div>
+        <div class="shrink-stat-meta">—</div>
       </div>
     </div>
-    <p class="subheadline anim anim-delay-4" style="font-size:14px;opacity:0.5;margin-top:16px;">Same budget. Shrinking home.</p>
+    <p class="shrink-headline anim anim-delay-4" id="shrinkHeadline">Same budget. Shrinking home.</p>
+    <p class="shrink-note anim anim-delay-4">2014 = post-financial-crisis recovery — a market low point before the 2017–24 boom.</p>
   </div>
-  <p class="data-source">Median price: Zillow Home Value Index. Sqft: MAPC, Residential Sales Data, City of Boston 2000–2023 (median $/sqft at ~$700K budget).</p>
+  <p class="data-source">Median $/sqft: educated estimates calibrated to Zillow / Redfin / MAPC neighborhood medians (2014 and 2023–24).</p>
 </section>
 
 <!-- ====== SLIDE 10 — Mortgage Reality ====== -->
 <section class="slide" id="slide-mortgage">
   <div class="slide-inner">
     <p class="top-label anim">THE COST OF TIME</p>
-    <h2 class="headline anim anim-delay-1" style="font-size:24px;">You'll need</h2>
+    <h2 class="headline h-h3 anim anim-delay-1">You'll need</h2>
     <div class="years-number anim anim-delay-1" id="yearsNumber">0</div>
-    <h2 class="headline anim anim-delay-1" style="font-size:24px;margin-top:0;">years</h2>
+    <h2 class="headline h-h3 h-tight anim anim-delay-1">years</h2>
     <div class="timeline-container anim anim-delay-2">
+      <!-- ABOVE THE BAR -->
+      <div class="milestones milestones-above">
+        <div class="milestone milestone-payoff" id="milestonePayoff" style="left:35%">
+          <div class="milestone-text"><span class="milestone-prefix">Pay off</span>home</div>
+          <div class="milestone-age" id="milestonePayoffAge">52</div>
+          <div class="milestone-icon">🏠</div>
+          <div class="milestone-connector"></div>
+        </div>
+      </div>
+
+      <!-- BAR -->
       <div class="timeline-bar">
         <div class="timeline-fill" id="timelineFill"></div>
       </div>
-      <div class="milestones">
-        <div class="milestone" style="left:0%"><div class="milestone-icon">🎓</div><div class="milestone-age">22</div><div class="milestone-text">Graduate</div></div>
-        <div class="milestone" style="left:17%"><div class="milestone-icon">💍</div><div class="milestone-age">30</div><div class="milestone-text">Marry</div></div>
-        <div class="milestone" style="left:21%"><div class="milestone-icon">👶</div><div class="milestone-age">32</div><div class="milestone-text">First child</div></div>
-        <div class="milestone" style="left:56%"><div class="milestone-icon">🏠</div><div class="milestone-age">49</div><div class="milestone-text">Pay off home</div></div>
-        <div class="milestone" style="left:90%"><div class="milestone-icon">🪑</div><div class="milestone-age">65</div><div class="milestone-text">Retire</div></div>
+
+      <!-- BELOW THE BAR (auto-staggered into 2 rows on collision) -->
+      <div class="milestones milestones-below">
+        <div class="milestone" style="left:0%">
+          <div class="milestone-connector"></div>
+          <div class="milestone-icon">🎓</div>
+          <div class="milestone-age">22</div>
+          <div class="milestone-text"><span class="milestone-prefix">avg.</span>Graduate</div>
+        </div>
+        <div class="milestone" style="left:10%">
+          <div class="milestone-connector"></div>
+          <div class="milestone-icon">💍</div>
+          <div class="milestone-age">30</div>
+          <div class="milestone-text"><span class="milestone-prefix">avg.</span>Marriage</div>
+        </div>
+        <div class="milestone" style="left:13%">
+          <div class="milestone-connector"></div>
+          <div class="milestone-icon">👶</div>
+          <div class="milestone-age">32</div>
+          <div class="milestone-text"><span class="milestone-prefix">avg.</span>First child</div>
+        </div>
+        <div class="milestone" style="left:55%">
+          <div class="milestone-connector"></div>
+          <div class="milestone-icon">🪑</div>
+          <div class="milestone-age">65</div>
+          <div class="milestone-text"><span class="milestone-prefix">avg.</span>Retire</div>
+        </div>
+        <div class="milestone milestone-end" style="left:100%">
+          <div class="milestone-age">100</div>
+        </div>
       </div>
     </div>
     <div class="monthly-payment anim anim-delay-3" id="monthlyPayment">$0</div>
     <div class="payment-label anim anim-delay-3">per month</div>
-    <div class="toggle-row anim anim-delay-4">
-      <div class="toggle-pill active">Single income</div>
-      <div class="toggle-pill">Dual income</div>
-      <div class="toggle-pill">With student loans</div>
-      <div class="toggle-pill">With kids</div>
+
+    <div class="cost-toggles anim anim-delay-4">
+      <div class="toggle-group">
+        <div class="toggle-group-label">Income</div>
+        <div class="toggle-row" data-group="income" data-mode="radio">
+          <button class="toggle-pill" data-value="single">Single</button>
+          <button class="toggle-pill active" data-value="dual">Dual</button>
+        </div>
+      </div>
+      <div class="toggle-group">
+        <div class="toggle-group-label">Kids</div>
+        <div class="toggle-row" data-group="kids" data-mode="radio">
+          <button class="toggle-pill active" data-value="0">None</button>
+          <button class="toggle-pill" data-value="1">1</button>
+          <button class="toggle-pill" data-value="2">2</button>
+          <button class="toggle-pill" data-value="3">3</button>
+        </div>
+      </div>
+      <div class="toggle-group">
+        <div class="toggle-group-label">Other burdens</div>
+        <div class="toggle-row" data-group="burdens" data-mode="multi">
+          <button class="toggle-pill" data-value="loan">Student loans</button>
+          <button class="toggle-pill" data-value="parents">Support parents</button>
+        </div>
+      </div>
     </div>
+
+    <p class="effective-note anim anim-delay-4">
+      While most US mortgages are 30 years, the number above is an
+      <em>effective</em> mortgage — illustrating how real-life burdens
+      (kids, loans, single income) push you to refinance into longer terms
+      to keep the monthly payment manageable. Real wage growth of ~1.2%/yr
+      is factored in (your future self can absorb part of the burden).
+    </p>
   </div>
-  <p class="data-source">Mortgage rate: Freddie Mac PMMS. Marriage age: U.S. Census Bureau. Retirement: SSA/Medicare eligibility.</p>
+  <p class="data-source">Mortgage rate: Freddie Mac PMMS. Wage growth: BLS / FRED. Retirement: SSA/Medicare eligibility.</p>
 </section>
 
 <!-- ====== SLIDE 11 — Share / CTA ====== -->
@@ -479,30 +563,30 @@
       <div class="bg-card bg-card-1"></div>
       <div class="bg-card bg-card-2"></div>
       <div class="share-card" id="shareCardEl">
-        <div class="share-card-title">BOSTON HOUSING WRAPPED 2024</div>
+        <div class="share-card-title">BOSTON HOUSING WRAPPED 2026</div>
         <div class="share-stat">
-          <div class="share-stat-label">Your Guess vs Reality</div>
-          <div class="share-stat-value" id="shareGuess">$500,000 &rarr; <span class="neon">$847,000</span></div>
+          <div class="share-stat-label">Your Budget vs Reality</div>
+          <div class="share-stat-value" id="shareGuess">$500,000 &rarr; <span class="neon">$785,000</span></div>
         </div>
         <div class="share-stat">
           <div class="share-stat-label">Mortgage Timeline</div>
-          <div class="share-stat-value">You'd need <span class="neon">27 years</span> of payments</div>
+          <div class="share-stat-value">You'd need <span class="neon" id="shareYears">30 years</span> of payments</div>
         </div>
         <div class="share-stat">
-          <div class="share-stat-label">Your Competition</div>
-          <div class="share-stat-value">You're competing against <span class="red">22% non-individual buyers</span></div>
+          <div class="share-stat-label">Monthly Payment</div>
+          <div class="share-stat-value"><span class="red" id="shareMonthly">$0</span> per month</div>
         </div>
         <div class="share-stat">
           <div class="share-stat-label">Shrinking Homes</div>
-          <div class="share-stat-value">In 2000: 1,800 sqft. Today: <span class="neon">620 sqft.</span></div>
+          <div class="share-stat-value">2014: <span id="shareSqft14">—</span> &rarr; 2024: <span class="neon" id="shareSqft24">—</span></div>
         </div>
         <div class="share-card-footer">BOSTONHOUSING.WRAPPED</div>
       </div>
     </div>
 
     <p class="top-label anim anim-delay-1">BOSTON HOUSING WRAPPED</p>
-    <h1 class="headline anim anim-delay-1" style="font-size:28px;">Your neighborhood<br>is <span>not for sale</span></h1>
-    <p class="subheadline anim anim-delay-2" style="font-size:14px;">Corporate ownership in Boston has quadrupled in 20 years. The question isn't whether it will keep growing, but whether we'll do anything about it.</p>
+    <h1 class="headline h-h2 anim anim-delay-1">Your neighborhood<br>is <span>not for sale</span></h1>
+    <p class="subheadline sub-sm anim anim-delay-2">Corporate ownership in Boston has quadrupled in 20 years. The question isn't whether it will keep growing, but whether we'll do anything about it.</p>
 
 <div class="cta-row anim anim-delay-2" style="display: flex; gap: 10px; justify-content: center;">
   <button class="btn" onclick="shareCard()">Share</button>
@@ -558,6 +642,7 @@
 </section>
 
 <script src="js/data.js"></script>
+<script src="js/boston_geo.js"></script>
 <script src="js/map.js"></script>
 <script src="js/main.js"></script>
 </body>
