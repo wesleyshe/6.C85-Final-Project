@@ -1470,9 +1470,9 @@ input[type="range"]::-moz-range-thumb {
   width: 100%;
 }
 
-/* ============ SLIDE 9 — Reality Check ============ */
+/* ============ SLIDE 10 — Reality Check ============ */
 #slide-reality {
-  background: linear-gradient(160deg, var(--orange) 0%, #c0392b 50%, var(--deep-red) 100%);
+  background: linear-gradient(160deg, #1a3a5c 0%, #11253d 55%, #07101e 100%);
 }
 
 .median-price {

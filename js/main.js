@@ -112,6 +112,9 @@ function onSlideEnter(slide) {
   if (slide.id === 'slide-competitors') animateDonut();
   if (slide.id === 'slide-competition-advantage') animateAdvantageBars();
   if (slide.id === 'slide-reality') {
+    // If the user reached this slide by scrolling (not via "Show Me"), refresh
+    // the selection-derived state so the median card matches the iso boxes.
+    refreshRealityFromSelections();
     animateMedianPrice();
     renderShrinkingHome();
     triggerShrinkAnim();
@@ -563,19 +566,30 @@ budgetSlider.addEventListener('input', () => {
   budgetDisplay.textContent = formatCurrency(userBudget);
 });
 
-// ============ SHOW REALITY (Slide 8 → 9) ============
-function showReality() {
+// ============ REALITY CHECK (Slides 9 → 10) ============
+// Refresh the selection-derived state (median, monthly, comparison copy) and
+// mirror it into the share card. Called by both the explicit "Show Me" button
+// and the slide-reality enter hook (so scrolling past Hunt still works).
+function refreshRealityFromSelections() {
   selectedMedian = getSelectedMedian();
   selectedMonthly = calcMonthlyMortgage(selectedMedian, STANDARD_TERM);
 
   const diff = Math.abs(selectedMedian - userBudget);
-  const direction = userBudget < selectedMedian ? 'short' : 'over';
+  const diffCopy = diff === 0
+    ? 'You nailed it'
+    : userBudget < selectedMedian
+      ? formatCurrency(diff) + ' under budget'
+      : formatCurrency(diff) + ' over budget';
 
   document.getElementById('guessComparison').textContent = 'You guessed ' + formatCurrency(userBudget);
-  document.getElementById('guessDiff').textContent = 'You were ' + formatCurrency(diff) + ' ' + direction;
+  document.getElementById('guessDiff').textContent = diffCopy;
 
   document.getElementById('shareGuess').innerHTML =
     formatCurrency(userBudget) + ' &rarr; <span class="neon">' + formatCurrency(selectedMedian) + '</span>';
+}
+
+function showReality() {
+  refreshRealityFromSelections();
 
   // Reset animation flags so slides 10/11 re-animate to the newly selected values.
   medianAnimated = false;
@@ -911,11 +925,20 @@ function renderShrinkingHome() {
   `;
 
   const shrinkPct = Math.max(0, Math.round((1 - sqft2024 / sqft2014) * 100));
-  document.getElementById('shrinkHeadline').innerHTML =
-    `Same <span class="neon">${formatCurrency(budget)}</span>. ` +
-    `<span class="neon">${br2014}</span> in 2014 &rarr; ` +
-    `<span class="neon-red">${br2024}</span> today. ` +
-    `Your home shrunk <span class="neon-red">${shrinkPct}%</span>.`;
+  // Branch the headline so a same-bedroom-label outcome doesn't read as "2BR → 2BR".
+  const sameLabel = br2014 === br2024;
+  const headlineEl = document.getElementById('shrinkHeadline');
+  if (sameLabel) {
+    headlineEl.innerHTML =
+      `Same <span class="neon">${formatCurrency(budget)}</span>, same <span class="neon">${br2014}</span> — ` +
+      `but <span class="neon-red">${shrinkPct}%</span> less square footage.`;
+  } else {
+    headlineEl.innerHTML =
+      `Same <span class="neon">${formatCurrency(budget)}</span>. ` +
+      `<span class="neon">${br2014}</span> in 2014 &rarr; ` +
+      `<span class="neon-red">${br2024}</span> today. ` +
+      `Your home shrunk <span class="neon-red">${shrinkPct}%</span>.`;
+  }
 
   // Mirror sqft into the slide-12 share card
   const s14 = document.getElementById('shareSqft14');
@@ -981,9 +1004,7 @@ const COST_PARAMS = {
   weightExp:          0.7,
   weightMin:          0.7,
   weightMax:          4.0,
-  midCareerYears:      15,  // typical mortgage midpoint where wage growth has compounded
-  minYears:            22,
-  capYears:            50   // realistic ceiling: 40-yr non-QM + one refi, ~50 max
+  midCareerYears:      15   // typical mortgage midpoint where wage growth has compounded
 };
 
 function readCostInputs() {
@@ -1016,9 +1037,9 @@ function computeCostOfTime() {
   if (burdens.includes('parents')) burdenYears += COST_PARAMS.parents;
 
   const adjustedBurden = burdenYears * w * growthDiscount;
-  let years = COST_PARAMS.baseTerm + adjustedBurden;
-  years = Math.round(years);
-  years = Math.max(COST_PARAMS.minYears, Math.min(COST_PARAMS.capYears, years));
+  // baseTerm + non-negative burden ≥ baseTerm, so no floor needed; no ceiling either —
+  // the model lets effective years run as long as the burdens dictate.
+  const years = Math.round(COST_PARAMS.baseTerm + adjustedBurden);
 
   // Monthly displayed = standard 30-year payment (the bank's actual ask).
   const stdMonthly = calcMonthlyMortgage(selectedMedian, COST_PARAMS.baseTerm);
@@ -1029,8 +1050,7 @@ function computeCostOfTime() {
     monthly: Math.round(stdMonthly / 10) * 10,           // nominal, rounded to $10
     weight: w,
     growthDiscount,
-    burdenAddedYears: Math.round(adjustedBurden),
-    capped: years >= COST_PARAMS.capYears
+    burdenAddedYears: Math.round(adjustedBurden)
   };
 }
 
@@ -1195,11 +1215,11 @@ document.getElementById('slide-map-intro').addEventListener('click', (e) => {
   }
 });
 
-// ============ SHARE (Slide 11) ============
+// ============ SHARE (Slide 12) ============
 function shareCard() {
   if (navigator.share) {
     navigator.share({
-      title: 'Boston Housing Wrapped 2024',
+      title: 'Boston Housing Wrapped 2026',
       text: 'I just took the Boston Housing Wrapped quiz. Can you outbid the investors?',
       url: window.location.href
     }).catch(() => {});
