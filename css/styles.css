@@ -688,6 +688,19 @@ input[type="range"]::-moz-range-thumb {
   border-radius: 999px;
 }
 
+@media (min-width: 768px) {
+  .advantage-layout {
+    align-items: stretch;
+  }
+
+  .advantage-card,
+  .trend-card {
+    height: 100%;
+  }
+}
+
+
+
 /* ============ SLIDE 5 — Wrapped Intro (Neighborhood Map) ============ */
 #slide-map-intro {
   background: linear-gradient(160deg, var(--navy) 0%, #0a3d5c 40%, var(--teal) 100%);
@@ -835,6 +848,20 @@ input[type="range"]::-moz-range-thumb {
   animation: none;
 }
 
+/* Floating Next button on the intro slide — visible during phases 0–2,
+   hidden when phase 3 (which has its own "See the Map" button) is reached.
+   The wrapper does the centering (full-width, text-align) so the button's
+   hover scale transform doesn't overwrite a translateX and cause it to jump. */
+.intro-next-wrap {
+  position: absolute;
+  bottom: 60px;
+  left: 0;
+  right: 0;
+  text-align: center;
+  z-index: 5;
+}
+.intro-next-wrap.hidden { display: none; }
+
 .intro-phase.active .btn-pulse {
   animation: btnPulse 2s ease-in-out 1.5s infinite;
 }
@@ -930,6 +957,7 @@ input[type="range"]::-moz-range-thumb {
 }
 
 .sidebar-card {
+  position: relative;
   background: rgba(255,255,255,0.06);
   border: 1px solid rgba(255,255,255,0.1);
   border-radius: var(--radius);
@@ -981,6 +1009,80 @@ input[type="range"]::-moz-range-thumb {
 .stat-value.neon { color: var(--neon); }
 .stat-value.red { color: var(--neon-red); }
 .stat-value.orange { color: var(--orange); }
+
+/* Smaller "context" stats — kept but visually demoted */
+.stat-row.context { padding: 3px 0; }
+.stat-row.context .stat-label { font-size: 10px; opacity: 0.4; }
+.stat-row.context .stat-value { font-size: 12px; font-weight: 600; opacity: 0.6; }
+
+/* (?) info button — its hover popover is positioned relative to the
+   .sidebar-card (above) so it always lands flush left of the card,
+   never overlapping the stat label. */
+.info-anchor {
+  position: static;
+  display: inline-block;
+}
+.info-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 14px;
+  height: 14px;
+  border: 1px solid rgba(255,255,255,0.3);
+  border-radius: 50%;
+  background: transparent;
+  color: rgba(255,255,255,0.5);
+  font-size: 9px;
+  font-weight: 700;
+  font-family: inherit;
+  margin-left: 6px;
+  padding: 0;
+  cursor: help;
+  vertical-align: middle;
+  transition: color 0.15s, border-color 0.15s, background 0.15s;
+}
+.info-anchor:hover .info-btn,
+.info-anchor:focus-within .info-btn {
+  color: var(--neon);
+  border-color: var(--neon);
+  background: rgba(204,255,0,0.08);
+}
+
+/* Hover popover — sits flush against the LEFT edge of the .sidebar-card
+   (over the map area), so it never overlaps the stat label. Vertical
+   position falls back to the (?) button's static flow position. */
+.info-caption {
+  position: absolute;
+  right: calc(100% + 10px);
+  width: 220px;
+  background: rgba(15, 25, 38, 0.96);
+  border: 1px solid rgba(204, 255, 0, 0.4);
+  border-radius: 6px;
+  padding: 10px 12px;
+  font-size: 11px;
+  line-height: 1.45;
+  color: rgba(255,255,255,0.9);
+  font-style: italic;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+  z-index: 100;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.15s;
+}
+.info-caption::after {
+  content: '';
+  position: absolute;
+  right: -12px;
+  top: 50%;
+  transform: translateY(-50%);
+  border: 6px solid transparent;
+  border-left-color: rgba(204, 255, 0, 0.4);
+}
+.info-anchor:hover .info-caption,
+.info-anchor:focus-within .info-caption {
+  opacity: 1;
+  visibility: visible;
+}
 
 .demo-bar-wrap {
   margin-top: 8px;
@@ -1075,7 +1177,7 @@ input[type="range"]::-moz-range-thumb {
   width: 120px;
   height: 10px;
   border-radius: 5px;
-  background: linear-gradient(90deg, #1a2a3a, #e67e22, #e74c3c, #8B0000);
+  background: linear-gradient(90deg, #1a2a3a, #e67e22, #e74c3c, #FF3B3B);
 }
 
 /* ============ SLIDE 7 — The Shift ============ */
