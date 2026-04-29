@@ -665,6 +665,19 @@ input[type="range"]::-moz-range-thumb {
   border-radius: 999px;
 }
 
+@media (min-width: 768px) {
+  .advantage-layout {
+    align-items: stretch;
+  }
+
+  .advantage-card,
+  .trend-card {
+    height: 100%;
+  }
+}
+
+
+
 /* ============ SLIDE 5 — Wrapped Intro (Neighborhood Map) ============ */
 #slide-map-intro {
   background: linear-gradient(160deg, var(--navy) 0%, #0a3d5c 40%, var(--teal) 100%);

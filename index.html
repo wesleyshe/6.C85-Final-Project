@@ -193,76 +193,74 @@
 <!-- ====== SLIDE 4 — Competition Advantages ====== -->
 <section class="slide" id="slide-competition-advantage">
   <div class="slide-inner">
-    <p class="top-label anim">WHY THEY WIN</p>
-    <h2 class="headline anim anim-delay-1" style="font-size:32px;">Some buyers play by<br>a different rulebook</h2>
-    <p class="subheadline anim anim-delay-2" style="max-width:600px;">This screen translates structural advantages in the housing market into measurable indicators, highlighting who moves fastest, who buys in cash, and how investor activity has evolved over time.</p>
+    <p class="top-label anim">INVESTOR BEHAVIOR</p>
+    <h2 class="headline anim anim-delay-1" style="font-size:32px;">Do investors play by<br>a different rulebook?</h2>
+    <p class="subheadline anim anim-delay-2" style="max-width:600px;">
+  Investors are often assumed to behave differently in the housing market. Here, we compare investor and non-investor transactions in Boston to see where the data supports that idea — and where it does not.
+</p>
 
     <div class="advantage-layout">
       <div class="advantage-card anim anim-delay-2">
         <div class="advantage-title">Investor advantage</div>
-        <p class="advantage-desc">This chart will compare different buyer types on structural advantages in the housing market. Using the Boston residential transactions dataset, we plan to measure metrics such as the share of purchases made in cash, the frequency of repeat purchases by the same buyer, and the speed of resale for flipped properties.</p>
+          <div class="advantage-title">What does the data show?</div>
+          <p class="advantage-desc">
+            Select a metric to compare buyers classified as investors with non-investor buyers.
+          </p>
+
         <div class="metric-switcher">
-          <button class="metric-pill active">Cash share</button>
-          <button class="metric-pill">Fast resale</button>
-          <button class="metric-pill">Repeat buyers</button>
+          <button class="metric-pill active" data-metric="repeat">Repeat buyers</button>
+          <button class="metric-pill" data-metric="flip">Flips</button>
+          <button class="metric-pill" data-metric="horizon">Flip speed</button>
+          <button class="metric-pill" data-metric="priceChange">Price increase</button>
         </div>
+
         <div class="bar-group">
           <div class="bar-row">
-            <div class="bar-label">Individual</div>
-            <div class="bar-track"><div class="bar-fill resident advantage-bar" data-width="33%"></div></div>
-            <div class="bar-value">33%</div>
+            <div class="bar-label">Non-investors</div>
+            <div class="bar-track"><div class="bar-fill resident advantage-bar" data-width="0%"></div></div>
+            <div class="bar-value">--</div>
           </div>
           <div class="bar-row">
-            <div class="bar-label">Corporate</div>
-            <div class="bar-track"><div class="bar-fill corporate advantage-bar" data-width="55%"></div></div>
-            <div class="bar-value">55%</div>
+            <div class="bar-label">Investors</div>
+            <div class="bar-track"><div class="bar-fill corporate advantage-bar" data-width="0%"></div></div>
+            <div class="bar-value">--</div>
           </div>
           <div class="bar-row">
-            <div class="bar-label">Absentee</div>
-            <div class="bar-track"><div class="bar-fill absentee advantage-bar" data-width="40%"></div></div>
-            <div class="bar-value">40%</div>
+            <div class="bar-label"></div>
+            <div class="bar-track"><div class="bar-fill absentee advantage-bar" data-width="0%"></div></div>
+            <div class="bar-value">--</div>
           </div>
           <div class="bar-row">
-            <div class="bar-label">Flipper</div>
-            <div class="bar-track"><div class="bar-fill flipper advantage-bar" data-width="49%"></div></div>
-            <div class="bar-value">49%</div>
+            <div class="bar-label"></div>
+            <div class="bar-track"><div class="bar-fill flipper advantage-bar" data-width="0%"></div></div>
+            <div class="bar-value">--</div>
           </div>
         </div>
+
+      <p class="advantage-desc" id="metricExplanation" style="margin-top: 24px;">
+        Repeat buyers: Share of buyers who appear more than once in the transaction data.
+      </p>
       </div>
 
       <div class="trend-card anim anim-delay-3">
-        <div class="trend-title">Investor activity over time</div>
-        <p class="trend-desc">This chart will track how different types of buyers have become more or less prominent in the Boston housing market over time. Using the transaction dataset, we will categorize purchases by ownership structure (e.g. individuals, LLCs, trusts, and investor-linked buyers) and plot their relative share of transactions by year. The goal is to show how speculative or institutional actors may have become more visible in the market over time.</p>
-        <div class="chart-shell">
-          <svg viewBox="0 0 320 180" aria-label="Investor trend chart">
-            <line class="chart-axis" x1="30" y1="18" x2="30" y2="150"></line>
-            <line class="chart-axis" x1="30" y1="150" x2="300" y2="150"></line>
-            <line class="chart-grid" x1="30" y1="50" x2="300" y2="50"></line>
-            <line class="chart-grid" x1="30" y1="90" x2="300" y2="90"></line>
-            <path class="chart-line line-corporate" d="M40 124 L95 118 L150 103 L205 82 L260 62"></path>
-            <path class="chart-line line-absentee" d="M40 112 L95 108 L150 100 L205 92 L260 84"></path>
-            <path class="chart-line line-flipper" d="M40 138 L95 132 L150 126 L205 118 L260 104"></path>
-            <circle class="point point-corporate" cx="260" cy="62" r="5"></circle>
-            <circle class="point point-absentee" cx="260" cy="84" r="5"></circle>
-            <circle class="point point-flipper" cx="260" cy="104" r="5"></circle>
-            <text class="axis-label" x="22" y="155">0</text>
-            <text class="axis-label" x="8" y="95">10%</text>
-            <text class="axis-label" x="8" y="55">20%</text>
-            <text class="axis-label" x="34" y="168">2004</text>
-            <text class="axis-label" x="116" y="168">2010</text>
-            <text class="axis-label" x="196" y="168">2016</text>
-            <text class="axis-label" x="258" y="168">2023</text>
-          </svg>
-        </div>
-        <div class="chart-legend">
-          <div class="chart-legend-item"><span class="chart-swatch" style="background:var(--neon-red)"></span>Corporate buyers</div>
-          <div class="chart-legend-item"><span class="chart-swatch" style="background:#FFD166"></span>Absentee owners</div>
-          <div class="chart-legend-item"><span class="chart-swatch" style="background:var(--neon)"></span>Flippers</div>
-        </div>
+        <div class="trend-title">How to read this</div>
+          <p class="trend-desc">
+            The clearest difference is repeat participation: investors are much more likely to appear multiple times in the market.
+          </p>
+          <p class="trend-desc">
+            However, the picture is mixed. Investors do not flip more often, and flip timelines are very similar across both groups.
+          </p>
+          <p class="trend-desc">
+            Average price increases are higher for investor transactions, but this depends on holding period, timing, and property strategy.
+          </p>
+
+          <div class="callout-card" style="margin-top:20px;text-align:center;">
+            The data suggests investors differ less by speed, and more by repeated exposure to the market.
+          </div>
       </div>
     </div>
   </div>
-  <p class="data-source">Source: MAPC, Residential Sales Data, City of Boston 2000–2023 (via data.boston.gov)</p>
+  <p class="data-source">Source: MAPC, Residential Sales Data, City of Boston 2000–2023 (via data.boston.gov). Price change calculated from sale price and prior sale price for selected residential property types with valid prior sale prices.</p>
 </section>
 
 <!-- ====== SLIDE 5 — Who Owns Your Neighborhood (Wrapped Intro) ====== -->

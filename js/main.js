@@ -261,15 +261,315 @@ document.querySelectorAll('.neighborhood-pills .pill').forEach(pill => {
 });
 
 // ============ ADVANTAGE BARS (Slide 4) ============
+let advantageMetrics = null;
+
+function loadAdvantageData() {
+  fetch('data/boston_residential_sales.csv')
+    .then(res => res.text())
+    .then(csvText => {
+      const rows = parseCSV(csvText);
+      advantageMetrics = processAdvantageData(rows);
+      updateAdvantageSlide('repeat');
+    })
+    .catch(err => {
+      console.error('Could not load advantage data:', err);
+    });
+
+}
+
+function parseCSV(csvText) {
+  const lines = csvText.trim().split(/\r?\n/);
+  const headers = parseCSVLine(lines[0]).map(h => h.trim());
+
+  return lines.slice(1).map(line => {
+    const values = parseCSVLine(line);
+    const row = {};
+
+    headers.forEach((h, i) => {
+      row[h] = values[i] ? values[i].trim() : '';
+    });
+
+    return row;
+  });
+}
+
+function parseCSVLine(line) {
+  const values = [];
+  let current = '';
+  let inQuotes = false;
+
+  for (let i = 0; i < line.length; i++) {
+    const char = line[i];
+    const nextChar = line[i + 1];
+
+    if (char === '"' && inQuotes && nextChar === '"') {
+      current += '"';
+      i++;
+    } else if (char === '"') {
+      inQuotes = !inQuotes;
+    } else if (char === ',' && !inQuotes) {
+      values.push(current);
+      current = '';
+    } else {
+      current += char;
+    }
+  }
+
+  values.push(current);
+  return values;
+}
+
+function toNumber(value) {
+  const n = Number(value);
+  return Number.isFinite(n) ? n : 0;
+}
+
+function toOptionalNumber(value) {
+  if (value === undefined || value === null || value.trim() === '') return NaN;
+  const n = Number(value);
+  return Number.isFinite(n) ? n : NaN;
+}
+
+function processAdvantageData(rows) {
+  const allowedTypes = ['APT', 'R1F', 'R2F', 'R3F', 'RES', 'CNR', 'RCD', 'R14', 'R25'];
+
+const clean = rows
+  .filter(d => {
+    const type = (d.proptype || '').trim().toUpperCase();
+    const prevPrice = toOptionalNumber(d.prslpr);
+
+    return (
+      allowedTypes.includes(type) &&
+      Number.isFinite(prevPrice) &&
+      prevPrice > 50000
+    );
+  })
+  .map(d => {
+    const investorType = d.investor_type_purchase;
+    const isInvestor = investorType && investorType !== 'Non-investor';
+
+    const price = toOptionalNumber(d.price);
+    const previousPrice = toOptionalNumber(d.prslpr);
+
+    const priceDiff =
+      Number.isFinite(price) && Number.isFinite(previousPrice)
+        ? price - previousPrice
+        : NaN;
+
+    const priceDiffPct =
+      Number.isFinite(priceDiff) && previousPrice > 0
+        ? (priceDiff / previousPrice) * 100
+        : NaN;
+
+    return {
+      group: isInvestor ? 'Investors' : 'Non-investors',
+      cashSale: toNumber(d.cash_sale),
+      repeatBuyer: toNumber(d.buyer_purchases) > 1 ? 1 : 0,
+      flip: toNumber(d.flip_ind),
+      flipHorizon: toNumber(d.flip_horizon) / 30.44,
+      price,
+      previousPrice,
+      priceDiff,
+      priceDiffPct
+    };
+  });
+
+  const resaleData = clean.filter(d =>
+  Number.isFinite(d.priceDiffPct)
+  );
+
+  console.log(
+  clean.filter(d => d.flip === 1).slice(0, 10)
+  );
+
+
+  const nonInvestors = clean.filter(d => d.group === 'Non-investors');
+  const investors = clean.filter(d => d.group === 'Investors');
+
+
+  function avg(group, key) {
+    if (!group.length) return 0;
+    return group.reduce((sum, d) => sum + d[key], 0) / group.length;
+  }
+
+function avgFlipHorizon(group) {
+  const flips = group.filter(d =>
+    d.flip === 1 &&
+    Number.isFinite(d.flipHorizon) &&
+    d.flipHorizon > 0
+  );
+
+  if (!flips.length) return 0;
+
+  return flips.reduce((sum, d) => sum + d.flipHorizon, 0) / flips.length;
+}
+
+function medianPriceChange(group) {
+  const valid = group
+    .map(d => d.priceDiffPct)
+    .filter(v => Number.isFinite(v))
+    .sort((a, b) => a - b);
+
+  if (!valid.length) return 0;
+
+  const mid = Math.floor(valid.length / 2);
+  return valid.length % 2 === 0
+    ? (valid[mid - 1] + valid[mid]) / 2
+    : valid[mid];
+}
+
+
+function avgPriceChange(group) {
+  const valid = group
+    .map(d => d.priceDiffPct)
+    .filter(v => Number.isFinite(v));  // ✅ ONLY keep valid numbers
+
+  if (!valid.length) return 0;
+
+  return valid.reduce((sum, v) => sum + v, 0) / valid.length;
+}
+
+console.log('Average resale price change:', {
+  nonInvestors: avgPriceChange(nonInvestors),
+  investors: avgPriceChange(investors)
+});
+
+console.log(
+  'Sample price changes:',
+  clean
+    .map(d => d.priceDiffPct)
+    .filter(v => Number.isFinite(v))
+    .slice(0, 20)
+);
+
+console.log(
+  'Extreme values:',
+  clean
+    .map(d => d.priceDiffPct)
+    .filter(v => Number.isFinite(v))
+    .sort((a, b) => b - a)
+    .slice(0, 10)
+);
+
+console.log('Rows after filtering:', clean.length);
+
+  return {
+    cash: {
+      title: 'Cash sale rate',
+      nonInvestor: avg(nonInvestors, 'cashSale'),
+      investor: avg(investors, 'cashSale'),
+      format: 'percent'
+    },
+    repeat: {
+      title: 'Repeat buyer rate',
+      nonInvestor: avg(nonInvestors, 'repeatBuyer'),
+      investor: avg(investors, 'repeatBuyer'),
+      format: 'percent'
+    },
+    flip: {
+      title: 'Flip rate',
+      nonInvestor: avg(nonInvestors, 'flip'),
+      investor: avg(investors, 'flip'),
+      format: 'percent'
+    },
+    horizon: {
+      title: 'Average flip horizon',
+      nonInvestor: avgFlipHorizon(nonInvestors),
+      investor: avgFlipHorizon(investors),
+      format: 'months'
+    },
+    priceChange: {
+  title: 'Average resale price change',
+  nonInvestor: avgPriceChange(nonInvestors),
+  investor: avgPriceChange(investors),
+  format: 'percentWhole'
+}
+  };
+}
+
+function updateAdvantageSlide(metricKey) {
+  if (!advantageMetrics) return;
+
+  const metric = advantageMetrics[metricKey];
+  const metricDescriptions = {
+  repeat: '<strong>Repeat buyers:</strong> Share of buyers who appear more than once in the transaction data. This is the clearest difference between the two groups: investors are much more likely to show up repeatedly.',
+  flip: '<strong>Flips:</strong>Share of transactions where the property was resold within two years. Here, investors and non-investors look very similar, suggesting flipping frequency is not the main difference.',
+  horizon: '<strong>Flip speed:</strong> Average time between purchase and resale among flipped properties. Lower values mean faster resale. The timelines are close, so speed is not a strong differentiator.',
+  priceChange: '<strong>Price increase:</strong> Average percent change between sale price and prior sale price, using selected residential property types with valid prior sale prices. This is an average, so it can be influenced by holding period and unusual high-growth cases.'
+};
+
+const explanation = document.getElementById('metricExplanation');
+if (explanation) {
+  explanation.innerHTML = metricDescriptions[metricKey] || '';
+}
+  const bars = document.querySelectorAll('.advantage-bar');
+  const values = document.querySelectorAll('.bar-value');
+
+  const nonInvestorValue = metric.nonInvestor;
+  const investorValue = metric.investor;
+
+let maxValue;
+if (metric.format === 'percent') {
+  maxValue = 1;
+} else if (metric.format === 'percentWhole') {
+  maxValue = Math.max(nonInvestorValue, investorValue, 100);
+} else {
+  maxValue = Math.max(nonInvestorValue, investorValue, 1);
+}
+
+  const displayRows = [
+    nonInvestorValue,
+    investorValue
+  ];
+
+  bars.forEach((bar, i) => {
+    if (i > 1) {
+      bar.closest('.bar-row').style.display = 'none';
+      return;
+    }
+
+    bar.closest('.bar-row').style.display = 'grid';
+
+    const width = (displayRows[i] / maxValue) * 100;
+    bar.dataset.width = `${width}%`;
+    bar.style.width = `${width}%`;
+  });
+
+  values.forEach((value, i) => {
+    if (i > 1) return;
+
+    const rawValue = displayRows[i];
+
+    if (metric.format === 'percent') {
+  value.textContent = `${Math.round(rawValue * 100)}%`;
+} else if (metric.format === 'percentWhole') {
+  value.textContent = `${Math.round(rawValue)}%`;
+} else {
+  value.textContent = `${Math.round(rawValue)} mo.`;
+}
+  });
+}
+
 function animateAdvantageBars() {
   if (barsAnimated) return;
   barsAnimated = true;
+
   document.querySelectorAll('.advantage-bar').forEach(bar => {
     requestAnimationFrame(() => {
       bar.style.width = bar.dataset.width;
     });
   });
 }
+
+document.querySelectorAll('.metric-pill').forEach(pill => {
+  pill.addEventListener('click', () => {
+    document.querySelectorAll('.metric-pill').forEach(p => p.classList.remove('active'));
+    pill.classList.add('active');
+
+    const metricKey = pill.dataset.metric;
+    updateAdvantageSlide(metricKey);
+  });
+});
 
 // ============ SELECTOR PILLS (Slide 8) ============
 document.querySelectorAll('.selector-row').forEach(row => {
@@ -443,6 +743,7 @@ window.addEventListener('load', async () => {
   // Trigger first slide animations
   onSlideEnter(slides[0]);
   updateCompetitionCards('Dorchester');
+  loadAdvantageData();
 
   // Map init
   await buildMap();
