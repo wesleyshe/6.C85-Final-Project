@@ -1745,6 +1745,34 @@ input[type="range"]::-moz-range-thumb {
   .hunt-card { padding: 12px; }
   .hunt-pair { gap: 10px; }
   .hunt-card-desc { font-size: 11px; margin-top: 10px; padding-top: 8px; }
+
+  #slide-credits {
+  height: auto;
+  min-height: 100vh;
+  min-height: 100dvh;
+  overflow: visible;
+  padding-top: 40px;
+  padding-bottom: 72px;
+}
+
+#slide-credits .credits-inner {
+  max-width: 470px;
+}
+
+.credits-card {
+  gap: 11px;
+  padding: 11px 12px;
+}
+
+.credits-icon {
+  font-size: 20px;
+  width: 22px;
+}
+
+.credits-copy p {
+  font-size: 11.5px;
+}
+
 }
 
 .selector-group {
@@ -2767,6 +2795,18 @@ input[type="range"]::-moz-range-thumb {
   .headline.h-h2 { font-size: 32px; }
   .headline.h-h3 { font-size: 26px; }
   .years-number { font-size: 96px; }
+  #slide-credits .credits-card {
+  padding: 9px 12px;
+}
+
+#slide-credits .credits-copy p {
+  font-size: 11.5px;
+  line-height: 1.35;
+}
+
+#slide-credits .headline {
+  margin-bottom: 10px;
+}
 
   /* Mortgage: shrink the giant number + bar paddings */
   #slide-mortgage .years-sublabel { font-size: 12px; margin-top: -4px; }
@@ -2857,4 +2897,88 @@ input[type="range"]::-moz-range-thumb {
   text-align: right;
   z-index: 5;
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+}
+/* ============ CREDITS (Ch 4 — final notes) ============ */
+
+#slide-credits {
+  padding: 28px 24px 20px;
+}
+
+#slide-credits .credits-inner {
+  max-width: 720px;
+}
+
+#slide-credits .top-label {
+  font-size: var(--fs-caption);
+  margin-bottom: 8px;
+}
+
+#slide-credits .headline {
+  font-size: var(--fs-h2);
+  line-height: 1.05;
+  margin-bottom: 18px;
+}
+
+.credits-list {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.credits-card {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  padding: 13px 15px;
+  border-radius: 12px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  text-align: left;
+}
+
+.credits-card-highlight {
+  background: rgba(204,255,0,0.08);
+  border-color: rgba(204,255,0,0.28);
+}
+
+.credits-icon {
+  font-size: 22px;
+  line-height: 1.1;
+  flex-shrink: 0;
+  width: 26px;
+  text-align: center;
+}
+
+.credits-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.credits-copy h3 {
+  font-size: var(--fs-caption);
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--neon);
+  margin: 0;
+}
+
+.credits-copy p {
+  font-size: 12px;
+  line-height: 1.45;
+  opacity: 0.72;
+  margin: 0;
+}
+
+.credits-copy a {
+  color: var(--neon);
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.credits-copy a:hover {
+  text-decoration: underline;
 }
