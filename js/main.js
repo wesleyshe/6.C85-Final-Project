@@ -24,6 +24,53 @@ let userBudget = 500000;
 let currentSlideIdx = 0;
 let isTransitioning = false;
 
+// ============ PROPERTY DATA (Slide 3) ============
+const propertyPool = [
+    {
+        img: "asset/dorchester_chelmsford.png",
+        label: "12 Chelmsford St, Dorchester • 6 Bed • 2 Bath",
+        price2026: 1245000,
+        price2013: 388800,
+        price2003: 280000
+    },
+    {
+        img: "asset/east_boston_brooks.png",
+        label: "54 Brooks St, East Boston • 11 Bed • 3 Bath",
+        price2026: 1430000,
+        price2013: 310000,
+        price2003: 185000
+    },
+    {
+        img: "asset/fenway_queensberry.png",
+        label: "60 Queensberry St, Fenway • 1 Bed • 1 Bath",
+        price2026: 552500,
+        price2013: 285000,
+        price2003: 220000
+    },
+    {
+        img: "asset/roxbury_st_james.png",
+        label: "16 Saint James St, Roxbury • 3 Bed • 2 Bath",
+        price2026: 550000,
+        price2013: 240000,
+        price2003: 165000
+    },
+    {
+        img: "asset/southie_linden.png",
+        label: "19 Linden St, South Boston • 5 Bed • 3 Bath",
+        price2026: 1635000,
+        price2013: 580000,
+        price2003: 395000
+    },
+    {
+        img: "asset/seaport_blvd.png",
+        label: "133 Seaport Blvd, Seaport • 1 Bed • 1 Bath",
+        price2026: 1294000,
+        price2013: 0, 
+        price2003: 0
+    }
+];
+
+let selectedPropertySlide3 = null; // 
 // Selection-driven median + mortgage state (set by showReality)
 const MORTGAGE_RATE = 0.07;          // Freddie Mac PMMS ~2024
 const STANDARD_TERM = 30;            // standard US 30-year mortgage (the "real" contract length)
@@ -198,24 +245,29 @@ priceSlider.addEventListener('input', () => {
   priceDisplay.textContent = formatCurrency(val);
 });
 
-// ============ REVEAL PRICE (Slide 2) ============
+// ============ REVEAL PRICE (Slide 3) ============
 function revealPrice() {
   const btn = document.getElementById('revealBtn');
   const sliderArea = document.getElementById('sliderArea');
   const revealArea = document.getElementById('revealArea');
+  const priceDisplay = document.getElementById('priceDisplay');
 
   btn.style.display = 'none';
   sliderArea.style.display = 'none';
   priceDisplay.style.display = 'none';
-  document.querySelector('#slide-guess .subheadline').style.display = 'none';
+  
+  const subheadline = document.querySelector('#slide-guess .subheadline');
+  if (subheadline) subheadline.style.display = 'none';
 
   revealArea.classList.add('show');
   revealArea.querySelectorAll('.anim').forEach(el => el.classList.add('visible'));
 
+ 
   document.getElementById('userGuessStrike').textContent = 'Your guess: ' + formatCurrency(userGuessSlide2);
-  countUp(document.getElementById('actualPriceEl'), 0, ACTUAL_PRICE, 1500, true);
+  
+  
+  countUp(document.getElementById('actualPriceEl'), 0, selectedPropertySlide3.price2026, 1500, true);
 }
-
 // ============ DONUT CHART (Slide 3) ============
 const donutOrder = [
   { key: 'nonInvestor', id: 'seg-nonInvestor' },
@@ -1543,6 +1595,8 @@ document.addEventListener('touchend', e => {
 window.addEventListener('load', async () => {
   // Trigger first slide animations
   onSlideEnter(slides[0]);
+  initSlide3Random(); 
+  
   updateCompetitionCards('Dorchester');
   loadAdvantageData();
 
@@ -1574,4 +1628,27 @@ function toggleOverlay(show) {
   } else {
     overlay.classList.remove('active');
   }
+}
+
+
+function initSlide3Random() {
+    const randomIndex = Math.floor(Math.random() * propertyPool.length);
+    selectedPropertySlide3 = propertyPool[randomIndex];
+
+    //
+    const imgEl = document.getElementById('propertyImg');
+    const labelEl = document.getElementById('propertyLabel');
+    
+    if (imgEl) imgEl.src = selectedPropertySlide3.img;
+    if (labelEl) labelEl.textContent = selectedPropertySlide3.label;
+
+    //  
+    const p2003 = selectedPropertySlide3.price2003 > 0 ? formatCurrency(selectedPropertySlide3.price2003) : "N/A (Parking lot)";
+    const p2013 = selectedPropertySlide3.price2013 > 0 ? formatCurrency(selectedPropertySlide3.price2013) : "N/A (Under development)";
+    
+    const hist2003El = document.getElementById('hist2003');
+    const hist2013El = document.getElementById('hist2013');
+    
+    if (hist2003El) hist2003El.textContent = "In 2003: " + p2003;
+    if (hist2013El) hist2013El.textContent = "In 2013: " + p2013;
 }

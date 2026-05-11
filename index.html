@@ -80,23 +80,24 @@
   <div class="slide-inner">
     <p class="top-label anim">GUESS THE PRICE</p>
     <div class="property-card anim anim-delay-1">
-      <img class="property-img" src="asset/Boston Triple-Decker, Dorchester.png" alt="Boston Triple-Decker, Dorchester">
-      <div class="property-label">115 Wendover St &bull; 6 Bed &bull; 3 Bath</div>
+      <img class="property-img" id="propertyImg" src="asset/dorchester_chelmsford.png" alt="Property">
+      <div class="property-label" id="propertyLabel">Loading...</div>
     </div>
-    <p class="subheadline anim anim-delay-2" style="margin-bottom:8px;">How much did this sell for in 2023?</p>
+    <p class="subheadline anim anim-delay-2" style="margin-bottom:8px;">How much did this sell for in 2026?</p>
     <div class="price-display anim anim-delay-2" id="priceDisplay">$500,000</div>
     <div class="slider-container anim anim-delay-3" id="sliderArea">
       <input type="range" id="priceSlider" min="0" max="2000000" step="5000" value="500000">
       <div class="slider-labels"><span>$0</span><span>$2,000,000</span></div>
     </div>
     <button class="btn anim anim-delay-4" id="revealBtn" onclick="revealPrice()">Reveal</button>
+    
     <div class="reveal-area" id="revealArea">
       <div class="actual-price anim" id="actualPriceEl">$0</div>
-      <div class="user-guess-strike anim anim-delay-1" id="userGuessStrike"></div>
-      <div class="comparison-line anim anim-delay-2">In 2003: $195,000</div>
-      <div class="comparison-line anim anim-delay-3">In 2013: $410,000</div>
+      <div class="user-guess-strike anim" id="userGuessStrike"></div>
+      <div class="comparison-line anim" id="hist2003">In 2003: --</div>
+      <div class="comparison-line anim" id="hist2013">In 2013: --</div>
     </div>
-    <p class="slide-counter anim anim-delay-4">1 of 6 properties</p>
+    <p class="slide-counter anim anim-delay-4">1 of 6 randomly selected properties</p>
   </div>
 </section>
 
