@@ -385,10 +385,9 @@ function updateSelectedYear(year) {
   updateSelectedDelta();
 }
 
-// Position the hover popover vertically so it lines up with its (?) button.
-// (CSS alone can't do this because the popover is anchored to .sidebar-card
-// for horizontal positioning, which loses the per-row vertical reference.)
-function positionInfoCaption(anchor) {
+// Sidebar (map) variant — popover is anchored horizontally to the .sidebar-card
+// but needs JS to align vertically with its specific (?) button.
+function positionSidebarInfoCaption(anchor) {
   const btn = anchor.querySelector('.info-btn');
   const caption = anchor.querySelector('.info-caption');
   const card = anchor.closest('.sidebar-card');
@@ -399,10 +398,52 @@ function positionInfoCaption(anchor) {
   caption.style.top = (btnCenter - caption.offsetHeight / 2) + 'px';
 }
 
+// Heading variant — caption is centered above the (?) button by CSS, but if
+// the button is near a viewport edge the popover would overflow. Shift the
+// popover horizontally and re-anchor the arrow so it still points at the button.
+function positionHeadingInfoCaption(anchor) {
+  const btn = anchor.querySelector('.info-btn');
+  const caption = anchor.querySelector('.info-caption');
+  if (!btn || !caption) return;
+  const margin = 16;
+
+  // Reset any previous JS positioning so offsetWidth reflects the natural width.
+  caption.style.left = '';
+  caption.style.transform = '';
+  caption.style.removeProperty('--arrow-x');
+
+  // Force a layout read with default positioning so we know the width.
+  const captionWidth = caption.offsetWidth;
+  const btnRect = btn.getBoundingClientRect();
+  const anchorRect = anchor.getBoundingClientRect();
+  const btnCenterX = btnRect.left + btnRect.width / 2;
+
+  // Where the popover left-edge would land if centered on the button.
+  let desiredLeft = btnCenterX - captionWidth / 2;
+  // Clamp to viewport.
+  const minLeft = margin;
+  const maxLeft = window.innerWidth - captionWidth - margin;
+  const clampedLeft = Math.max(minLeft, Math.min(desiredLeft, maxLeft));
+
+  if (clampedLeft === desiredLeft) return; // no shift needed; CSS default works
+  // Apply the shifted position relative to the anchor.
+  const leftFromAnchor = clampedLeft - anchorRect.left;
+  caption.style.left = leftFromAnchor + 'px';
+  caption.style.transform = 'none';
+  // Move the arrow back to under the (?) button.
+  const arrowX = btnCenterX - clampedLeft;
+  caption.style.setProperty('--arrow-x', arrowX + 'px');
+}
+
 function initInfoPopovers() {
   const handler = (e) => {
     const anchor = e.target.closest && e.target.closest('.info-anchor');
-    if (anchor) positionInfoCaption(anchor);
+    if (!anchor) return;
+    if (anchor.classList.contains('info-anchor-h')) {
+      positionHeadingInfoCaption(anchor);
+    } else {
+      positionSidebarInfoCaption(anchor);
+    }
   };
   document.addEventListener('mouseover', handler);
   document.addEventListener('focusin', handler);
@@ -444,11 +485,13 @@ function togglePlay() {
     clearInterval(playInterval);
     playing = false;
     btn.innerHTML = '&#9654;';
+    if (typeof endAnim === 'function') endAnim();
     return;
   }
 
   playing = true;
   btn.innerHTML = '&#9646;&#9646;';
+  if (typeof beginAnim === 'function') beginAnim();
   let year = parseInt(yearSlider.value);
   if (year >= 2024) year = 2004;
 
@@ -458,6 +501,7 @@ function togglePlay() {
       clearInterval(playInterval);
       playing = false;
       btn.innerHTML = '&#9654;';
+      if (typeof endAnim === 'function') endAnim();
       return;
     }
     yearSlider.value = year;
@@ -534,48 +578,3 @@ function animateShiftBars() {
   });
 }
 
-// ============ PARTICLE CANVAS ============
-function initParticles() {
-  const canvas = document.getElementById('particleCanvas');
-  if (!canvas) return;
-  const ctx = canvas.getContext('2d');
-  let particles = [];
-  const COUNT = 40;
-
-  function resize() {
-    canvas.width = canvas.offsetWidth;
-    canvas.height = canvas.offsetHeight;
-  }
-  resize();
-  window.addEventListener('resize', resize);
-
-  for (let i = 0; i < COUNT; i++) {
-    particles.push({
-      x: Math.random() * canvas.width,
-      y: Math.random() * canvas.height,
-      vx: (Math.random() - 0.5) * 0.4,
-      vy: (Math.random() - 0.5) * 0.4,
-      r: Math.random() * 2 + 0.5,
-      alpha: Math.random() * 0.3 + 0.05
-    });
-  }
-
-  function draw() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    particles.forEach(p => {
-      p.x += p.vx;
-      p.y += p.vy;
-      if (p.x < 0) p.x = canvas.width;
-      if (p.x > canvas.width) p.x = 0;
-      if (p.y < 0) p.y = canvas.height;
-      if (p.y > canvas.height) p.y = 0;
-
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-      ctx.fillStyle = `rgba(204, 255, 0, ${p.alpha})`;
-      ctx.fill();
-    });
-    requestAnimationFrame(draw);
-  }
-  draw();
-}

@@ -4,6 +4,9 @@ function formatCurrency(n) {
 }
 
 function countUp(el, start, end, duration, isCurrency) {
+  // Hooks into the settle tracker (defined later) so the scroll-cue waits
+  // until this count-up finishes, not just CSS transitions.
+  if (typeof beginAnim === 'function') beginAnim();
   const startTime = performance.now();
   function tick(now) {
     const elapsed = now - startTime;
@@ -12,13 +15,13 @@ function countUp(el, start, end, duration, isCurrency) {
     const current = Math.round(start + (end - start) * eased);
     el.textContent = isCurrency ? formatCurrency(current) : current.toLocaleString();
     if (progress < 1) requestAnimationFrame(tick);
+    else if (typeof endAnim === 'function') endAnim();
   }
   requestAnimationFrame(tick);
 }
 
 // ============ GLOBALS ============
 const slides = document.querySelectorAll('.slide');
-const dotsContainer = document.getElementById('dots');
 let userGuessSlide2 = 500000;
 let userBudget = 500000;
 let currentSlideIdx = 0;
@@ -70,14 +73,18 @@ const propertyPool = [
     }
 ];
 
-let selectedPropertySlide3 = null; // 
-// Selection-driven median + mortgage state (set by showReality)
-const MORTGAGE_RATE = 0.07;          // Freddie Mac PMMS ~2024
-const STANDARD_TERM = 30;            // standard US 30-year mortgage (the "real" contract length)
-const DOWN_PAYMENT_PCT = 0.20;       // conventional 20% down
-const REAL_WAGE_GROWTH = 0.012;      // ~1.2% real wage growth above inflation (BLS / FRED)
+// Slide-guess random property pick (chosen once on load).
+let selectedPropertySlide3 = null;
+
+// Mortgage model — used by computeCostOfTime + refreshRealityFromSelections.
+const MORTGAGE_RATE    = 0.07;   // Freddie Mac PMMS ~2024
+const STANDARD_TERM    = 30;     // standard US 30-year mortgage
+const DOWN_PAYMENT_PCT = 0.20;   // conventional 20% down
+const REAL_WAGE_GROWTH = 0.012;  // ~1.2%/yr real wage growth (BLS/FRED)
+
+// Live median price for the user's hunt selection. Re-derived on each
+// hunt change and on slide-reality / slide-mortgage entry.
 let selectedMedian = MEDIAN_PRICE;
-let selectedMonthly = 0;
 
 function getSelectedMedian() {
   const district = document.querySelector('.selector-row[data-group="district"] .selector-pill.active')?.dataset.value;
@@ -94,18 +101,207 @@ function calcMonthlyMortgage(price, termYears = STANDARD_TERM) {
 }
 
 
-// ============ DOT INDICATORS ============
-slides.forEach((_, i) => {
-  const d = document.createElement('div');
-  d.className = 'dot' + (i === 0 ? ' active' : '');
-  d.addEventListener('click', () => goToSlide(i));
-  dotsContainer.appendChild(d);
+// ============ CHAPTER CHIP ============
+// A single bottom-right chip showing the current chapter only. Updated on every
+// slide navigation. Slides carry a data-chapter="1..4" attribute. The chip is
+// hidden on Chapter 4 share/resources slides (final outcome, no nav chrome).
+const CHAPTER_TITLES = {
+  '1': 'Background',
+  '2': 'Current Status',
+  '3': 'Reasons Behind',
+  '4': 'The Cost'
+};
+
+const chapterChip       = document.getElementById('chapterChip');
+const chapterChipNum    = document.getElementById('chapterChipNum');
+const chapterChipName   = document.getElementById('chapterChipName');
+const chapterChipProg   = document.getElementById('chapterChipProgress');
+const chapterChipMenu   = document.getElementById('chapterChipMenu');
+
+// Group slide indices by chapter, preserving DOM order.
+const chapterGroups = (() => {
+  const groups = new Map();
+  slides.forEach((s, i) => {
+    const ch = s.dataset.chapter || '1';
+    if (!groups.has(ch)) groups.set(ch, []);
+    groups.get(ch).push(i);
+  });
+  return groups;
+})();
+
+// Build the hover menu once — one item per chapter, themed with that
+// chapter's accent. Click jumps to the first slide of the chapter.
+(function buildChipMenu() {
+  if (!chapterChipMenu) return;
+  chapterGroups.forEach((slideIndices, chapter) => {
+    const item = document.createElement('button');
+    item.type = 'button';
+    item.className = 'chip-menu-item';
+    item.dataset.chapter = chapter;
+    item.setAttribute('role', 'menuitem');
+    item.setAttribute('aria-label', `Jump to chapter ${chapter}: ${CHAPTER_TITLES[chapter] || ''}`);
+    item.innerHTML =
+      `<span class="chip-menu-num">${chapter.padStart(2, '0')}</span>` +
+      `<span class="chip-menu-name">${CHAPTER_TITLES[chapter] || ''}</span>`;
+    item.addEventListener('click', () => {
+      goToSlide(slideIndices[0], true);
+      chapterChip?.classList.remove('open');
+    });
+    chapterChipMenu.appendChild(item);
+  });
+})();
+
+// Touch / tap support — hover doesn't fire on touch devices, so tapping
+// the chip body (not the sub-dots inside the progress strip, and not a
+// menu item) toggles the menu. A document-level tap-outside listener
+// closes it again.
+chapterChip?.addEventListener('click', (e) => {
+  if (e.target.closest('.chip-dot') || e.target.closest('.chip-menu-item')) return;
+  chapterChip.classList.toggle('open');
+});
+document.addEventListener('click', (e) => {
+  if (!chapterChip) return;
+  if (!chapterChip.contains(e.target)) chapterChip.classList.remove('open');
 });
 
 function updateDots(idx) {
-  document.querySelectorAll('.dot').forEach((d, i) => {
-    d.classList.toggle('active', i === idx);
+  // Update the chapter chip + body[data-chapter] so per-chapter palettes apply.
+  const slide = slides[idx];
+  const chapter = slide?.dataset.chapter || '1';
+  document.body.setAttribute('data-chapter', chapter);
+
+  if (!chapterChip) return;
+  chapterChip.dataset.chapter = chapter;
+  chapterChipNum.textContent  = chapter.padStart(2, '0');
+  chapterChipName.textContent = CHAPTER_TITLES[chapter] || '';
+
+  // Rebuild sub-dots whenever the chapter changes (cheap — ≤6 dots).
+  const slideIndices = chapterGroups.get(chapter) || [];
+  if (chapterChipProg.childElementCount !== slideIndices.length) {
+    chapterChipProg.innerHTML = '';
+    slideIndices.forEach(slideIdx => {
+      const d = document.createElement('button');
+      d.type = 'button';
+      d.className = 'chip-dot';
+      d.dataset.slideIdx = slideIdx;
+      d.setAttribute('aria-label', `Slide ${slideIdx + 1}`);
+      d.addEventListener('click', () => goToSlide(slideIdx, true));
+      chapterChipProg.appendChild(d);
+    });
+  }
+  chapterChipProg.querySelectorAll('.chip-dot').forEach(dot => {
+    dot.classList.toggle('active', parseInt(dot.dataset.slideIdx, 10) === idx);
   });
+
+  // Hover-menu: highlight whichever item matches the current chapter.
+  chapterChipMenu?.querySelectorAll('.chip-menu-item').forEach(item => {
+    item.classList.toggle('current', item.dataset.chapter === chapter);
+  });
+
+  // Bottom progress bar — accent matches the current chapter.
+  const progressBar = document.getElementById('progressBar');
+  const progressBarFill = document.getElementById('progressBarFill');
+  if (progressBar) progressBar.dataset.chapter = chapter;
+  if (progressBarFill && slides.length) {
+    const pct = ((idx + 1) / slides.length) * 100;
+    progressBarFill.style.width = pct.toFixed(2) + '%';
+  }
+}
+
+updateDots(0);
+
+// ============ SCROLL CUE + SETTLE TRACKER ============
+// Goal: show "Scroll to continue" exactly 500ms after the current slide has
+// genuinely stopped animating (not a hardcoded guess). We count active
+// CSS transitions/animations scoped to the current slide via
+// transitionstart/end and animationstart/end events. JS-driven animations
+// (rAF count-ups, the map autoplay loop, the intro sequence) call the
+// beginAnim / endAnim helpers explicitly so they're tracked too.
+const scrollCueEl    = document.getElementById('scrollCue');
+const scrollCueLabel = document.getElementById('scrollCueLabel');
+
+const SETTLE_IDLE_MS = 500;    // how long the slide must be quiet before cue
+const SETTLE_MAX_MS  = 15000;  // hard fallback (infinite animations safety)
+
+let settleActive    = 0;
+let settleIdleTimer = null;
+let settleMaxTimer  = null;
+let cueShownForIdx  = -1;
+
+// Slides whose action button must be clicked before the scroll-cue may appear.
+// Each entry checks whether the action's "completed" state element is visible.
+function isCueGatedByAction(slide) {
+  if (slide.id === 'slide-welcome') return !welcomeStarted; // Begin button click
+  if (slide.id === 'slide-hunt') {
+    return !document.getElementById('huntTypeDesc')?.classList.contains('confirmed');
+  }
+  if (slide.id === 'slide-guess') {
+    return !document.getElementById('revealArea')?.classList.contains('show');
+  }
+  return false;
+}
+
+function scrollCueFire() {
+  if (cueShownForIdx === currentSlideIdx) return;
+  const slide = slides[currentSlideIdx];
+  if (!slide || !scrollCueEl) return;
+  // Last slide has nowhere to go.
+  if (slide.id === 'slide-resources') return;
+  // Required-action slides: don't show until the button has been clicked.
+  if (isCueGatedByAction(slide)) return;
+  cueShownForIdx = currentSlideIdx;
+  if (scrollCueLabel) scrollCueLabel.textContent = 'Scroll to continue';
+  scrollCueEl.classList.add('show');
+}
+
+function settleCheck() {
+  clearTimeout(settleIdleTimer);
+  if (settleActive > 0) return;
+  settleIdleTimer = setTimeout(scrollCueFire, SETTLE_IDLE_MS);
+}
+
+function beginAnim() {
+  settleActive++;
+  clearTimeout(settleIdleTimer);
+}
+function endAnim() {
+  settleActive = Math.max(0, settleActive - 1);
+  settleCheck();
+}
+
+// Scope event tracking to the CURRENT slide only — stray events from
+// off-screen slides (or the chip / progress bar) don't count.
+function _evtIsOnCurrentSlide(e) {
+  if (!e.target || !e.target.closest) return false;
+  return e.target.closest('.slide') === slides[currentSlideIdx];
+}
+['transitionstart', 'animationstart'].forEach(t =>
+  document.addEventListener(t, e => { if (_evtIsOnCurrentSlide(e)) beginAnim(); })
+);
+['transitionend', 'transitioncancel', 'animationend', 'animationcancel'].forEach(t =>
+  document.addEventListener(t, e => { if (_evtIsOnCurrentSlide(e)) endAnim(); })
+);
+
+function hideScrollCue() {
+  clearTimeout(settleIdleTimer);
+  clearTimeout(settleMaxTimer);
+  cueShownForIdx = -1;
+  scrollCueEl?.classList.remove('show');
+}
+
+function scheduleScrollCue(slide) {
+  hideScrollCue();
+  // Fresh per-slide settle state — stale counts from the previous slide
+  // (events that fired after we navigated away) get reset here.
+  settleActive = 0;
+  if (!slide || !scrollCueEl) return;
+  // Skip slides where the cue is replaced by an explicit button (welcome →
+  // "Begin") or there's no "continue" target (final resources slide).
+  if (slide.id === 'slide-welcome' || slide.id === 'slide-resources') return;
+  // Kick off the idle countdown. For action-gated slides (hunt, guess) the
+  // cue stays hidden until the button is clicked — handled in scrollCueFire.
+  settleCheck();
+  settleMaxTimer = setTimeout(scrollCueFire, SETTLE_MAX_MS);
 }
 
 // ============ SLIDE NAVIGATION ============
@@ -117,26 +313,44 @@ function goToSlide(i, force) {
 
   isTransitioning = true;
   currentSlideIdx = i;
+  hideScrollCue();
 
   slides[i].scrollIntoView({ behavior: 'smooth' });
   updateDots(i);
   onSlideEnter(slides[i]);
+  scheduleScrollCue(slides[i]);
 
   // Lock out further scroll/wheel/key navigation until transition completes
   setTimeout(() => { isTransitioning = false; }, TRANSITION_DURATION);
 }
 
-// Button-initiated navigation always forces through (bypasses transition lock)
-function scrollToSlide(i) { goToSlide(i, true); }
+// Forward scroll/key/touch is BLOCKED on slides that have a required action
+// button. The user must click that button to advance — scroll alone does not
+// trigger it. Returns true to swallow the scroll without navigating.
+let welcomeStarted = false;
+function consumePendingAction() {
+  const id = slides[currentSlideIdx]?.id;
 
-function scrollToId(id) {
-  const el = document.getElementById(id);
-  if (!el) return;
-  const idx = Array.from(slides).indexOf(el);
-  if (idx >= 0) goToSlide(idx, true);
+  // Landing slide: must click the "Begin" button.
+  if (id === 'slide-welcome' && !welcomeStarted) return true;
+
+  // Hunt: must click Confirm (which marks #huntTypeDesc as .confirmed).
+  if (id === 'slide-hunt') {
+    const desc = document.getElementById('huntTypeDesc');
+    if (desc && !desc.classList.contains('confirmed')) return true;
+  }
+
+  // Guess: must click Reveal (which reveals #revealArea).
+  if (id === 'slide-guess') {
+    const revealArea = document.getElementById('revealArea');
+    if (revealArea && !revealArea.classList.contains('show')) return true;
+  }
+
+  return false;
 }
 
 function nextSlide() {
+  if (consumePendingAction()) return;
   goToSlide(currentSlideIdx + 1);
 }
 
@@ -151,7 +365,6 @@ let medianAnimated = false;
 let mortgageAnimated = false;
 let shiftAnimated = false;
 let mapAutoPlayed = false;
-let introStarted = false;
 
 function onSlideEnter(slide) {
   slide.querySelectorAll('.anim').forEach(el => el.classList.add('visible'));
@@ -167,17 +380,15 @@ function onSlideEnter(slide) {
     triggerShrinkAnim();
   }
   if (slide.id === 'slide-mortgage') {
+    // Refresh in case the user reached this slide via the chapter nav without
+    // passing through Reality (which is where selectedMedian is normally set).
+    refreshRealityFromSelections();
     animateMortgage();
     staggerMilestones();
   }
   if (slide.id === 'slide-share') {
     renderShrinkingHome();
     updateCostOfTime();
-  }
-
-  if (slide.id === 'slide-map-intro' && !introStarted) {
-    introStarted = true;
-    setTimeout(runIntroSequence, 400);
   }
 
   if (slide.id === 'slide-map') {
@@ -263,10 +474,25 @@ function revealPrice() {
   revealArea.querySelectorAll('.anim').forEach(el => el.classList.add('visible'));
 
  
-  document.getElementById('userGuessStrike').textContent = 'Your guess: ' + formatCurrency(userGuessSlide2);
-  
-  
-  countUp(document.getElementById('actualPriceEl'), 0, selectedPropertySlide3.price2026, 1500, true);
+  const actual = selectedPropertySlide3.price2026;
+  const diff = userGuessSlide2 - actual;
+  const guessEl = document.getElementById('userGuessStrike');
+  let deltaHtml = '';
+  if (diff < 0) {
+    // Guessed too low — actual price was higher. Red = "too far down".
+    deltaHtml = `<span class="guess-delta guess-delta-low">−${formatCurrency(Math.abs(diff))} too low</span>`;
+  } else if (diff > 0) {
+    // Guessed too high — actual price was lower. Green = "too far up".
+    deltaHtml = `<span class="guess-delta guess-delta-high">+${formatCurrency(diff)} too high</span>`;
+  } else {
+    deltaHtml = `<span class="guess-delta guess-delta-exact">Exact!</span>`;
+  }
+  guessEl.innerHTML =
+    `<span class="strike">Your guess: ${formatCurrency(userGuessSlide2)}</span> ${deltaHtml}`;
+
+  countUp(document.getElementById('actualPriceEl'), 0, actual, 1500, true);
+  // Reveal complete — the scroll-cue may now appear once everything settles.
+  scheduleScrollCue(slides[currentSlideIdx]);
 }
 // ============ DONUT CHART (Slide 3) ============
 const donutOrder = [
@@ -306,6 +532,8 @@ function drawDonut(data) {
 function updateCompetitionCards(name) {
   const data = neighborhoodMix[name];
   if (!data) return;
+  // Track for the donut hover handler — uses this to look up percentages.
+  currentMixHood = name;
 
   const nonInvestorPct = roundedPct(data.nonInvestor, data.total);
   const smallPct = roundedPct(data.small, data.total);
@@ -317,19 +545,17 @@ function updateCompetitionCards(name) {
     data.small + data.medium + data.large + data.institutional;
   const investorPct = roundedPct(investorTotal, data.total);
 
-  document.getElementById('legend-nonInvestor').textContent = `Non-investors ${nonInvestorPct}%`;
-  document.getElementById('legend-small').textContent = `Small investors ${smallPct}%`;
-  document.getElementById('legend-medium').textContent = `Medium investors ${mediumPct}%`;
-  document.getElementById('legend-large').textContent = `Large investors ${largePct}%`;
-  document.getElementById('legend-institutional').textContent = `Institutional ${institutionalPct}%`;
+  // Card stats live on the "Meet the Players" slide; guard in case they're
+  // ever absent (e.g. during slide-prep transitions).
+  const setText = (id, txt) => { const el = document.getElementById(id); if (el) el.textContent = txt; };
+  setText('nonInvestorCard',  `${nonInvestorPct}%`);
+  setText('smallCard',        `${smallPct}%`);
+  setText('mediumCard',       `${mediumPct}%`);
+  setText('largeCard',        `${largePct}%`);
+  setText('institutionalCard',`${institutionalPct}%`);
 
-  document.getElementById('nonInvestorCard').textContent = `${nonInvestorPct}%`;
-  document.getElementById('smallCard').textContent = `${smallPct}%`;
-  document.getElementById('mediumCard').textContent = `${mediumPct}%`;
-  document.getElementById('largeCard').textContent = `${largePct}%`;
-  document.getElementById('institutionalCard').textContent = `${institutionalPct}%`;
-
-  document.getElementById('competitionCallout').innerHTML =
+  const callout = document.getElementById('competitionCallout');
+  if (callout) callout.innerHTML =
     `In <span>${name}</span>, <span>${investorPct}%</span> of buyers are investors.`;
 
   if (donutAnimated) drawDonut(data);
@@ -340,6 +566,39 @@ function animateDonut() {
   donutAnimated = true;
   drawDonut(neighborhoodMix['Dorchester']);
 }
+
+// ============ DONUT HOVER (Slide: Buyer breakdown) ============
+// On hover over a segment, swap the center label to show that category's
+// name + share for the currently-selected neighborhood. Reset on leave.
+const DCL_DEFAULT_TOP = 'BUYER';
+const DCL_DEFAULT_BOT = 'BREAKDOWN';
+
+function setCenterLabel(top, bot, color) {
+  const el = document.getElementById('donutCenterLabel');
+  if (!el) return;
+  el.querySelector('.dcl-line1').textContent = top;
+  el.querySelector('.dcl-line2').textContent = bot;
+  el.style.color = color || '';
+}
+
+document.querySelectorAll('.donut-segment[data-key]').forEach(seg => {
+  seg.addEventListener('mouseenter', () => {
+    const data = neighborhoodMix[currentMixHood];
+    if (!data) return;
+    const key = seg.dataset.key;
+    const label = seg.dataset.label || '';
+    const p = roundedPct(data[key], data.total);
+    const color = seg.getAttribute('stroke') || '';
+    // Resolve CSS variable strokes (var(--white) etc) at runtime.
+    const resolved = color.startsWith('var(')
+      ? getComputedStyle(seg).getPropertyValue('stroke').trim()
+      : color;
+    setCenterLabel(`${p}%`, label.toUpperCase(), resolved);
+  });
+  seg.addEventListener('mouseleave', () => {
+    setCenterLabel(DCL_DEFAULT_TOP, DCL_DEFAULT_BOT, '');
+  });
+});
 
 document.querySelectorAll('.neighborhood-pills .pill').forEach(pill => {
   pill.addEventListener('click', () => {
@@ -463,84 +722,31 @@ const clean = rows
     };
   });
 
-  const resaleData = clean.filter(d =>
-  Number.isFinite(d.priceDiffPct)
-  );
-
-  console.log(
-  clean.filter(d => d.flip === 1).slice(0, 10)
-  );
-
-
   const nonInvestors = clean.filter(d => d.group === 'Non-investors');
-  const investors = clean.filter(d => d.group === 'Investors');
-
+  const investors    = clean.filter(d => d.group === 'Investors');
 
   function avg(group, key) {
     if (!group.length) return 0;
     return group.reduce((sum, d) => sum + d[key], 0) / group.length;
   }
 
-function avgFlipHorizon(group) {
-  const flips = group.filter(d =>
-    d.flip === 1 &&
-    Number.isFinite(d.flipHorizon) &&
-    d.flipHorizon > 0
-  );
+  function avgFlipHorizon(group) {
+    const flips = group.filter(d =>
+      d.flip === 1 &&
+      Number.isFinite(d.flipHorizon) &&
+      d.flipHorizon > 0
+    );
+    if (!flips.length) return 0;
+    return flips.reduce((sum, d) => sum + d.flipHorizon, 0) / flips.length;
+  }
 
-  if (!flips.length) return 0;
-
-  return flips.reduce((sum, d) => sum + d.flipHorizon, 0) / flips.length;
-}
-
-function medianPriceChange(group) {
-  const valid = group
-    .map(d => d.priceDiffPct)
-    .filter(v => Number.isFinite(v))
-    .sort((a, b) => a - b);
-
-  if (!valid.length) return 0;
-
-  const mid = Math.floor(valid.length / 2);
-  return valid.length % 2 === 0
-    ? (valid[mid - 1] + valid[mid]) / 2
-    : valid[mid];
-}
-
-
-function avgPriceChange(group) {
-  const valid = group
-    .map(d => d.priceDiffPct)
-    .filter(v => Number.isFinite(v));  // ✅ ONLY keep valid numbers
-
-  if (!valid.length) return 0;
-
-  return valid.reduce((sum, v) => sum + v, 0) / valid.length;
-}
-
-console.log('Average resale price change:', {
-  nonInvestors: avgPriceChange(nonInvestors),
-  investors: avgPriceChange(investors)
-});
-
-console.log(
-  'Sample price changes:',
-  clean
-    .map(d => d.priceDiffPct)
-    .filter(v => Number.isFinite(v))
-    .slice(0, 20)
-);
-
-console.log(
-  'Extreme values:',
-  clean
-    .map(d => d.priceDiffPct)
-    .filter(v => Number.isFinite(v))
-    .sort((a, b) => b - a)
-    .slice(0, 10)
-);
-
-console.log('Rows after filtering:', clean.length);
+  function avgPriceChange(group) {
+    const valid = group
+      .map(d => d.priceDiffPct)
+      .filter(v => Number.isFinite(v));
+    if (!valid.length) return 0;
+    return valid.reduce((sum, v) => sum + v, 0) / valid.length;
+  }
 
   return {
     cash: {
@@ -660,7 +866,9 @@ document.querySelectorAll('.metric-pill').forEach(pill => {
   });
 });
 
-// ============ SELECTOR PILLS (Slide 9) ============
+// ============ SELECTOR PILLS (Slide: Pick Your Dream Home) ============
+// When hunt selections change, invalidate downstream animation flags so the
+// next visit to Reality or Mortgage re-animates with the new median.
 document.querySelectorAll('.selector-row').forEach(row => {
   row.querySelectorAll('.selector-pill').forEach(pill => {
     pill.addEventListener('click', () => {
@@ -669,6 +877,10 @@ document.querySelectorAll('.selector-row').forEach(row => {
       const g = row.dataset.group;
       if (g === 'district') updateHuntDistrict();
       if (g === 'type')     updateHuntType();
+      // Hunt selection changed — downstream stats are now stale.
+      medianAnimated = false;
+      mortgageAnimated = false;
+      refreshRealityFromSelections();
     });
   });
 });
@@ -737,15 +949,19 @@ function buildHuntMap() {
   // Tighten the viewBox to the actual rendered Boston shape so the silhouette
   // fills the wrap (eliminates large blank margins inside the SVG).
   // Hide the dot+ring during measurement so they don't expand the bbox.
+  // Skip if bbox is degenerate (SVG in a display:none subtree returns zeros)
+  // — we'll re-run this once the column becomes visible.
   dot.style.display = 'none';
   ring.style.display = 'none';
   const bbox = svg.getBBox();
   dot.style.display = '';
   ring.style.display = '';
-  const pad = 4;
-  svg.setAttribute('viewBox',
-    `${bbox.x - pad} ${bbox.y - pad} ${bbox.width + 2 * pad} ${bbox.height + 2 * pad}`
-  );
+  if (bbox.width > 1 && bbox.height > 1) {
+    const pad = 4;
+    svg.setAttribute('viewBox',
+      `${bbox.x - pad} ${bbox.y - pad} ${bbox.width + 2 * pad} ${bbox.height + 2 * pad}`
+    );
+  }
 }
 
 function updateHuntDistrict() {
@@ -875,16 +1091,24 @@ function updateHuntType() {
   const wrap = document.getElementById('huntTypeWrap');
   wrap.innerHTML = buildHuntTypeSvg(v);
   document.getElementById('huntTypeName').textContent = info.label;
-  document.getElementById('huntTypeDesc').textContent = info.desc;
+  // Don't overwrite the post-confirm "Remember your dream house!" message
+  // even if the user toggles a Type pill afterwards.
+  const desc = document.getElementById('huntTypeDesc');
+  if (desc && !desc.classList.contains('confirmed')) desc.textContent = info.desc;
 
-  // Tighten viewBox to the building's actual bbox so it sits centered in the wrap
+  // Tighten viewBox to the building's actual bbox so it sits centered in the wrap.
+  // Skip when bbox is degenerate (e.g. SVG is in a display:none subtree on
+  // mobile pre-confirm) — keep the default 0 0 240 220 so the shape stays
+  // visible, and we'll re-call this after the column becomes visible.
   const svg = wrap.querySelector('svg');
   if (svg) {
     const bbox = svg.getBBox();
-    const pad = 6;
-    svg.setAttribute('viewBox',
-      `${bbox.x - pad} ${bbox.y - pad} ${bbox.width + 2 * pad} ${bbox.height + 2 * pad}`
-    );
+    if (bbox.width > 1 && bbox.height > 1) {
+      const pad = 6;
+      svg.setAttribute('viewBox',
+        `${bbox.x - pad} ${bbox.y - pad} ${bbox.width + 2 * pad} ${bbox.height + 2 * pad}`
+      );
+    }
   }
 }
 
@@ -924,14 +1148,13 @@ budgetSlider.addEventListener('input', () => {
 // and the slide-reality enter hook (so scrolling past Hunt still works).
 function refreshRealityFromSelections() {
   selectedMedian = getSelectedMedian();
-  selectedMonthly = calcMonthlyMortgage(selectedMedian, STANDARD_TERM);
 
   const diff = Math.abs(selectedMedian - userBudget);
   const diffCopy = diff === 0
     ? 'You nailed it'
     : userBudget < selectedMedian
-      ? formatCurrency(diff) + ' under budget'
-      : formatCurrency(diff) + ' over budget';
+      ? formatCurrency(diff) + ' under median'
+      : formatCurrency(diff) + ' over median';
 
   document.getElementById('guessComparison').textContent = 'You guessed ' + formatCurrency(userBudget);
   document.getElementById('guessDiff').textContent = diffCopy;
@@ -940,20 +1163,70 @@ function refreshRealityFromSelections() {
     formatCurrency(userBudget) + ' &rarr; <span class="neon">' + formatCurrency(selectedMedian) + '</span>';
 }
 
-function showReality() {
+// ============ BEGIN (slide-welcome) ============
+// Clicking "Begin" is the only way out of the landing slide — scroll is
+// blocked until welcomeStarted is true.
+function beginExperience() {
+  welcomeStarted = true;
+  goToSlide(currentSlideIdx + 1, true);
+}
+
+// ============ HUNT CONFIRM (slide-hunt) ============
+// Locks in the user's selection and bridges into the Guess slide with a
+// "Remember your dream house — we'll get back to it" message. No slide change;
+// the user scrolls forward when they're ready.
+function confirmHunt() {
+  const desc = document.getElementById('huntTypeDesc');
+  const btn  = document.getElementById('huntConfirmBtn');
+  if (!desc) return;
+
+  // Save the user's intent for downstream slides (already auto-refreshed on
+  // slide-reality enter, but this is also a good moment to sync explicitly).
   refreshRealityFromSelections();
 
-  // Reset animation flags so slides 10/11 re-animate to the newly selected values.
-  medianAnimated = false;
-  mortgageAnimated = false;
-  document.getElementById('medianPrice').textContent = '$0';
-  document.getElementById('yearsNumber').textContent = '0';
-  document.getElementById('monthlyPayment').textContent = '$0';
+  // Replace the property-type description in the right preview card with the
+  // confirmation. Selectors on the left stay visible so the reader can still
+  // see what they picked. The .confirmed flag is the "action done" marker.
+  const newDescHTML =
+    `<strong class="confirmed-title">Remember your dream house!</strong>` +
+    `<span class="confirmed-sub">We'll get back to it.</span>`;
+  const form = document.getElementById('huntForm');
+  // Use visibility (not display:none) so the button's box still reserves
+  // space — otherwise the left column shifts down once the CTA disappears.
+  if (btn) { btn.style.visibility = 'hidden'; btn.style.pointerEvents = 'none'; }
 
-  // Build the shrinking-home iso pair before the slide enters so it's ready to animate
-  renderShrinkingHome();
+  if (window.matchMedia('(max-width: 767px)').matches) {
+    // Mobile: fade the left options out FIRST, then bring the right-column
+    // visualization in. Otherwise both happen at once and the right column
+    // visibly snaps upward when the left collapses out of the layout.
+    const huntLeft = document.getElementById('huntLeft');
+    if (huntLeft) {
+      huntLeft.style.transition = 'opacity 0.35s ease';
+      huntLeft.style.opacity = '0';
+      huntLeft.style.pointerEvents = 'none';
+    }
+    setTimeout(() => {
+      if (huntLeft) huntLeft.style.display = 'none';
+      desc.innerHTML = newDescHTML;
+      desc.classList.add('confirmed');
+      form?.classList.add('confirmed');
+      // Right column was display:none until just now, so any viewBox tightening
+      // done earlier ran against a zero-bbox SVG. Re-run now that the SVGs
+      // have layout — and on the next frame so styles flush first.
+      requestAnimationFrame(() => {
+        buildHuntMap();
+        updateHuntDistrict();
+        updateHuntType();
+      });
+    }, 380);
+  } else {
+    // Desktop: both columns stay visible — swap the desc immediately.
+    desc.innerHTML = newDescHTML;
+    desc.classList.add('confirmed');
+    form?.classList.add('confirmed');
+  }
 
-  scrollToId('slide-reality');
+  scheduleScrollCue(slides[currentSlideIdx]);
 }
 
 // ============ ANIMATE MEDIAN PRICE (Slide 9) ============
@@ -1495,84 +1768,73 @@ function animateMortgage() {
   if (shareMonthlyEl) shareMonthlyEl.textContent = formatCurrency(result.monthly);
 }
 
-// ============ WRAPPED INTRO SEQUENCE (Slide 5) ============
-const phases = [
-  document.getElementById('introPhase1'),
-  document.getElementById('introPhase2'),
-  document.getElementById('introPhase3'),
-  document.getElementById('introPhase4')
-];
-let currentPhase = -1;
-let introComplete = false;
-const PHASE_DURATION = 2200;
-
-function showPhase(idx) {
-  phases.forEach((p, i) => {
-    if (i < idx) {
-      p.classList.remove('active');
-      p.classList.add('exit');
-    } else if (i === idx) {
-      p.classList.remove('exit');
-      p.classList.add('active');
-    } else {
-      p.classList.remove('active', 'exit');
-    }
-  });
+// ============ SHARE (Slide 12) ============
+// Build the user-specific result text from the live share-card values.
+function buildShareText() {
+  const txt = (id) => (document.getElementById(id)?.textContent || '').trim();
+  const guess  = txt('shareGuess').replace(/\s+/g, ' ');
+  const years  = txt('shareYears');
+  const month  = txt('shareMonthly');
+  return `My Boston Housing Wrapped: ${guess}. ${month}/mo for ${years}. See your number — `;
 }
 
-// Show phase 0 only; user advances manually with the Next button.
-function runIntroSequence() {
-  currentPhase = 0;
-  showPhase(0);
-  const nextWrap = document.getElementById('introNextWrap');
-  if (nextWrap) nextWrap.classList.remove('hidden');
+function showShareToast(msg) {
+  const toast = document.getElementById('shareToast');
+  if (!toast) return;
+  toast.textContent = msg;
+  toast.classList.add('show');
+  clearTimeout(showShareToast._t);
+  showShareToast._t = setTimeout(() => toast.classList.remove('show'), 2200);
 }
 
-// Step the intro forward one phase. Triggers count-up animations on entry to
-// phases 1 and 2; hides the Next button on phase 3 (final headline has its own).
-function advanceIntro() {
-  if (currentPhase >= 3) return;
-  currentPhase++;
-  showPhase(currentPhase);
-
-  if (currentPhase === 1) {
-    const el = document.getElementById('statEarly');
-    let val = 0;
-    const timer = setInterval(() => {
-      val++;
-      el.textContent = val + '%';
-      if (val >= 5) clearInterval(timer);
-    }, 80);
-  } else if (currentPhase === 2) {
-    const el = document.getElementById('statNow');
-    let val = 0;
-    const timer = setInterval(() => {
-      val += 2;
-      if (val > 38) val = 38;
-      el.textContent = val + '%';
-      if (val >= 38) clearInterval(timer);
-    }, 40);
-  } else if (currentPhase === 3) {
-    introComplete = true;
-    const nextWrap = document.getElementById('introNextWrap');
-    if (nextWrap) nextWrap.classList.add('hidden');
+// Primary CTA — prefers native share sheet on mobile; falls back to copy.
+function shareCard() {
+  const text = buildShareText();
+  const url  = window.location.href;
+  if (navigator.share) {
+    navigator.share({ title: 'Boston Housing Wrapped 2026', text, url }).catch(() => {});
+  } else {
+    navigator.clipboard.writeText(text + url)
+      .then(() => showShareToast('Link & result copied'))
+      .catch(() => showShareToast('Could not copy — please copy the URL manually'));
   }
 }
 
-// ============ SHARE (Slide 12) ============
-function shareCard() {
-  if (navigator.share) {
-    navigator.share({
-      title: 'Boston Housing Wrapped 2026',
-      text: 'I just took the Boston Housing Wrapped quiz. Can you outbid the investors?',
-      url: window.location.href
-    }).catch(() => {});
-  } else {
-    navigator.clipboard.writeText(window.location.href).then(() => {
-      const btn = document.querySelector('#slide-share .btn');
-      btn.textContent = 'Link Copied!';
-      setTimeout(() => btn.textContent = 'Share', 2000);
-    }).catch(() => {});
+// Social row — each target gets its own behavior.
+function shareTo(target) {
+  const text = buildShareText();
+  const url  = window.location.href;
+  const enc  = encodeURIComponent;
+
+  if (target === 'copy') {
+    navigator.clipboard.writeText(url)
+      .then(() => showShareToast('Link copied to clipboard'))
+      .catch(() => showShareToast('Could not copy link'));
+    return;
+  }
+
+  if (target === 'twitter') {
+    const intent = `https://twitter.com/intent/tweet?text=${enc(text)}&url=${enc(url)}`;
+    window.open(intent, '_blank', 'noopener,noreferrer,width=620,height=520');
+    return;
+  }
+
+  if (target === 'instagram') {
+    // Instagram has no public web-share intent; copy a caption the user can paste.
+    navigator.clipboard.writeText(text + url)
+      .then(() => showShareToast('Caption copied — paste it into your Instagram story or post'))
+      .catch(() => showShareToast('Could not copy caption'));
+    return;
+  }
+
+  if (target === 'sms') {
+    // Native share sheet handles SMS best when available; otherwise sms: link.
+    if (navigator.share) {
+      navigator.share({ title: 'Boston Housing Wrapped 2026', text, url }).catch(() => {});
+    } else {
+      window.location.href = `sms:?&body=${enc(text + url)}`;
+    }
+    return;
   }
 }
 
@@ -1595,7 +1857,8 @@ document.addEventListener('touchend', e => {
 window.addEventListener('load', async () => {
   // Trigger first slide animations
   onSlideEnter(slides[0]);
-  initSlide3Random(); 
+  scheduleScrollCue(slides[0]);
+  initSlide3Random();
   
   updateCompetitionCards('Dorchester');
   loadAdvantageData();
@@ -1605,7 +1868,6 @@ window.addEventListener('load', async () => {
   buildShiftGrid();
   updateMap(2004);
   initYearSlider();
-  initParticles();
 
   // Seed slide 10's iso pair with default selections so direct dot-nav has content
   renderShrinkingHome();
@@ -1620,16 +1882,6 @@ window.addEventListener('load', async () => {
 
   initInfoPopovers();
 });
-
-function toggleOverlay(show) {
-  const overlay = document.getElementById('resourceOverlay');
-  if (show) {
-    overlay.classList.add('active');
-  } else {
-    overlay.classList.remove('active');
-  }
-}
-
 
 function initSlide3Random() {
     const randomIndex = Math.floor(Math.random() * propertyPool.length);

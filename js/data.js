@@ -1,5 +1,5 @@
 // ============ CONSTANTS ============
-const ACTUAL_PRICE = 847000;
+// Fallback median used before the user picks a Hunt selection.
 const MEDIAN_PRICE = 785000;
 
 // ============ MEDIAN SALE PRICE LOOKUP ============

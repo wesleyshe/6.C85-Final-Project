@@ -18,11 +18,39 @@
 </head>
 <body>
 
-<!-- Dot indicators -->
-<div class="dots" id="dots"></div>
+<!-- Idle nudge — appears at bottom-center a few seconds after entering each
+     slide (once that slide's animations have settled). The label swaps to
+     "Scroll to begin" on the very first slide. Hidden during navigation and
+     on the final resources slide (nothing to continue to). -->
+<div class="scroll-cue" id="scrollCue" aria-hidden="true">
+  <span id="scrollCueLabel">Scroll to continue</span>
+  <span class="scroll-cue-chev" aria-hidden="true">&#x2193;</span>
+</div>
 
-<!-- ====== SLIDE 1 — Welcome ====== -->
-<section class="slide" id="slide-welcome">
+<!-- Indicator-only progress bar. Tints to the current chapter's accent color
+     so it stays consistent with the chapter chip. Not interactive. -->
+<div class="progress-bar" id="progressBar" data-chapter="1" aria-hidden="true">
+  <div class="progress-bar-fill" id="progressBarFill"></div>
+</div>
+
+<!-- Current-chapter chip — fixed bottom-left. Hover (or tap) expands to a
+     full chapter menu so the reader can jump to any chapter instantly. -->
+<aside class="chapter-chip" id="chapterChip" data-chapter="1" aria-haspopup="menu" tabindex="0">
+  <span class="chapter-chip-num" id="chapterChipNum">01</span>
+  <div class="chapter-chip-info">
+    <div class="chapter-chip-name" id="chapterChipName">Background</div>
+    <div class="chapter-chip-progress" id="chapterChipProgress"></div>
+  </div>
+  <div class="chapter-chip-menu" id="chapterChipMenu" role="menu" aria-label="Jump to chapter"></div>
+</aside>
+
+
+<!-- =================================================================== -->
+<!-- CHAPTER 1 — BACKGROUND                                              -->
+<!-- =================================================================== -->
+
+<!-- ====== Welcome ====== -->
+<section class="slide" id="slide-welcome" data-chapter="1">
   <div class="skyline">
     <div class="building b1"></div>
     <div class="building b2"></div>
@@ -39,13 +67,13 @@
     <p class="top-label anim">BOSTON HOUSING &bull; 2026 WRAPPED</p>
     <h1 class="headline anim anim-delay-1">Welcome to<br>Boston</h1>
     <p class="subheadline anim anim-delay-2">A city many people want to call home — if they can afford to compete.</p>
-    <button class="btn anim anim-delay-3" onclick="scrollToSlide(1)">Start Your Search &rarr;</button>
+    <button class="btn anim anim-delay-3 u-mt-lg" id="beginBtn" onclick="beginExperience()">Begin</button>
   </div>
 </section>
 
-<!-- ====== SLIDE 2 — Boston Housing Headlines ====== -->
-<section class="slide" id="slide-headlines">
-  <div class="slide-inner" style="max-width:520px;">
+<!-- ====== Headlines ====== -->
+<section class="slide" id="slide-headlines" data-chapter="1">
+  <div class="slide-inner u-mw-520">
     <p class="top-label anim">SETTING THE SCENE</p>
     <h2 class="headline h-h2 anim anim-delay-1">Boston's housing market<br>has been making headlines</h2>
 
@@ -69,143 +97,235 @@
     </div>
 
     <p class="subheadline sub-sm anim anim-delay-3">
-      Boston’s housing crisis is not just about high prices. It is also about who has the power to buy, hold, and profit from housing as an asset. Before we look at ownership, let’s start where most buyers do: the price tag.
+      Boston's housing crisis is not just about high prices. It is also about who has the power to buy, hold, and profit from housing as an asset. Before we look at ownership, let's start with you.
     </p>
-    <button class="btn anim anim-delay-4" onclick="scrollToSlide(2)">Guess the Price &rarr;</button>
   </div>
 </section>
 
-<!-- ====== SLIDE 3 — Guess the Price ====== -->
-<section class="slide" id="slide-guess">
+
+<!-- =================================================================== -->
+<!-- CHAPTER 2 — CURRENT STATUS (your home search)                       -->
+<!-- =================================================================== -->
+
+<!-- ====== Pick Your Dream Home ====== -->
+<section class="slide" id="slide-hunt" data-chapter="2">
+  <div class="slide-inner">
+    <p class="top-label anim">PICK YOUR DREAM HOME</p>
+    <h2 class="headline h-h2 anim anim-delay-1">Let's search for your<br>dream home</h2>
+
+    <div class="hunt-layout" id="huntForm">
+      <div class="hunt-left" id="huntLeft">
+        <div class="selector-group anim anim-delay-2">
+          <div class="selector-label">District</div>
+          <div class="selector-row" data-group="district">
+            <button class="selector-pill active" data-value="backbay">Back Bay</button>
+            <button class="selector-pill" data-value="dorchester">Dorchester</button>
+            <button class="selector-pill" data-value="eastboston">East Boston</button>
+            <button class="selector-pill" data-value="jp">Jamaica Plain</button>
+            <button class="selector-pill" data-value="southboston">South Boston</button>
+          </div>
+        </div>
+        <div class="selector-group anim anim-delay-2">
+          <div class="selector-label">Type</div>
+          <div class="selector-row" data-group="type">
+            <button class="selector-pill active" data-value="condo">Condo</button>
+            <button class="selector-pill" data-value="single">Single Family</button>
+            <button class="selector-pill" data-value="multi">Multi-Family</button>
+          </div>
+        </div>
+        <div class="selector-group anim anim-delay-3">
+          <div class="selector-label">Bedrooms</div>
+          <div class="selector-row" data-group="beds">
+            <button class="selector-pill" data-value="1">1</button>
+            <button class="selector-pill active" data-value="2">2</button>
+            <button class="selector-pill" data-value="3">3</button>
+            <button class="selector-pill" data-value="4">4+</button>
+          </div>
+        </div>
+        <div class="budget-slider-wrap anim anim-delay-3">
+          <label class="budget-slider-label">What would you pay?</label>
+          <div class="budget-display" id="budgetDisplay">$500,000</div>
+          <input type="range" id="budgetSlider" min="100000" max="2000000" step="25000" value="500000">
+          <div class="slider-labels"><span>$100K</span><span>$2M</span></div>
+        </div>
+      </div>
+
+      <div class="hunt-right anim anim-delay-2">
+        <div class="hunt-card hunt-combined">
+          <div class="hunt-pair">
+            <div class="hunt-section">
+              <div class="hunt-card-label">Region</div>
+              <div class="hunt-map-wrap" id="huntMapWrap"></div>
+              <div class="hunt-card-name" id="huntDistrictName">Back Bay</div>
+            </div>
+            <div class="hunt-section">
+              <div class="hunt-card-label">Type</div>
+              <div class="hunt-type-wrap" id="huntTypeWrap"></div>
+              <div class="hunt-card-name" id="huntTypeName">Condo</div>
+            </div>
+          </div>
+          <div class="hunt-card-desc" id="huntTypeDesc"></div>
+        </div>
+      </div>
+    </div>
+
+    <button class="btn anim anim-delay-4" id="huntConfirmBtn" onclick="confirmHunt()">Confirm</button>
+  </div>
+  <p class="data-source">Median sale prices: calibrated to 2023–24 Boston neighborhood medians (Zillow / Redfin / MAPC).</p>
+</section>
+
+<!-- ====== Guess the Price ====== -->
+<section class="slide" id="slide-guess" data-chapter="2">
   <div class="slide-inner">
     <p class="top-label anim">GUESS THE PRICE</p>
-    <div class="property-card anim anim-delay-1">
+    <p class="guess-lead anim anim-delay-1">In the meantime, let's guess the price for housing in Boston.</p>
+    <div class="property-card anim anim-delay-2">
       <img class="property-img" id="propertyImg" src="asset/dorchester_chelmsford.png" alt="Property">
       <div class="property-label" id="propertyLabel">Loading...</div>
     </div>
-    <p class="subheadline anim anim-delay-2" style="margin-bottom:8px;">How much do you think this home sold for in 2026?</p>
+    <p class="subheadline anim anim-delay-2 u-mb-xs">How much do you think this home sold for in 2026?</p>
     <div class="price-display anim anim-delay-2" id="priceDisplay">$500,000</div>
     <div class="slider-container anim anim-delay-3" id="sliderArea">
       <input type="range" id="priceSlider" min="0" max="2000000" step="5000" value="500000">
       <div class="slider-labels"><span>$0</span><span>$2,000,000</span></div>
     </div>
     <button class="btn anim anim-delay-4" id="revealBtn" onclick="revealPrice()">Reveal</button>
-    
+
     <div class="reveal-area" id="revealArea">
       <div class="actual-price anim" id="actualPriceEl">$0</div>
       <div class="user-guess-strike anim" id="userGuessStrike"></div>
       <div class="comparison-line anim" id="hist2003">In 2003: --</div>
       <div class="comparison-line anim" id="hist2013">In 2013: --</div>
     </div>
-    <p class="slide-counter anim anim-delay-4">1 of 6 randomly selected properties</p>
   </div>
 </section>
 
-<!-- ====== SLIDE 4 — Your Competitors ====== -->
-<section class="slide" id="slide-competitors">
+<!-- =================================================================== -->
+<!-- CHAPTER 3 — REASONS BEHIND (why prices rose)                        -->
+<!-- =================================================================== -->
+
+<!-- ====== Buyer Breakdown — donut + pills + callout ====== -->
+<section class="slide" id="slide-competitors" data-chapter="3">
   <div class="slide-inner">
     <p class="top-label anim">YOUR COMPETITION</p>
-    <h2 class="headline h-h2 anim anim-delay-1">Who are you really<br>competing against?</h2>
-    <p class="subheadline anim anim-delay-2" style="max-width:560px;">
-  In Boston, buying a home does not always mean competing with another household. In many neighborhoods, everyday buyers also face investors, trusts, LLCs, and larger ownership groups with different financial resources and incentives.
-</p>
+    <h2 class="headline h-h2 anim anim-delay-1">Who are Bostonians really<br>competing with?</h2>
+    <p class="subheadline anim anim-delay-2 u-mw-560">
+      In Boston, buying a home does not always mean competing with another household. In many neighborhoods, everyday buyers also face investors, trusts, LLCs, and larger ownership groups.
+    </p>
 
-    <div class="competitors-layout">
-      <div class="competitor-top">
-        <div class="donut-panel anim anim-delay-2">
+    <div class="donut-panel anim anim-delay-2">
       <div class="donut-panel-title">Buyer breakdown</div>
       <div class="donut-wrap">
         <svg viewBox="0 0 200 200" aria-label="Buyer breakdown donut chart">
           <circle class="donut-bg" cx="100" cy="100" r="82"></circle>
-          <circle class="donut-segment" id="seg-nonInvestor" cx="100" cy="100" r="82" stroke="var(--white)"></circle>
-          <circle class="donut-segment" id="seg-small" cx="100" cy="100" r="82" stroke="var(--neon-red)"></circle>
-          <circle class="donut-segment" id="seg-medium" cx="100" cy="100" r="82" stroke="var(--neon)"></circle>
-          <circle class="donut-segment" id="seg-large" cx="100" cy="100" r="82" stroke="var(--orange)"></circle>
-          <circle class="donut-segment" id="seg-institutional" cx="100" cy="100" r="82" stroke="var(--purple)"></circle>
+          <!-- All investor slices are highlighted — these are the buyer types
+               competing against the reader. The non-investor slice is dimmed
+               by default (it's the reader's own category). Hover any slice to
+               reveal its name + share in the center label. -->
+          <circle class="donut-segment" id="seg-nonInvestor" data-key="nonInvestor" data-label="Non-investors" cx="100" cy="100" r="82" stroke="var(--white)"></circle>
+          <circle class="donut-segment always-lit" id="seg-small"         data-key="small"         data-label="Small investors"   cx="100" cy="100" r="82" stroke="var(--neon-red)"></circle>
+          <circle class="donut-segment always-lit" id="seg-medium"        data-key="medium"        data-label="Medium investors"  cx="100" cy="100" r="82" stroke="var(--neon)"></circle>
+          <circle class="donut-segment always-lit" id="seg-large"         data-key="large"         data-label="Large investors"   cx="100" cy="100" r="82" stroke="var(--orange)"></circle>
+          <circle class="donut-segment always-lit" id="seg-institutional" data-key="institutional" data-label="Institutional"     cx="100" cy="100" r="82" stroke="var(--purple)"></circle>
         </svg>
-        <div class="donut-center-label">BUYER<br>BREAKDOWN</div>
+        <div class="donut-center-label" id="donutCenterLabel">
+          <span class="dcl-line1">BUYER</span>
+          <span class="dcl-line2">BREAKDOWN</span>
+        </div>
       </div>
-        <div class="legend">
-          <div class="legend-item"><div class="legend-dot" style="background:var(--white)"></div><span id="legend-nonInvestor">Non-investors 0%</span></div>
-          <div class="legend-item"><div class="legend-dot" style="background:var(--neon-red)"></div><span id="legend-small">Small investors 0%</span></div>
-          <div class="legend-item"><div class="legend-dot" style="background:var(--neon)"></div><span id="legend-medium">Medium investors 0%</span></div>
-          <div class="legend-item"><div class="legend-dot" style="background:var(--orange)"></div><span id="legend-large">Large investors 0%</span></div>
-        <div class="legend-item"><div class="legend-dot" style="background:var(--purple)"></div><span id="legend-institutional">Institutional 0%</span></div>
+      <p class="donut-hint">Hover any slice to see who they are.</p>
+
+      <!-- Headline takeaway sits inside the same frame as the donut. -->
+      <div class="donut-callout" id="competitionCallout">
+        In <span>Dorchester</span>, <span>0%</span> of buyers are investors.
       </div>
     </div>
 
-          <div class="competitor-grid anim anim-delay-3">
-            <div class="card-group-title">Meet the players</div>
-            <div class="competitor-cards">
-              <div class="competitor-card">
-                <div class="competitor-icon">🏠</div>
-                <div class="competitor-name">Non-investors</div>
-                <div class="competitor-stat" id="nonInvestorCard">0%</div>
-                <div class="competitor-copy">Buyers who appear to be purchasing homes outside of an investor ownership strategy.</div>
-              </div>
-
-              <div class="competitor-card">
-                <div class="competitor-icon">📈</div>
-                <div class="competitor-name">Small investors</div>
-                <div class="competitor-stat" id="smallCard">0%</div>
-                <div class="competitor-copy">Smaller-scale buyers who participate in the market as property investors.</div>
-              </div>
-
-              <div class="competitor-card">
-                <div class="competitor-icon">📊</div>
-                <div class="competitor-name">Medium investors</div>
-                <div class="competitor-stat" id="mediumCard">0%</div>
-                <div class="competitor-copy">Buyers with a recurring presence across multiple housing transactions.</div>
-              </div>
-
-              <div class="competitor-card highlight">
-                <div class="competitor-icon">🏢</div>
-                <div class="competitor-name">Large investors</div>
-                <div class="competitor-stat" id="largeCard">0%</div>
-                <div class="competitor-copy">High-volume buyers purchasing properties as part of broader portfolios.</div>
-              </div>
-
-              <div class="competitor-card">
-                <div class="competitor-icon">🏦</div>
-                <div class="competitor-name">Institutional</div>
-                <div class="competitor-stat" id="institutionalCard">0%</div>
-                <div class="competitor-copy">Larger entities whose housing purchases resemble institutional investment activity.</div>
-              </div>
-            </div>
-          </div>
-      </div>
-
-      <div class="callout-card anim anim-delay-4" id="competitionCallout">
-        In <span>Dorchester</span>, <span>0%</span> of buyers are investors.
-      </div>
-
-      <div class="neighborhood-pills anim anim-delay-4">
-        <div class="pill active" data-hood="Dorchester">Dorchester</div>
-        <div class="pill" data-hood="Roxbury">Roxbury</div>
-        <div class="pill" data-hood="South Boston">South Boston</div>
-        <div class="pill" data-hood="Jamaica Plain">Jamaica Plain</div>
-      </div>
+    <div class="neighborhood-pills anim anim-delay-4">
+      <div class="pill active" data-hood="Dorchester">Dorchester</div>
+      <div class="pill" data-hood="Roxbury">Roxbury</div>
+      <div class="pill" data-hood="South Boston">South Boston</div>
+      <div class="pill" data-hood="Jamaica Plain">Jamaica Plain</div>
     </div>
   </div>
   <p class="data-source">Source: MAPC, Residential Sales Data, City of Boston 2000–2023 (via data.boston.gov)</p>
 </section>
 
-<!-- ====== SLIDE 4 — Competition Advantages ====== -->
-<section class="slide" id="slide-competition-advantage">
+<!-- ====== Meet the Players — 5 buyer-category cards ====== -->
+<section class="slide" id="slide-competitors-players" data-chapter="3">
+  <div class="slide-inner">
+    <p class="top-label anim">MEET THE PLAYERS</p>
+    <h2 class="headline h-h2 anim anim-delay-1">The five kinds of buyers<br>you'll face in Boston</h2>
+
+    <div class="competitor-grid anim anim-delay-2">
+      <div class="competitor-cards">
+        <div class="competitor-card">
+          <div class="competitor-icon">🏠</div>
+          <div class="competitor-name">Non-investors</div>
+          <div class="competitor-stat" id="nonInvestorCard">0%</div>
+          <div class="competitor-copy">Buyers who appear to be purchasing homes outside of an investor ownership strategy.</div>
+        </div>
+
+        <div class="competitor-card">
+          <div class="competitor-icon">📈</div>
+          <div class="competitor-name">Small investors</div>
+          <div class="competitor-stat" id="smallCard">0%</div>
+          <div class="competitor-copy">Smaller-scale buyers who participate in the market as property investors.</div>
+        </div>
+
+        <div class="competitor-card">
+          <div class="competitor-icon">📊</div>
+          <div class="competitor-name">Medium investors</div>
+          <div class="competitor-stat" id="mediumCard">0%</div>
+          <div class="competitor-copy">Buyers with a recurring presence across multiple housing transactions.</div>
+        </div>
+
+        <div class="competitor-card highlight">
+          <div class="competitor-icon">🏢</div>
+          <div class="competitor-name">Large investors</div>
+          <div class="competitor-stat" id="largeCard">0%</div>
+          <div class="competitor-copy">High-volume buyers purchasing properties as part of broader portfolios.</div>
+        </div>
+
+        <div class="competitor-card">
+          <div class="competitor-icon">🏦</div>
+          <div class="competitor-name">Institutional</div>
+          <div class="competitor-stat" id="institutionalCard">0%</div>
+          <div class="competitor-copy">Larger entities whose housing purchases resemble institutional investment activity.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <p class="data-source">Percentages reflect the neighborhood selected on the previous slide. Source: MAPC, Residential Sales Data 2000–2023.</p>
+</section>
+
+<!-- ====== Investor Behavior ====== -->
+<section class="slide" id="slide-competition-advantage" data-chapter="3">
   <div class="slide-inner">
     <p class="top-label anim">INVESTOR BEHAVIOR</p>
-    <h2 class="headline anim anim-delay-1" style="font-size:32px;">Do investors play by<br>a different rulebook?</h2>
-    <p class="subheadline anim anim-delay-2" style="max-width:600px;">
-  Investors are often assumed to have an advantage in the housing market. We compare investor and non-investor transactions to see where that advantage appears in the data — and where the story is more complicated.
-</p>
+    <h2 class="headline anim anim-delay-1 h-sm">Do investors play by<br>a different rulebook?</h2>
+    <p class="subheadline anim anim-delay-2 u-mw-600">
+      Investors are often assumed to have an advantage. We compare investor and non-investor transactions to see where that advantage appears in the data — and where the story is more complicated.
+    </p>
 
-    <div class="advantage-layout">
+    <div class="advantage-layout advantage-single">
       <div class="advantage-card anim anim-delay-2">
-        <div class="advantage-title">Investor advantage</div>
-          <div class="advantage-title">What does the data show?</div>
-          <p class="advantage-desc">
-            Select a metric to compare buyers classified as investors with non-investor buyers.
-          </p>
+        <div class="advantage-title">
+          What does the data show?
+          <span class="info-anchor info-anchor-h" tabindex="0" role="button" aria-label="How to read this">
+            <button class="info-btn" type="button" tabindex="-1">?</button>
+            <span class="info-caption info-caption-wide">
+              <strong>How to read this.</strong>
+              The clearest difference is repeat participation: investors are much more likely to appear multiple times in the transaction data.
+              But not every metric points the same way — investors do not always flip more often, and flip timelines are similar across buyer types.
+              Price increases tend to be higher for investor-linked transactions, but those differences may reflect timing, property type, renovation strategy, and holding period.
+              In short: investors do not always move faster — but they appear more repeatedly, giving them more exposure to Boston's rising market.
+            </span>
+          </span>
+        </div>
+        <p class="advantage-desc">
+          Select a metric to compare buyers classified as investors with non-investor buyers.
+        </p>
 
         <div class="metric-switcher">
           <button class="metric-pill active" data-metric="repeat">Repeat buyers</button>
@@ -237,66 +357,18 @@
           </div>
         </div>
 
-      <p class="advantage-desc" id="metricExplanation" style="margin-top: 24px;">
-        Repeat buyers: Share of buyers who appear more than once in the transaction data.
-      </p>
-      </div>
-
-      <div class="trend-card anim anim-delay-3">
-        <div class="trend-title">How to read this</div>
-          <p class="trend-desc">
-            The clearest difference is repeat participation: investors are much more likely to appear multiple times in the transaction data.
-          </p>
-          <p class="trend-desc">
-            But not every metric points in the same direction. Investors do not always flip more often, and flip timelines are similar across buyer types.
-          </p>
-          <p class="trend-desc">
-            Price increases tend to be higher for investor-linked transactions, but those differences may reflect timing, property type, renovation strategy, and holding period.
-          </p>
-
-          <div class="callout-card" style="margin-top:20px;text-align:center;">
-            Investors do not always move faster — but they appear more repeatedly, giving them more exposure to Boston’s rising market.
-          </div>
+        <p class="advantage-desc u-mt-lg" id="metricExplanation">
+          Repeat buyers: Share of buyers who appear more than once in the transaction data.
+        </p>
       </div>
     </div>
   </div>
   <p class="data-source">Source: MAPC, Residential Sales Data, City of Boston 2000–2023 (via data.boston.gov). Price change calculated from sale price and prior sale price for selected residential property types with valid prior sale prices.</p>
 </section>
 
-<!-- ====== SLIDE 5 — Who Owns Your Neighborhood (Wrapped Intro) ====== -->
-<section class="slide" id="slide-map-intro">
-  <div class="slide-inner">
-    <div class="intro-phase phase-1" id="introPhase1">
-      <p class="top-label phase-label">BOSTON HOUSING WRAPPED</p>
-      <div class="big-question">Do you know who<br>owns your<br>neighborhood?</div>
-    </div>
-    <div class="intro-phase phase-2" id="introPhase2">
-      <p class="top-label phase-label">IN 2004</p>
-      <div class="mega-number" id="statEarly">5%</div>
-      <div class="mega-label">of Boston homes were<br>corporate-owned</div>
-    </div>
-    <div class="intro-phase phase-3" id="introPhase3">
-      <p class="top-label phase-label">TODAY</p>
-      <div class="mega-number red-glow" id="statNow">38%</div>
-      <div class="mega-label">in some neighborhoods</div>
-      <div class="pulse-ring"></div>
-    </div>
-    <div class="intro-phase phase-4" id="introPhase4">
-      <p class="top-label phase-label">BOSTON HOUSING WRAPPED</p>
-      <h1 class="headline glitch-in">Who <span>Owns</span><br>Your Neighborhood?</h1>
-      <p class="subheadline fade-up-late">Watch how corporate ownership has spread across Boston’s neighborhoods over the past 20 years.</p>
-      <button class="btn fade-up-late btn-pulse" onclick="scrollToSlide(6)">See the Map &rarr;</button>
-    </div>
-    <div class="intro-next-wrap" id="introNextWrap">
-      <button class="btn" onclick="advanceIntro()">Next &rarr;</button>
-    </div>
-  </div>
-  <canvas id="particleCanvas"></canvas>
-  <p class="data-source">Source: City of Boston Property Assessment Data, 2004–2024 (data.boston.gov)</p>
-</section>
 
-<!-- ====== SLIDE 6 — The Map ====== -->
-<section class="slide" id="slide-map">
+<!-- ====== The Map ====== -->
+<section class="slide" id="slide-map" data-chapter="3">
   <div class="slide-inner">
     <div class="map-layout anim">
       <div class="map-container" id="mapContainer">
@@ -318,7 +390,7 @@
         <div class="sidebar-card" id="demoCard">
           <h3>Neighborhood Context</h3>
           <div id="demoContent">
-            <div class="selected-detail" style="opacity:0.4;">Select a neighborhood to see who lives there</div>
+            <div class="selected-detail u-fade-40">Select a neighborhood to see who lives there</div>
           </div>
         </div>
 
@@ -356,92 +428,30 @@
   <p class="data-source">Source: City of Boston Property Assessment Data, 2004–2024 (data.boston.gov). Demographics: U.S. Census Bureau.</p>
 </section>
 
-<!-- ====== SLIDE 7 — The Shift ====== -->
-<section class="slide" id="slide-shift">
+<!-- ====== The Shift ====== -->
+<section class="slide" id="slide-shift" data-chapter="3">
   <div class="slide-inner">
     <p class="top-label anim">20 YEARS LATER</p>
     <h1 class="headline h-h2 anim anim-delay-1">The neighborhoods<br>hit hardest</h1>
     <p class="subheadline sub-sm anim anim-delay-2">Top 5 biggest increases in corporate ownership</p>
     <div class="top-shifts anim anim-delay-3" id="shiftGrid"></div>
-    <div class="callout-card anim anim-delay-4" style="max-width:600px;margin-top:24px;text-align:center;">
+    <div class="callout-card anim anim-delay-4 u-mw-600 u-mt-lg u-text-center">
       Every Boston neighborhood in our data saw corporate ownership rise. The South Boston Waterfront saw one of the largest jumps, at <span>+32 percentage points</span>. In neighborhoods like Dorchester and Roxbury, smaller increases may still matter deeply because residents already face greater affordability pressures.
     </div>
   </div>
   <p class="data-source">Source: City of Boston Property Assessment Data, 2004–2024 (data.boston.gov)</p>
 </section>
 
-<!-- ====== SLIDE 8 — House Hunting ====== -->
-<section class="slide" id="slide-hunt">
+
+<!-- =================================================================== -->
+<!-- CHAPTER 4 — THE COST (price reveal, mortgage, share, resources)     -->
+<!-- =================================================================== -->
+
+<!-- ====== Reality Check (median for hunt selection + shrinking home) ====== -->
+<section class="slide" id="slide-reality" data-chapter="4">
   <div class="slide-inner">
-    <p class="top-label anim">HOUSE HUNTING</p>
-    <h2 class="headline h-h2 anim anim-delay-1">Let's search for your<br>dream home</h2>
-
-    <div class="hunt-layout">
-      <div class="hunt-left">
-        <div class="selector-group anim anim-delay-2">
-          <div class="selector-label">District</div>
-          <div class="selector-row" data-group="district">
-            <button class="selector-pill active" data-value="backbay">Back Bay</button>
-            <button class="selector-pill" data-value="dorchester">Dorchester</button>
-            <button class="selector-pill" data-value="eastboston">East Boston</button>
-            <button class="selector-pill" data-value="jp">Jamaica Plain</button>
-            <button class="selector-pill" data-value="southboston">South Boston</button>
-          </div>
-        </div>
-        <div class="selector-group anim anim-delay-2">
-          <div class="selector-label">Type</div>
-          <div class="selector-row" data-group="type">
-            <button class="selector-pill active" data-value="condo">Condo</button>
-            <button class="selector-pill" data-value="single">Single Family</button>
-            <button class="selector-pill" data-value="multi">Multi-Family</button>
-          </div>
-        </div>
-        <div class="selector-group anim anim-delay-3">
-          <div class="selector-label">Bedrooms</div>
-          <div class="selector-row" data-group="beds">
-            <button class="selector-pill" data-value="1">1</button>
-            <button class="selector-pill active" data-value="2">2</button>
-            <button class="selector-pill" data-value="3">3</button>
-            <button class="selector-pill" data-value="4">4+</button>
-          </div>
-        </div>
-        <div class="budget-slider-wrap anim anim-delay-3">
-          <label class="budget-slider-label">What would you pay?</label>
-          <div class="budget-display" id="budgetDisplay">$500,000</div>
-          <input type="range" id="budgetSlider" min="100000" max="2000000" step="25000" value="500000">
-          <div class="slider-labels"><span>$100K</span><span>$2M</span></div>
-        </div>
-        <button class="btn anim anim-delay-4" onclick="showReality()">Show Me</button>
-      </div>
-
-      <div class="hunt-right anim anim-delay-2">
-        <div class="hunt-card hunt-combined">
-          <div class="hunt-pair">
-            <div class="hunt-section">
-              <div class="hunt-card-label">Region</div>
-              <div class="hunt-map-wrap" id="huntMapWrap"></div>
-              <div class="hunt-card-name" id="huntDistrictName">Back Bay</div>
-            </div>
-            <div class="hunt-section">
-              <div class="hunt-card-label">Type</div>
-              <div class="hunt-type-wrap" id="huntTypeWrap"></div>
-              <div class="hunt-card-name" id="huntTypeName">Condo</div>
-            </div>
-          </div>
-          <div class="hunt-card-desc" id="huntTypeDesc"></div>
-        </div>
-      </div>
-    </div>
-  </div>
-  <p class="data-source">Median sale prices: calibrated to 2023–24 Boston neighborhood medians (Zillow / Redfin / MAPC).</p>
-</section>
-
-<!-- ====== SLIDE 10 — Reality Check ====== -->
-<section class="slide" id="slide-reality">
-  <div class="slide-inner">
-    <p class="top-label anim">REALITY CHECK</p>
-    <div class="median-price anim anim-delay-1" id="medianPrice">$0</div>
-    <h2 class="headline h-h3 anim anim-delay-1">Median Sale Price</h2>
+    <p class="reality-lead anim anim-delay-1">Let's go back to your dream house…</p>
+    <div class="median-price anim anim-delay-2" id="medianPrice">$0</div>
     <p class="guess-comparison anim anim-delay-2" id="guessComparison">You guessed $500,000</p>
     <p class="difference anim anim-delay-2" id="guessDiff">You were $285,000 off</p>
     <div class="shrink-iso-wrap anim anim-delay-3" id="shrinkIsoWrap"></div>
@@ -459,21 +469,40 @@
       </div>
     </div>
     <p class="shrink-headline anim anim-delay-4" id="shrinkHeadline">Same budget. Shrinking home.</p>
-    <p class="shrink-note anim anim-delay-4">We use 2014 as a post-recession comparison point before Boston’s later price acceleration.</p>
+    <p class="shrink-note anim anim-delay-4">We use 2014 as a post-recession comparison point before Boston's later price acceleration.</p>
   </div>
   <p class="data-source">Median $/sqft: educated estimates calibrated to Zillow / Redfin / MAPC neighborhood medians (2014 and 2023–24).</p>
 </section>
 
-<!-- ====== SLIDE 11 — Mortgage Reality ====== -->
-<section class="slide" id="slide-mortgage">
+<!-- ====== Mortgage Burden ====== -->
+<section class="slide" id="slide-mortgage" data-chapter="4">
   <div class="slide-inner">
     <p class="top-label anim">THE COST OF TIME</p>
-    <h2 class="headline h-h3 anim anim-delay-1">You'll need</h2>
+    <h2 class="headline h-h3 anim anim-delay-1">
+      You'll really pay for
+      <span class="info-anchor info-anchor-h" tabindex="0" role="button" aria-label="What this means">
+        <button class="info-btn" type="button" tabindex="-1">?</button>
+        <span class="info-caption info-caption-wide">
+          The bank prices a 30-year mortgage at the monthly payment below. But that math assumes a clear runway —
+          no kids, no student loans, no single-income years, no parents to support. As each of those land on you,
+          the only way to keep the monthly payment manageable is to <strong>refinance into longer terms</strong>.
+          That's why your real payoff age lands past 52 — and why the number below is <strong>longer than 30</strong>.
+          Real wage growth (~1.2%/yr above inflation) is already baked in; your future self absorbs part of the burden.
+        </span>
+      </span>
+    </h2>
     <div class="years-number anim anim-delay-1" id="yearsNumber">0</div>
     <h2 class="headline h-h3 h-tight anim anim-delay-1">years</h2>
+
     <div class="timeline-container anim anim-delay-2">
       <!-- ABOVE THE BAR -->
       <div class="milestones milestones-above">
+        <div class="milestone" style="left:10%">
+          <div class="milestone-text"><span class="milestone-prefix">avg.</span>Marriage</div>
+          <div class="milestone-age">30</div>
+          <div class="milestone-icon">💍</div>
+          <div class="milestone-connector"></div>
+        </div>
         <div class="milestone milestone-payoff" id="milestonePayoff" style="left:35%">
           <div class="milestone-text"><span class="milestone-prefix">Pay off</span>home</div>
           <div class="milestone-age" id="milestonePayoffAge">52</div>
@@ -482,10 +511,12 @@
         </div>
       </div>
 
-      <!-- BAR -->
+      <!-- BAR with static 30-year reference marker -->
       <div class="timeline-bar">
         <div class="timeline-fill" id="timelineFill"></div>
+        <div class="timeline-ref-30" aria-hidden="true"></div>
       </div>
+      <div class="timeline-ref-30-label">Standard 30-yr mortgage ends</div>
 
       <!-- BELOW THE BAR (auto-staggered into 2 rows on collision) -->
       <div class="milestones milestones-below">
@@ -494,12 +525,6 @@
           <div class="milestone-icon">🎓</div>
           <div class="milestone-age">22</div>
           <div class="milestone-text"><span class="milestone-prefix">avg.</span>Graduate</div>
-        </div>
-        <div class="milestone" style="left:10%">
-          <div class="milestone-connector"></div>
-          <div class="milestone-icon">💍</div>
-          <div class="milestone-age">30</div>
-          <div class="milestone-text"><span class="milestone-prefix">avg.</span>Marriage</div>
         </div>
         <div class="milestone" style="left:13%">
           <div class="milestone-connector"></div>
@@ -518,8 +543,12 @@
         </div>
       </div>
     </div>
-    <div class="monthly-payment anim anim-delay-3" id="monthlyPayment">$0</div>
-    <div class="payment-label anim anim-delay-3">per month</div>
+
+    <div class="monthly-row anim anim-delay-3">
+      <div class="monthly-caption">What the bank actually charges</div>
+      <div class="monthly-payment" id="monthlyPayment">$0</div>
+      <div class="payment-label">per month, for 30 years &middot; 7% APR, 20% down</div>
+    </div>
 
     <div class="cost-toggles anim anim-delay-4">
       <div class="toggle-group">
@@ -546,21 +575,12 @@
         </div>
       </div>
     </div>
-
-    <p class="effective-note anim anim-delay-4">
-
-      The monthly payment shown is the standard 30-year mortgage at 7% APR with 20% down — what the bank actually asks.
-      The number above is the <em>effective</em> term: how long you'd realistically keep paying once life burdens
-      (kids, loans, a single income) push you to refinance into longer terms to keep that monthly manageable.
-      Real wage growth (~1.2%/yr above inflation) is factored in — your future self absorbs part of the burden.
-    </p>
-
   </div>
   <p class="data-source">Mortgage rate: Freddie Mac PMMS. Wage growth: BLS / FRED. Retirement: SSA/Medicare eligibility.</p>
 </section>
 
-<!-- ====== SLIDE 12 — Share / CTA ====== -->
-<section class="slide" id="slide-share">
+<!-- ====== Share Card ====== -->
+<section class="slide" id="slide-share" data-chapter="4">
   <div class="slide-inner">
     <div class="card-stack anim">
       <div class="bg-card bg-card-1"></div>
@@ -588,59 +608,70 @@
     </div>
 
     <p class="top-label anim anim-delay-1">BOSTON HOUSING WRAPPED</p>
-    <h1 class="headline h-h2 anim anim-delay-1"> Who gets to call<br><span>Boston home?</span></h1>
-    <p class="subheadline sub-sm anim anim-delay-2"> Corporate ownership has grown across Boston over the past two decades. The question is not only what homes cost, but who gets to compete for them — and who gets left out. </p>
+    <h1 class="headline h-h2 anim anim-delay-1">Who gets to call<br><span>Boston home?</span></h1>
+    <p class="subheadline sub-sm anim anim-delay-2">Corporate ownership has grown across Boston over the past two decades. The question is not only what homes cost, but who gets to compete for them — and who gets left out.</p>
 
-<div class="cta-row anim anim-delay-2" style="display: flex; gap: 10px; justify-content: center;">
-  <button class="btn" onclick="shareCard()">Share</button>
-  <button class="btn btn-outline" onclick="toggleOverlay(true)">Get Help & Resources</button>
-</div>
-
-<div id="resourceOverlay" class="overlay">
-  <div class="overlay-content">
-    <button class="close-btn" onclick="toggleOverlay(false)">&times;</button>
-    <h2 class="overlay-title">Take Action</h2>
-    <p class="overlay-subtitle">Resources for navigating the Boston housing market.</p>
-
-    <div class="resource-list">
-      <a href="https://www.boston.gov/departments/housing" target="_blank" class="res-item">
-        <span class="res-icon">🏛️</span>
-        <div class="res-info">
-          <strong>City of Boston Housing</strong>
-          <span>Down payment assistance & programs</span>
-        </div>
-      </a>
-      <a href="https://www.masshousing.com/" target="_blank" class="res-item">
-        <span class="res-icon">🏡</span>
-        <div class="res-info">
-          <strong>MassHousing</strong>
-          <span>Affordable mortgage & low-interest loans</span>
-        </div>
-      </a>
-      <a href="https://www.mahahome.com/" target="_blank" class="res-item">
-        <span class="res-icon">🎓</span>
-        <div class="res-info">
-          <strong>MAHA (Homebuyer Ed)</strong>
-          <span>Classes required for special loan rates</span>
-        </div>
-      </a>
-      <a href="https://www.clvu.org/" target="_blank" class="res-item">
-        <span class="res-icon">✊</span>
-        <div class="res-info">
-          <strong>City Life / Vida Urbana</strong>
-          <span>Tenant rights & housing justice advocacy</span>
-        </div>
-      </a>
+    <div class="cta-row anim anim-delay-2 u-flex-center">
+      <button class="btn" onclick="shareCard()">Share Your Result</button>
     </div>
-  </div>
-</div>
+
     <div class="social-row anim anim-delay-3">
-      <div class="social-icon" title="Copy link">🔗</div>
-      <div class="social-icon" title="X / Twitter">𝕏</div>
-      <div class="social-icon" title="Instagram">📷</div>
-      <div class="social-icon" title="Message">💬</div>
+      <button class="social-icon" type="button" title="Copy link" aria-label="Copy link" onclick="shareTo('copy')">🔗</button>
+      <button class="social-icon" type="button" title="Post on X / Twitter" aria-label="Post on X / Twitter" onclick="shareTo('twitter')">𝕏</button>
+      <button class="social-icon" type="button" title="Copy caption for Instagram" aria-label="Copy caption for Instagram" onclick="shareTo('instagram')">📷</button>
+      <button class="social-icon" type="button" title="Share via text message" aria-label="Share via text message" onclick="shareTo('sms')">💬</button>
     </div>
-    <div class="watermark anim anim-delay-4">BOSTONHOUSING.WRAPPED</div>
+    <div class="share-toast" id="shareToast" role="status" aria-live="polite"></div>
+  </div>
+</section>
+
+<!-- ====== Resources ====== -->
+<section class="slide" id="slide-resources" data-chapter="4">
+  <div class="slide-inner">
+    <p class="top-label anim">WHERE TO START</p>
+    <h2 class="headline h-h2 anim anim-delay-1">If any of this<br>hit home</h2>
+    <p class="subheadline sub-sm anim anim-delay-2">
+      Each resource below maps to a specific concern this story raised — pick the one that fits where you are right now.
+    </p>
+
+    <div class="resources-inline anim anim-delay-3 u-mt-md">
+      <div class="resources-inline-list">
+        <a href="https://www.boston.gov/departments/housing" target="_blank" rel="noopener" class="res-item-inline">
+          <span class="res-icon">🏛️</span>
+          <div class="res-info">
+            <strong>City of Boston Housing — Down payment assistance</strong>
+            <span class="res-desc">Directly addresses the budget-vs-price gap you saw in <em>Guess the Price</em> and <em>Reality Check</em>.</span>
+          </div>
+          <span class="res-link-arrow">&rarr;</span>
+        </a>
+        <a href="https://www.masshousing.com/" target="_blank" rel="noopener" class="res-item-inline">
+          <span class="res-icon">🏡</span>
+          <div class="res-info">
+            <strong>MassHousing — Below-market mortgage rates</strong>
+            <span class="res-desc">Eases the monthly-payment and effective-term burden shown in <em>The Cost of Time</em>.</span>
+          </div>
+          <span class="res-link-arrow">&rarr;</span>
+        </a>
+        <a href="https://www.mahahome.com/" target="_blank" rel="noopener" class="res-item-inline">
+          <span class="res-icon">🎓</span>
+          <div class="res-info">
+            <strong>MAHA — Homebuyer education classes</strong>
+            <span class="res-desc">Gives everyday buyers the tools to compete against the investor categories you saw in <em>Your Competition</em>.</span>
+          </div>
+          <span class="res-link-arrow">&rarr;</span>
+        </a>
+        <a href="https://www.clvu.org/" target="_blank" rel="noopener" class="res-item-inline">
+          <span class="res-icon">✊</span>
+          <div class="res-info">
+            <strong>City Life / Vida Urbana — Tenant rights &amp; organizing</strong>
+            <span class="res-desc">Protects renters in the neighborhoods most affected by the corporate-ownership shift in <em>Who Owns Your Neighborhood</em>.</span>
+          </div>
+          <span class="res-link-arrow">&rarr;</span>
+        </a>
+      </div>
+    </div>
+
+    <div class="watermark anim anim-delay-4 u-mt-xl">BOSTONHOUSING.WRAPPED</div>
   </div>
 </section>
 
