@@ -68,7 +68,7 @@ const propertyPool = [
         img: "asset/seaport_blvd.png",
         label: "133 Seaport Blvd, Seaport • 1 Bed • 1 Bath",
         price2026: 1294000,
-        price2013: 0, 
+        price2013: 0,
         price2003: 0
     }
 ];
@@ -246,7 +246,7 @@ function scrollCueFire() {
   const slide = slides[currentSlideIdx];
   if (!slide || !scrollCueEl) return;
   // Last slide has nowhere to go.
-  if (slide.id === 'slide-resources') return;
+  if (slide.id === 'slide-credits') return;
   // Required-action slides: don't show until the button has been clicked.
   if (isCueGatedByAction(slide)) return;
   cueShownForIdx = currentSlideIdx;
@@ -297,7 +297,7 @@ function scheduleScrollCue(slide) {
   if (!slide || !scrollCueEl) return;
   // Skip slides where the cue is replaced by an explicit button (welcome →
   // "Begin") or there's no "continue" target (final resources slide).
-  if (slide.id === 'slide-welcome' || slide.id === 'slide-resources') return;
+  if (slide.id === 'slide-welcome' || slide.id === 'slide-credits') return;
   // Kick off the idle countdown. For action-gated slides (hunt, guess) the
   // cue stays hidden until the button is clicked — handled in scrollCueFire.
   settleCheck();
@@ -466,14 +466,14 @@ function revealPrice() {
   btn.style.display = 'none';
   sliderArea.style.display = 'none';
   priceDisplay.style.display = 'none';
-  
+
   const subheadline = document.querySelector('#slide-guess .subheadline');
   if (subheadline) subheadline.style.display = 'none';
 
   revealArea.classList.add('show');
   revealArea.querySelectorAll('.anim').forEach(el => el.classList.add('visible'));
 
- 
+
   const actual = selectedPropertySlide3.price2026;
   const diff = userGuessSlide2 - actual;
   const guessEl = document.getElementById('userGuessStrike');
@@ -1859,7 +1859,7 @@ window.addEventListener('load', async () => {
   onSlideEnter(slides[0]);
   scheduleScrollCue(slides[0]);
   initSlide3Random();
-  
+
   updateCompetitionCards('Dorchester');
   loadAdvantageData();
 
@@ -1890,17 +1890,17 @@ function initSlide3Random() {
     //
     const imgEl = document.getElementById('propertyImg');
     const labelEl = document.getElementById('propertyLabel');
-    
+
     if (imgEl) imgEl.src = selectedPropertySlide3.img;
     if (labelEl) labelEl.textContent = selectedPropertySlide3.label;
 
-    //  
+    //
     const p2003 = selectedPropertySlide3.price2003 > 0 ? formatCurrency(selectedPropertySlide3.price2003) : "N/A (Parking lot)";
     const p2013 = selectedPropertySlide3.price2013 > 0 ? formatCurrency(selectedPropertySlide3.price2013) : "N/A (Under development)";
-    
+
     const hist2003El = document.getElementById('hist2003');
     const hist2013El = document.getElementById('hist2013');
-    
+
     if (hist2003El) hist2003El.textContent = "In 2003: " + p2003;
     if (hist2013El) hist2013El.textContent = "In 2013: " + p2013;
 }
